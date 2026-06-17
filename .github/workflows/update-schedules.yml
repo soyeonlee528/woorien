@@ -1,0 +1,42 @@
+name: 교수 시간표 주간 갱신
+
+on:
+  schedule:
+    # 매주 월요일 00:00 KST (= 일요일 15:00 UTC)
+    - cron: "0 15 * * 0"
+  workflow_dispatch: {}   # 수동 실행 버튼
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-schedules
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 의존성 설치
+        run: pip install -r scripts/requirements.txt
+
+      - name: 시간표 수집
+        run: python scripts/scrape.py
+
+      - name: 변경분 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain data/schedules.json)" ]; then
+            git add data/schedules.json
+            git commit -m "교수 시간표 자동 갱신 ($(date +%Y-%m-%d))"
+            git push
+          else
+            echo "변경 사항 없음 — 커밋 생략"
+          fi

@@ -1,0 +1,167 @@
+{
+  "updatedAt": "2026-06-17T23:26:25+09:00",
+  "note": "샘플 데이터입니다. scripts/sources.json 에 병원별 어댑터를 추가하면 GitHub Actions가 매주 실제 시간표로 갱신합니다.",
+  "hospitals": [
+    {
+      "id": "snuh",
+      "name": "서울대학교병원",
+      "url": "https://www.snuh.org",
+      "source": "sample",
+      "professors": [
+        {
+          "name": "김민수",
+          "department": "소화기내과",
+          "specialty": "위·대장 내시경",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [],
+            "fri": [
+              "AM"
+            ],
+            "sat": []
+          }
+        },
+        {
+          "name": "이서연",
+          "department": "순환기내과",
+          "specialty": "심부전·고혈압",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": []
+          }
+        },
+        {
+          "name": "박지훈",
+          "department": "정형외과",
+          "specialty": "척추",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [],
+            "sat": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "yuhs",
+      "name": "세브란스병원",
+      "url": "https://www.severance.healthcare",
+      "source": "sample",
+      "professors": [
+        {
+          "name": "정하늘",
+          "department": "신경외과",
+          "specialty": "뇌종양",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [],
+            "thu": [],
+            "fri": [
+              "PM"
+            ],
+            "sat": []
+          }
+        },
+        {
+          "name": "최유진",
+          "department": "내분비내과",
+          "specialty": "당뇨·갑상선",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [],
+            "fri": [
+              "AM"
+            ],
+            "sat": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "amc",
+      "name": "서울아산병원",
+      "url": "https://www.amc.seoul.kr",
+      "source": "sample",
+      "professors": [
+        {
+          "name": "한도현",
+          "department": "혈액종양내과",
+          "specialty": "림프종",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [],
+            "sat": []
+          }
+        },
+        {
+          "name": "오세라",
+          "department": "안과",
+          "specialty": "망막",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [],
+            "thu": [],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [
+              "AM"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

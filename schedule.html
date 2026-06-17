@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>교수 진료 시간표 모아보기 | 우리엔</title>
+<meta name="description" content="여러 대학병원의 교수 외래 진료 시간표를 한곳에서 모아보고, 내 일정도 함께 관리하세요. 매주 자동 갱신." />
+<style>
+  :root{
+    --red:#E0112E; --ink:#1d1d1f; --sub:#6b7280; --line:#e5e7eb;
+    --bg:#f6f7f9; --am:#1d6fe0; --pm:#e07a11;
+    --card:#ffffff; --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.04);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+       color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  header.top{background:#fff;border-bottom:1px solid var(--line);padding:18px 20px;position:sticky;top:0;z-index:20}
+  .top .wrap{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:baseline;gap:10px}
+  .brand b{font-size:20px;letter-spacing:-.4px}
+  .brand span{color:var(--red);font-weight:800}
+  .updated{font-size:13px;color:var(--sub)}
+  .updated b{color:var(--ink)}
+  main{max-width:1180px;margin:0 auto;padding:20px}
+  .tabs{display:flex;gap:6px;margin-bottom:18px}
+  .tab{appearance:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 18px;
+       font-size:14px;font-weight:600;cursor:pointer;color:var(--sub)}
+  .tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px}
+  .filters{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-bottom:16px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:12px;font-weight:700;color:var(--sub)}
+  .field input,.field select{border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;background:#fff;min-width:160px}
+  .pills{display:flex;flex-wrap:wrap;gap:8px}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;
+        cursor:pointer;color:var(--sub);user-select:none}
+  .pill.on{background:var(--red);border-color:var(--red);color:#fff}
+  .count{font-size:13px;color:var(--sub);margin:4px 2px 12px}
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:14px;min-width:760px}
+  th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  thead th{background:#fafbfc;font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0}
+  tbody tr:hover{background:#fafbfc}
+  .day-col{text-align:center;min-width:64px}
+  .hname{font-weight:700}
+  .dept{color:var(--sub);font-size:13px}
+  .badge{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px;margin:1px}
+  .badge.am{background:rgba(29,111,224,.12);color:var(--am)}
+  .badge.pm{background:rgba(224,122,17,.12);color:var(--pm)}
+  .empty{color:#cbd1d9}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--sub);margin-top:12px;align-items:center;flex-wrap:wrap}
+  .note{font-size:12px;color:var(--sub);margin-top:10px}
+
+  /* 내 일정 */
+  .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:6px}
+  .daycard{border:1px solid var(--line);border-radius:12px;padding:10px;min-height:120px;background:#fff}
+  .daycard h4{margin:0 0 8px;font-size:13px;color:var(--sub);text-align:center}
+  .daycard.today h4{color:var(--red)}
+  .item{background:#fff;border:1px solid var(--line);border-left:3px solid var(--red);border-radius:8px;padding:7px 8px;margin-bottom:7px;font-size:12px;position:relative}
+  .item .it-title{font-weight:700}
+  .item .it-meta{color:var(--sub);font-size:11px;margin-top:2px}
+  .item .del{position:absolute;top:5px;right:6px;border:none;background:none;color:#c0c6cf;cursor:pointer;font-size:14px;line-height:1}
+  .item .del:hover{color:var(--red)}
+  .addform{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:16px}
+  .btn{appearance:none;border:none;background:var(--red);color:#fff;font-weight:700;border-radius:10px;padding:10px 18px;font-size:14px;cursor:pointer}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .hide{display:none !important}
+  @media (max-width:760px){
+    .grid7{grid-template-columns:1fr;gap:8px}
+    .field input,.field select{min-width:0;width:100%}
+    .field{flex:1 1 140px}
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>교수 진료 시간표 <span>모아보기</span></b></div>
+    <div class="updated" id="updated">불러오는 중…</div>
+  </div>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab active" data-tab="hospital">병원 시간표</button>
+    <button class="tab" data-tab="my">내 일정</button>
+  </div>
+
+  <!-- ===================== 병원 시간표 ===================== -->
+  <section id="tab-hospital">
+    <div class="card">
+      <div class="filters">
+        <div class="field" style="flex:1 1 100%">
+          <label>병원</label>
+          <div class="pills" id="hospitalPills"></div>
+        </div>
+        <div class="field">
+          <label>진료과</label>
+          <select id="deptFilter"><option value="">전체</option></select>
+        </div>
+        <div class="field" style="flex:1">
+          <label>교수 검색</label>
+          <input id="search" type="search" placeholder="교수명·전문분야 검색" />
+        </div>
+      </div>
+      <div class="count" id="count"></div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>병원</th><th>진료과</th><th>교수</th><th>전문분야</th>
+              <th class="day-col">월</th><th class="day-col">화</th><th class="day-col">수</th>
+              <th class="day-col">목</th><th class="day-col">금</th><th class="day-col">토</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <span><span class="badge am">오전</span> 오전 진료</span>
+        <span><span class="badge pm">오후</span> 오후 진료</span>
+        <span class="empty">— 휴진</span>
+      </div>
+      <div class="note" id="dataNote"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 내 일정 ===================== -->
+  <section id="tab-my" class="hide">
+    <div class="card">
+      <h3 style="margin:0 0 14px">내 주간 일정 추가</h3>
+      <form class="addform" id="myForm">
+        <div class="field"><label>제목*</label><input id="m_title" required placeholder="예: 김민수 교수 진료" /></div>
+        <div class="field"><label>장소/병원</label><input id="m_place" placeholder="예: 서울대병원 본관" /></div>
+        <div class="field"><label>요일*</label>
+          <select id="m_day">
+            <option value="mon">월</option><option value="tue">화</option><option value="wed">수</option>
+            <option value="thu">목</option><option value="fri">금</option><option value="sat">토</option><option value="sun">일</option>
+          </select>
+        </div>
+        <div class="field"><label>시간</label><input id="m_time" placeholder="예: 09:30 / 오후" /></div>
+        <div class="field" style="flex:1"><label>메모</label><input id="m_memo" placeholder="진료실, 연락처 등" /></div>
+        <button class="btn" type="submit">추가</button>
+      </form>
+      <div class="grid7" id="myGrid"></div>
+      <div class="note">내 일정은 이 브라우저에만 저장됩니다(localStorage). 다른 기기와는 공유되지 않아요.
+        <button class="btn ghost" id="clearMine" style="padding:6px 12px;margin-left:8px">전체 삭제</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const DAYS = ["mon","tue","wed","thu","fri","sat","sun"];
+const DAY_KO = {mon:"월",tue:"화",wed:"수",thu:"목",fri:"금",sat:"토",sun:"일"};
+const LS_KEY = "woorien_my_schedules";
+
+let DATA = {hospitals:[]};
+let activeHospitals = new Set();   // 비어있으면 전체
+
+/* ---------- 탭 ---------- */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick = ()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    const tab = t.dataset.tab;
+    document.getElementById("tab-hospital").classList.toggle("hide", tab!=="hospital");
+    document.getElementById("tab-my").classList.toggle("hide", tab!=="my");
+  };
+});
+
+/* ---------- 데이터 로드 ---------- */
+async function load(){
+  try{
+    const res = await fetch("./data/schedules.json", {cache:"no-store"});
+    DATA = await res.json();
+  }catch(e){
+    document.getElementById("updated").textContent = "데이터를 불러오지 못했습니다";
+    return;
+  }
+  const d = DATA.updatedAt ? new Date(DATA.updatedAt) : null;
+  document.getElementById("updated").innerHTML = d
+    ? `최근 갱신 <b>${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}</b> · 매주 자동 갱신`
+    : "매주 자동 갱신";
+  if(DATA.note) document.getElementById("dataNote").textContent = "ℹ︎ " + DATA.note;
+
+  buildHospitalPills();
+  buildDeptFilter();
+  render();
+}
+
+function buildHospitalPills(){
+  const box = document.getElementById("hospitalPills");
+  box.innerHTML = "";
+  DATA.hospitals.forEach(h=>{
+    const p = document.createElement("span");
+    p.className = "pill on";
+    p.textContent = h.name;
+    activeHospitals.add(h.id);
+    p.onclick = ()=>{
+      p.classList.toggle("on");
+      if(p.classList.contains("on")) activeHospitals.add(h.id); else activeHospitals.delete(h.id);
+      render();
+    };
+    box.appendChild(p);
+  });
+}
+
+function buildDeptFilter(){
+  const sel = document.getElementById("deptFilter");
+  const depts = new Set();
+  DATA.hospitals.forEach(h=> (h.professors||[]).forEach(p=> p.department && depts.add(p.department)));
+  [...depts].sort((a,b)=>a.localeCompare(b,"ko")).forEach(d=>{
+    const o = document.createElement("option"); o.value=d; o.textContent=d; sel.appendChild(o);
+  });
+  sel.onchange = render;
+}
+document.getElementById("search").addEventListener("input", render);
+
+/* ---------- 렌더 ---------- */
+function slotBadges(slots){
+  if(!slots || !slots.length) return '<span class="empty">—</span>';
+  return slots.map(s=> s==="AM"
+    ? '<span class="badge am">오전</span>'
+    : '<span class="badge pm">오후</span>').join("");
+}
+
+function render(){
+  const dept = document.getElementById("deptFilter").value;
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const rows = document.getElementById("rows");
+  rows.innerHTML = "";
+  let n = 0;
+
+  DATA.hospitals.forEach(h=>{
+    if(activeHospitals.size && !activeHospitals.has(h.id)) return;
+    (h.professors||[]).forEach(p=>{
+      if(dept && p.department !== dept) return;
+      if(q && !(`${p.name} ${p.specialty||""} ${p.department||""}`.toLowerCase().includes(q))) return;
+      const tr = document.createElement("tr");
+      let cells = `<td class="hname">${esc(h.name)}</td>`+
+        `<td class="dept">${esc(p.department||"")}</td>`+
+        `<td><b>${esc(p.name)}</b></td>`+
+        `<td class="dept">${esc(p.specialty||"")}</td>`;
+      ["mon","tue","wed","thu","fri","sat"].forEach(day=>{
+        cells += `<td class="day-col">${slotBadges((p.schedule||{})[day])}</td>`;
+      });
+      tr.innerHTML = cells;
+      rows.appendChild(tr);
+      n++;
+    });
+  });
+  if(n===0){
+    rows.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#9aa1ab;padding:32px">조건에 맞는 교수가 없습니다.</td></tr>`;
+  }
+  document.getElementById("count").textContent = `총 ${n}명`;
+}
+
+function esc(s){return (s??"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ---------- 내 일정 (localStorage) ---------- */
+function getMine(){ try{return JSON.parse(localStorage.getItem(LS_KEY))||[];}catch(e){return [];} }
+function setMine(arr){ localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
+
+document.getElementById("myForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  const item = {
+    id: Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    title: document.getElementById("m_title").value.trim(),
+    place: document.getElementById("m_place").value.trim(),
+    day: document.getElementById("m_day").value,
+    time: document.getElementById("m_time").value.trim(),
+    memo: document.getElementById("m_memo").value.trim(),
+  };
+  if(!item.title) return;
+  const arr = getMine(); arr.push(item); setMine(arr);
+  e.target.reset();
+  renderMine();
+});
+
+document.getElementById("clearMine").onclick = ()=>{
+  if(confirm("내 일정을 모두 삭제할까요?")){ setMine([]); renderMine(); }
+};
+
+function renderMine(){
+  const grid = document.getElementById("myGrid");
+  grid.innerHTML = "";
+  const arr = getMine();
+  const todayIdx = (new Date().getDay()+6)%7; // 월=0
+  DAYS.forEach((day,i)=>{
+    const col = document.createElement("div");
+    col.className = "daycard" + (i===todayIdx ? " today":"");
+    col.innerHTML = `<h4>${DAY_KO[day]}</h4>`;
+    arr.filter(x=>x.day===day)
+       .sort((a,b)=>(a.time||"").localeCompare(b.time||""))
+       .forEach(x=>{
+      const el = document.createElement("div");
+      el.className = "item";
+      el.innerHTML = `<button class="del" title="삭제" data-id="${x.id}">×</button>`+
+        `<div class="it-title">${esc(x.title)}</div>`+
+        `<div class="it-meta">${[x.time,x.place,x.memo].filter(Boolean).map(esc).join(" · ")}</div>`;
+      col.appendChild(el);
+    });
+    grid.appendChild(col);
+  });
+  grid.querySelectorAll(".del").forEach(b=> b.onclick=()=>{
+    setMine(getMine().filter(x=>x.id!==b.dataset.id)); renderMine();
+  });
+}
+
+load();
+renderMine();
+</script>
+</body>
+</html>

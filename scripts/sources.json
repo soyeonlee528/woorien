@@ -1,0 +1,26 @@
+{
+  "_comment": "수집 대상 병원 목록. 병원 한 곳을 추가하려면 아래 배열에 항목을 넣고, scrape.py 의 ADAPTERS 에 같은 이름의 adapter 함수를 등록하세요. adapter 가 'sample' 이면 기존 data/schedules.json 의 값을 그대로 유지합니다(실수집 전 보존용).",
+  "hospitals": [
+    {
+      "id": "snuh",
+      "name": "서울대학교병원",
+      "url": "https://www.snuh.org",
+      "adapter": "sample",
+      "enabled": true
+    },
+    {
+      "id": "yuhs",
+      "name": "세브란스병원",
+      "url": "https://www.severance.healthcare",
+      "adapter": "sample",
+      "enabled": true
+    },
+    {
+      "id": "amc",
+      "name": "서울아산병원",
+      "url": "https://www.amc.seoul.kr",
+      "adapter": "sample",
+      "enabled": true
+    }
+  ]
+}
