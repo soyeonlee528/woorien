@@ -252,7 +252,10 @@ function render(){
     });
   });
   if(n===0){
-    rows.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#9aa1ab;padding:32px">조건에 맞는 교수가 없습니다.</td></tr>`;
+    const hasAny = DATA.hospitals.some(h=>(h.professors||[]).length);
+    const msg = hasAny ? "조건에 맞는 교수가 없습니다."
+      : "아직 등록된 시간표가 없습니다 — 데이터 준비 중입니다.";
+    rows.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#9aa1ab;padding:32px">${msg}</td></tr>`;
   }
   document.getElementById("count").textContent = `총 ${n}명`;
 }
