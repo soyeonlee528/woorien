@@ -93,7 +93,7 @@
       <a href="#location" class="hover:text-ink transition">오시는 길</a>
       <a href="#faq"      class="hover:text-ink transition">FAQ</a>
     </nav>
-    <a href="#" class="naver-cta shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 rounded-full bg-ink px-4 sm:px-5 py-2.5 text-[13px] sm:text-[13.5px] font-bold text-white hover:bg-woorien transition">
+    <a href="#apply" class="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 rounded-full bg-ink px-4 sm:px-5 py-2.5 text-[13px] sm:text-[13.5px] font-bold text-white hover:bg-woorien transition">
       신청하기 <i data-lucide="arrow-right" class="w-4 h-4 hidden sm:block"></i>
     </a>
   </div>
@@ -134,7 +134,7 @@
       </div>
 
       <div class="mt-7 flex flex-wrap gap-3">
-        <a href="#" class="naver-cta card-lift inline-flex items-center gap-2 rounded-full bg-woorien px-6 py-3.5 text-[15px] font-bold text-white shadow-lg shadow-woorien/25">
+        <a href="#apply" class="card-lift inline-flex items-center gap-2 rounded-full bg-woorien px-6 py-3.5 text-[15px] font-bold text-white shadow-lg shadow-woorien/25">
           세미나 신청하기 <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
         <a href="#program" class="inline-flex items-center gap-2 rounded-full bg-white border border-line px-6 py-3.5 text-[15px] font-bold text-ink hover:border-greenvet hover:text-greenvet-deep transition">
@@ -351,18 +351,132 @@
   </div>
 </section>
 
-<!-- ===================== 세미나 문의 (v1) ===================== -->
-<section id="contact" class="mx-auto max-w-6xl px-5 pt-20 sm:pt-24 scroll-mt-20">
+<!-- ===================== APPLY (네이버 폼 반영 신청서) ===================== -->
+<section id="apply" class="mx-auto max-w-6xl px-5 pt-20 sm:pt-24 scroll-mt-20">
   <div class="text-center max-w-2xl mx-auto" data-aos="fade-up">
-    <p class="text-[13px] font-extrabold tracking-[.22em] text-woorien">CONTACT</p>
-    <h2 class="mt-3 text-[28px] sm:text-[34px] font-extrabold tracking-tight text-ink">세미나 문의</h2>
-    <p class="mt-3 text-[15px] text-sub">우리엔 · 그린벳 · 마이브라운 카카오톡 채널 1:1 채팅으로 문의하실 수 있습니다.</p>
+    <p class="text-[13px] font-extrabold tracking-[.22em] text-woorien">APPLY</p>
+    <h2 class="mt-3 text-[28px] sm:text-[34px] font-extrabold tracking-tight text-ink">세미나 참가 신청</h2>
+    <p class="mt-3 text-[15px] text-sub">아래 신청서를 작성해 주세요. 사전 신청자에 한해 참석 안내가 발송됩니다.</p>
+    <div class="mt-4 flex flex-wrap items-center justify-center gap-2 text-[12.5px] font-semibold text-sub">
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1.5"><i data-lucide="calendar-days" class="w-4 h-4 text-woorien"></i>2026.07.07 (화) 19:00~21:30</span>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1.5"><i data-lucide="map-pin" class="w-4 h-4 text-greenvet"></i>그린벳 본사 1F Cafeteria</span>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1.5"><i data-lucide="phone" class="w-4 h-4 text-mybrown"></i>문의 031-8015-6581</span>
+    </div>
   </div>
-  <div class="mt-10 max-w-2xl mx-auto rounded-3xl bg-ink text-white p-7 sm:p-8 relative overflow-hidden" data-aos="fade-up">
+
+  <!-- [JS-2] 신청서 (네이버 폼 11문항 + 약관동의 2종) -->
+  <form id="applyForm" class="mt-12 max-w-2xl mx-auto space-y-5" novalidate>
+
+    <!-- 1 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <label class="block text-[14.5px] font-bold text-ink" for="f-hospital">1. 동물병원 명을 입력해 주세요 <span class="text-woorien">*</span></label>
+      <input id="f-hospital" name="hospital" type="text" required placeholder="○○동물병원" class="mt-2.5 w-full rounded-xl border border-line bg-bg px-4 py-3 text-[15px] outline-none focus:border-woorien focus:bg-white transition" />
+    </div>
+
+    <!-- 2 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <label class="block text-[14.5px] font-bold text-ink" for="f-region">2. 동물병원 소재 지역을 입력해주세요 <span class="text-woorien">*</span></label>
+      <input id="f-region" name="region" type="text" required placeholder="예) 서울시 강남구, 성남시 분당구" class="mt-2.5 w-full rounded-xl border border-line bg-bg px-4 py-3 text-[15px] outline-none focus:border-woorien focus:bg-white transition" />
+    </div>
+
+    <!-- 3 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <label class="block text-[14.5px] font-bold text-ink" for="f-phone">3. 참석자의 휴대폰 번호를 입력해주세요 <span class="text-woorien">*</span></label>
+      <input id="f-phone" name="phone" type="tel" required inputmode="numeric" placeholder="예) 01012341234" class="mt-2.5 w-full rounded-xl border border-line bg-bg px-4 py-3 text-[15px] outline-none focus:border-woorien focus:bg-white transition" />
+    </div>
+
+    <!-- 4 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <label class="block text-[14.5px] font-bold text-ink" for="f-name">4. 참석하시는 선생님의 성함을 입력해주세요 <span class="text-woorien">*</span></label>
+      <input id="f-name" name="name" type="text" required placeholder="성함" class="mt-2.5 w-full rounded-xl border border-line bg-bg px-4 py-3 text-[15px] outline-none focus:border-woorien focus:bg-white transition" />
+    </div>
+
+    <!-- 5 직책 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <p class="text-[14.5px] font-bold text-ink">5. 신청하시는 선생님의 직책을 선택해주세요 <span class="text-woorien">*</span></p>
+      <div class="mt-3 space-y-2">
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-woorien has-[:checked]:bg-woorien-soft transition"><input type="radio" name="role" value="병원장(대표원장)" required class="w-4 h-4 accent-woorien" /><span class="text-[14.5px] text-ink">병원장 (대표원장)</span></label>
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-woorien has-[:checked]:bg-woorien-soft transition"><input type="radio" name="role" value="진료 수의사(봉직의)" class="w-4 h-4 accent-woorien" /><span class="text-[14.5px] text-ink">진료 수의사 (봉직의)</span></label>
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-woorien has-[:checked]:bg-woorien-soft transition"><input type="radio" name="role" value="기타" class="w-4 h-4 accent-woorien" /><span class="text-[14.5px] text-ink">기타</span></label>
+      </div>
+    </div>
+
+    <!-- 6 저녁 식사 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <p class="text-[14.5px] font-bold text-ink">6. 저녁 식사 참석 여부를 선택해주세요 <span class="text-woorien">*</span></p>
+      <div class="mt-3 grid grid-cols-2 gap-2">
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-woorien has-[:checked]:bg-woorien-soft transition"><input type="radio" name="dinner" value="참석" required class="w-4 h-4 accent-woorien" /><span class="text-[14.5px] text-ink">참석</span></label>
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-woorien has-[:checked]:bg-woorien-soft transition"><input type="radio" name="dinner" value="미참석" class="w-4 h-4 accent-woorien" /><span class="text-[14.5px] text-ink">미참석</span></label>
+      </div>
+    </div>
+
+    <!-- 7 그린벳 투어 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <p class="text-[14.5px] font-bold text-ink">7. 그린벳 투어 참석 여부를 선택해주세요 <span class="text-woorien">*</span></p>
+      <p class="mt-1 text-[12.5px] text-sub">※ 희망자에 한해 진행됩니다.</p>
+      <div class="mt-3 grid grid-cols-2 gap-2">
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-greenvet has-[:checked]:bg-greenvet-soft transition"><input type="radio" name="tour" value="참석" required class="w-4 h-4 accent-greenvet" /><span class="text-[14.5px] text-ink">참석</span></label>
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-greenvet has-[:checked]:bg-greenvet-soft transition"><input type="radio" name="tour" value="미참석" class="w-4 h-4 accent-greenvet" /><span class="text-[14.5px] text-ink">미참석</span></label>
+      </div>
+    </div>
+
+    <!-- 8 관심 주제 (복수) -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <p class="text-[14.5px] font-bold text-ink">8. 가장 관심 있는 주제를 선택해주세요 <span class="text-woorien">*</span> <span class="text-[12px] font-semibold text-greenvet">(복수 선택 가능)</span></p>
+      <div class="mt-3 space-y-2">
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-woorien has-[:checked]:bg-woorien-soft transition"><input type="checkbox" name="topics" value="AI 차트 및 업무 효율화 (우리엔)" class="w-4 h-4 accent-woorien" /><span class="text-[14.5px] text-ink">AI 차트 및 업무 효율화 <span class="text-woorien-deep font-semibold">(우리엔)</span></span></label>
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-greenvet has-[:checked]:bg-greenvet-soft transition"><input type="checkbox" name="topics" value="건강검진을 통한 병원 성장 전략 (그린벳)" class="w-4 h-4 accent-greenvet" /><span class="text-[14.5px] text-ink">건강검진을 통한 병원 성장 전략 <span class="text-greenvet-deep font-semibold">(그린벳)</span></span></label>
+        <label class="flex items-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 cursor-pointer has-[:checked]:border-mybrown has-[:checked]:bg-mybrown-soft transition"><input type="checkbox" name="topics" value="반려동물 보험 및 라이브 청구 (마이브라운)" class="w-4 h-4 accent-mybrown" /><span class="text-[14.5px] text-ink">반려동물 보험 및 라이브 청구 <span class="text-mybrown-deep font-semibold">(마이브라운)</span></span></label>
+      </div>
+    </div>
+
+    <!-- 9 개인정보 수집·이용 동의 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <p class="text-[14.5px] font-bold text-ink">9. 개인정보 수집 및 이용 동의 <span class="text-woorien">*</span></p>
+      <p class="mt-1.5 text-[13px] leading-relaxed text-sub">동의를 거부하실 수 있으나, 거부 시 설명회 참석 안내 문자를 발송드릴 수 없습니다.</p>
+      <dl class="mt-3 rounded-xl border border-line overflow-hidden text-[13px] divide-y divide-line">
+        <div class="flex"><dt class="w-24 sm:w-28 shrink-0 bg-bg px-3 py-2.5 font-bold text-sub">수집 항목</dt><dd class="px-3 py-2.5 text-ink">병원명, 참석자 성함, 휴대폰 번호</dd></div>
+        <div class="flex"><dt class="w-24 sm:w-28 shrink-0 bg-bg px-3 py-2.5 font-bold text-sub">이용 목적</dt><dd class="px-3 py-2.5 text-ink">참석 안내 문자 발송</dd></div>
+        <div class="flex"><dt class="w-24 sm:w-28 shrink-0 bg-bg px-3 py-2.5 font-bold text-sub">보유 기간</dt><dd class="px-3 py-2.5 text-ink">설명회 참석일로부터 3개월 (기간 경과 후 지체 없이 파기)</dd></div>
+      </dl>
+      <label class="mt-3 flex items-center gap-2.5 rounded-xl bg-bg px-4 py-3 cursor-pointer has-[:checked]:bg-woorien-soft transition"><input type="checkbox" name="agree1" required class="w-4 h-4 accent-woorien" /><span class="text-[14px] font-semibold text-ink">개인정보 수집 및 이용에 동의합니다.</span></label>
+    </div>
+
+    <!-- 10 개인정보 제3자 제공 동의 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <p class="text-[14.5px] font-bold text-ink">10. 개인정보 제3자 제공 동의 <span class="text-woorien">*</span></p>
+      <p class="mt-1.5 text-[13px] leading-relaxed text-sub">우리엔·그린벳·마이브라운 공동 세미나 신청 및 안내를 위해 아래와 같이 개인정보를 마이브라운반려동물전문보험(주), (주)그린벳에 제공합니다.</p>
+      <dl class="mt-3 rounded-xl border border-line overflow-hidden text-[13px] divide-y divide-line">
+        <div class="flex"><dt class="w-24 sm:w-28 shrink-0 bg-bg px-3 py-2.5 font-bold text-sub">제공받는 자</dt><dd class="px-3 py-2.5 text-ink">마이브라운반려동물전문보험(주), (주)그린벳</dd></div>
+        <div class="flex"><dt class="w-24 sm:w-28 shrink-0 bg-bg px-3 py-2.5 font-bold text-sub">이용 목적</dt><dd class="px-3 py-2.5 text-ink">설명회 참석 여부 확인</dd></div>
+        <div class="flex"><dt class="w-24 sm:w-28 shrink-0 bg-bg px-3 py-2.5 font-bold text-sub">제공 항목</dt><dd class="px-3 py-2.5 text-ink">동물병원명, 참석자 성함, 휴대폰 번호</dd></div>
+        <div class="flex"><dt class="w-24 sm:w-28 shrink-0 bg-bg px-3 py-2.5 font-bold text-sub">보유 기간</dt><dd class="px-3 py-2.5 text-ink">설명회 참석일로부터 3개월 (기간 경과 후 지체 없이 파기)</dd></div>
+      </dl>
+      <label class="mt-3 flex items-center gap-2.5 rounded-xl bg-bg px-4 py-3 cursor-pointer has-[:checked]:bg-woorien-soft transition"><input type="checkbox" name="agree2" required class="w-4 h-4 accent-woorien" /><span class="text-[14px] font-semibold text-ink">개인정보 제3자 제공에 동의합니다.</span></label>
+    </div>
+
+    <!-- 11 사전 질문 -->
+    <div class="rounded-2xl bg-surface border border-line p-5 sm:p-6" data-aos="fade-up">
+      <label class="block text-[14.5px] font-bold text-ink" for="f-question">11. 세미나에서 궁금한 점이나 사전 질문이 있다면 자유롭게 작성해주세요 :)</label>
+      <textarea id="f-question" name="question" rows="3" placeholder="자유롭게 작성해 주세요" class="mt-2.5 w-full rounded-xl border border-line bg-bg px-4 py-3 text-[15px] outline-none focus:border-woorien focus:bg-white transition resize-y"></textarea>
+    </div>
+
+    <!-- 제출 -->
+    <button type="submit" id="applySubmit" class="card-lift w-full inline-flex items-center justify-center gap-2 rounded-xl bg-woorien px-6 py-4 text-[15px] font-bold text-white shadow-lg shadow-woorien/25 disabled:opacity-60">
+      <span class="btn-label inline-flex items-center gap-2">제출하기 <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+      <span class="btn-spin hidden"><i data-lucide="loader-circle" class="w-4 h-4 animate-spin"></i> 전송 중…</span>
+    </button>
+    <div id="formMsg" class="hidden rounded-xl px-4 py-3 text-[13.5px] font-semibold"></div>
+    <!-- 네이버 폼 대안 (CONFIG.NAVER_FORM_URL 입력 시 노출) -->
+    <p id="naverAlt" class="hidden text-center text-[13px] text-sub">또는 <a id="naverFormLink" href="#" target="_blank" rel="noopener" class="font-bold text-greenvet-deep underline underline-offset-2">네이버 폼으로 신청하기</a></p>
+  </form>
+
+  <!-- 문의(카카오 채널) + 공유 -->
+  <div class="mt-8 max-w-2xl mx-auto rounded-2xl bg-ink text-white p-6 sm:p-7 relative overflow-hidden" data-aos="fade-up">
     <div class="blob absolute -bottom-16 -right-10 w-56 h-56 rounded-full bg-greenvet/40"></div>
     <div class="relative">
       <div class="flex items-center justify-between gap-3 flex-wrap">
-        <h3 class="text-[17px] font-extrabold">카카오톡 채널 1:1 문의</h3>
+        <h3 class="text-[17px] font-extrabold">1:1 문의 &amp; 공유</h3>
         <div class="flex gap-2">
           <button type="button" onclick="shareKakao()" class="inline-flex items-center gap-1.5 rounded-lg bg-[#FEE500] text-[#191600] px-3 py-2 text-[13px] font-bold"><i data-lucide="message-circle-more" class="w-4 h-4"></i>카톡 공유</button>
           <button type="button" onclick="shareFallback()" class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 border border-white/15 text-white px-3 py-2 text-[13px] font-bold"><i data-lucide="link" class="w-4 h-4"></i>링크 복사</button>
@@ -453,7 +567,7 @@
 
 <!-- ===================== 모바일 하단 고정 CTA ===================== -->
 <div id="floatCta" class="fixed inset-x-0 bottom-0 z-40 p-3 sm:hidden translate-y-32 opacity-0 pointer-events-none">
-  <a href="#" class="naver-cta flex items-center justify-center gap-2 rounded-2xl bg-woorien px-6 py-4 text-[15px] font-extrabold text-white shadow-2xl shadow-woorien/30">
+  <a href="#apply" class="flex items-center justify-center gap-2 rounded-2xl bg-woorien px-6 py-4 text-[15px] font-extrabold text-white shadow-2xl shadow-woorien/30">
     <i data-lucide="calendar-check" class="w-5 h-5"></i> 세미나 신청하기
   </a>
 </div>
