@@ -504,6 +504,81 @@ def adapter_kdh(ctx, src):
     return list(uniq.values())
 
 
+# ---------------------------------------------------------------------------
+# 어댑터: 경희대학교병원 (med.khmc.or.kr)
+# timetable.do 가 anti-bot/JS 로딩이라 page.goto/content 가 막히지만, 메인 문서
+# '응답 body' 는 캡처 가능(완전한 HTML). 의사별 <li class="profile_outer"> 안에
+# 이름(.doctor_name) 과 진료일정 표(오전/오후 행, 요일 셀에 <em>=진료)가 들어있다.
+# 진료과 코드: 정형외과 2050000000, 신경외과 2060000000. 표는 가끔 빈 응답 → 재시도.
+# ---------------------------------------------------------------------------
+def _khmc_fetch(ctx, url, tries=4):
+    for _ in range(tries):
+        bodies = {}
+        page = ctx.new_page()
+
+        def on(r):
+            try:
+                if "timetable.do" in r.url and "html" in r.headers.get("content-type", ""):
+                    bodies[r.url] = r.text()
+            except Exception:
+                pass
+        page.on("response", on)
+        try:
+            page.goto(url, wait_until="commit", timeout=25000)
+        except Exception:
+            pass
+        page.wait_for_timeout(5000)
+        page.close()
+        for u, bd in bodies.items():
+            if "timetable.do" in u and len(bd) > 5000:
+                return bd
+    return ""
+
+
+def _khmc_parse(html):
+    profs = []
+    chunks = re.split(r'<li class="[^"]*profile_outer', html)
+    for ch in chunks[1:]:
+        m = re.search(r'doctor_name[^>]*>\s*<span>\s*([가-힣]{2,4})\s*</span>', ch)
+        if not m:
+            continue
+        name = m.group(1)
+        sched = empty_sched()
+        for label, slot in (("오전", "AM"), ("오후", "PM")):
+            rm = re.search(r'<td[^>]*>\s*' + label + r'\s*</td>(.*?)</tr>', ch, re.S)
+            if not rm:
+                continue
+            cells = re.findall(r'<td[^>]*>(.*?)</td>', rm.group(1), re.S)
+            for d, cell in enumerate(cells[:6]):
+                if "<em" in cell and DAYS[d] not in (None,):
+                    sched[DAYS[d]].append(slot)
+        profs.append({"name": name, "schedule": order_slots(sched)})
+    return profs
+
+
+def adapter_khmc(ctx, src):
+    base = src["base"].rstrip("/")
+    codes = src.get("deptCodes") or {}
+    out = []
+    for dnm, code in codes.items():
+        url = f"{base}/kr/treatment/department/{code}/timetable.do"
+        html = _khmc_fetch(ctx, url)
+        if not html:
+            print(f"  [khmc] {dnm}({code}): 응답 캡처 실패")
+            continue
+        got = _khmc_parse(html)
+        for g in got:
+            out.append({
+                "name": g["name"],
+                "department": dnm,
+                "specialty": "",
+                "title": "교수",
+                "schedule": g["schedule"],
+            })
+        print(f"  [khmc] {dnm}({code}): {len(got)}명")
+    return out
+
+
 ADAPTERS = {
     "anam_kumc": adapter_anam_kumc,
     "cmc": adapter_cmc,
@@ -511,6 +586,7 @@ ADAPTERS = {
     "saeroun": adapter_saeroun,
     "seoulhyundai": adapter_seoulhyundai,
     "kdh": adapter_kdh,
+    "khmc": adapter_khmc,
 }
 
 

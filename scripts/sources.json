@@ -71,6 +71,16 @@
       "deptCodes": { "정형외과": "111240", "신경외과": "111230" },
       "departments": ["정형외과", "신경외과"],
       "enabled": true
+    },
+    {
+      "id": "khmc",
+      "name": "경희대학교병원",
+      "url": "https://med.khmc.or.kr/kr/treatment/department/2050000000/timetable.do",
+      "adapter": "khmc",
+      "base": "https://med.khmc.or.kr",
+      "deptCodes": { "정형외과": "2050000000", "신경외과": "2060000000" },
+      "departments": ["정형외과", "신경외과"],
+      "enabled": true
     }
   ]
 }
