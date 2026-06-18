@@ -152,6 +152,25 @@
   .slot.busy{background:var(--busy-bg);color:var(--busy)} .slot.busy .lab{color:#fda4af}
   .slot.free{background:var(--free-bg);color:var(--free);box-shadow:inset 0 0 0 1px var(--free-ring)} .slot.free .lab{color:#34d399}
   .slot.free:active{background:#bbf7d0}
+  /* 일주일 보기 */
+  .schedseg{margin-bottom:12px}
+  .wkhead,.wkrow{display:grid;grid-template-columns:32px repeat(6,1fr);gap:4px}
+  .wkhead{margin-bottom:4px}
+  .wkc{text-align:center}
+  .wkc.wd{font-size:11px;font-weight:700;color:#64748b;line-height:1.05;padding:2px 0}
+  .wkc.wd b{display:block;font-size:14px;color:#334155}
+  .wkc.wd.td b{color:var(--brand)}
+  .wkcard{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px;margin-bottom:9px}
+  .wkname{font-weight:800;margin-bottom:7px;font-size:14px}
+  .wkname>span{font-size:12px;color:var(--sub);font-weight:600;margin-left:4px}
+  .wkname .sp{display:block;font-size:11px;color:var(--sub);font-weight:500;margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wkrow{margin-top:4px}
+  .wkc.rl{font-size:10px;font-weight:800;color:#94a3b8;display:flex;align-items:center;justify-content:center}
+  .wkc.cell{border:none;border-radius:8px;padding:8px 1px;font-size:10px;font-weight:800;line-height:1}
+  .wkc.cell.busy{background:var(--busy-bg);color:var(--busy)}
+  .wkc.cell.free{background:var(--free-bg);color:var(--free);box-shadow:inset 0 0 0 1px var(--free-ring)}
+  .wkc.cell.free:active{background:#bbf7d0}
+  .wkc.cell .mk{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:2px;vertical-align:1px}
   @media(max-width:760px){ .week{grid-template-columns:1fr 1fr} .field{min-width:0;flex:1} .field select{width:100%} .picker-btn{min-width:0;width:100%}
     .slot{width:58px} .nm{font-size:15px} }
 </style>
@@ -183,7 +202,7 @@ function saveAppts(){localStorage.setItem(LS,JSON.stringify(S.appts));}
 
 /* ===================== 상태 ===================== */
 var S={data:null,err:false,tab:"schedule",hospitalId:"",dept:"",selected:new Set(),
-       appts:loadAppts(),calView:"week",calCursor:new Date(),weekCursor:new Date(),selDate:""};
+       appts:loadAppts(),calView:"week",calCursor:new Date(),weekCursor:new Date(),selDate:"",schedView:"week"};
 
 /* ===================== 데이터 로드 ===================== */
 (function(){
@@ -252,15 +271,38 @@ function renderSchedule(main){
         '<div class="pop" id="pop" style="display:none"></div>'+
       '</div>'+
     '</div>'+
-    weekBarHTML()+
-    '<div id="listhost"></div>'+
-    '<p class="note">초록색 ‘공석’은 해당 날짜·시간대에 외래가 없는 시간(영업 공략 타이밍)입니다. 누르면 그 날짜로 면담 일정이 등록됩니다. (수술/학회 등 미반영)</p>';
+    '<div class="seg schedseg"><button id="sv-week" class="'+(S.schedView==="week"?"on":"")+'">일주일</button>'+
+      '<button id="sv-day" class="'+(S.schedView==="day"?"on":"")+'">하루</button></div>'+
+    '<div id="schedbody"></div>'+
+    '<p class="note">초록 ‘공석’은 외래가 없는 시간(영업 공략 타이밍)입니다. 누르면 그 날짜로 면담 일정이 등록됩니다. (수술/학회 등 미반영)</p>';
 
   document.getElementById("f-h").onchange=function(){S.hospitalId=this.value;S.dept=depts()[0]||"";resetSelected();render();};
   document.getElementById("f-d").onchange=function(){S.dept=this.value;resetSelected();render();};
+  document.getElementById("sv-week").onclick=function(){S.schedView="week";render();};
+  document.getElementById("sv-day").onclick=function(){S.schedView="day";render();};
   setupPicker(profs);
-  bindWeekBar();
-  renderProfList();
+  renderSchedBody();
+}
+
+function renderSchedBody(){
+  var body=document.getElementById("schedbody");if(!body)return;
+  if(S.schedView==="week"){body.innerHTML=weekRangeHTML()+'<div id="weekhost"></div>';bindWeekNav();renderWeekGrid();}
+  else{body.innerHTML=weekBarHTML()+'<div id="listhost"></div>';bindWeekBar();renderProfList();}
+}
+function refreshSched(){if(S.schedView==="week")renderWeekGrid();else renderProfList();}
+
+function weekRangeHTML(){
+  var s=startWeek(S.weekCursor),e=addDays(s,5);
+  var lab=(s.getMonth()+1)+"월 "+s.getDate()+"일 – "+(e.getMonth()+1)+"월 "+e.getDate()+"일";
+  return '<div class="weekbar"><button class="navbtn" id="wprev">‹</button>'+
+    '<div class="caltitle" style="flex:1">'+esc(lab)+'</div>'+
+    '<button class="navbtn" id="wnext">›</button>'+
+    '<button class="btn soft" id="wtoday" style="margin-left:6px;padding:6px 10px">오늘</button></div>';
+}
+function bindWeekNav(){
+  document.getElementById("wprev").onclick=function(){S.weekCursor=addDays(S.weekCursor,-7);render();};
+  document.getElementById("wnext").onclick=function(){S.weekCursor=addDays(S.weekCursor,7);render();};
+  document.getElementById("wtoday").onclick=function(){S.weekCursor=new Date();render();};
 }
 
 function weekBarHTML(){
@@ -287,8 +329,8 @@ function setupPicker(profs){
     pop.innerHTML='<button class="all">'+(allOn?"전체 해제":"전체 선택")+'</button>'+
       profs.map(function(p){return '<label><input type="checkbox" data-n="'+esc(p.name)+'"'+(S.selected.has(p.name)?" checked":"")+'>'+
         '<span style="font-weight:600">'+esc(p.name)+'</span>'+(p.title?' <span style="color:#94a3b8;font-size:12px">'+esc(p.title)+'</span>':'')+'</label>';}).join("");
-    pop.querySelector(".all").onclick=function(){if(allOn)S.selected=new Set();else S.selected=new Set(profs.map(function(p){return p.name;}));build();renderProfList();syncBtn();};
-    pop.querySelectorAll("input").forEach(function(c){c.onchange=function(){var n=c.dataset.n;if(c.checked)S.selected.add(n);else S.selected.delete(n);renderProfList();syncBtn();};});
+    pop.querySelector(".all").onclick=function(){if(allOn)S.selected=new Set();else S.selected=new Set(profs.map(function(p){return p.name;}));build();refreshSched();syncBtn();};
+    pop.querySelectorAll("input").forEach(function(c){c.onchange=function(){var n=c.dataset.n;if(c.checked)S.selected.add(n);else S.selected.delete(n);refreshSched();syncBtn();};});
   }
   function syncBtn(){var allOn=S.selected.size===profs.length&&profs.length>0;btn.querySelector("span").textContent=allOn?"전체":(S.selected.size+"명 선택");}
   btn.onclick=function(e){e.stopPropagation();pop.style.display=pop.style.display==="none"?"block":"none";if(pop.style.display==="block")build();};
@@ -318,6 +360,38 @@ function renderProfList(){
     var p=profsInDept().filter(function(x){return x.name===b.dataset.p;})[0];
     var key=S.selDate+"|"+b.dataset.s+"|"+h.id+"|"+p.name,bk=apptIndex()[key];
     if(bk)openModal(bk);else openModal({hospitalId:h.id,hospitalName:h.name,dept:p.department,professor:p.name,slot:b.dataset.s,date:S.selDate});
+  };});
+}
+function renderWeekGrid(){
+  var host=document.getElementById("weekhost");if(!host)return;
+  var profs=profsInDept().filter(function(p){return S.selected.has(p.name);});
+  if(!profs.length){host.innerHTML='<div class="empty">표시할 교수가 없습니다.</div>';return;}
+  var s=startWeek(S.weekCursor),idx=apptIndex(),h=curHospital(),dates=[];
+  for(var i=0;i<6;i++)dates.push(addDays(s,i));
+  var head='<div class="wkc lbl"></div>'+dates.map(function(d){var t=fmt(d)===todayYmd();
+    return '<div class="wkc wd'+(t?" td":"")+'">'+DAY_KO[DAYS[monIdx(d)]]+'<b>'+d.getDate()+'</b></div>';}).join("");
+  var html='<div class="wkhead">'+head+'</div>';
+  profs.forEach(function(p){
+    html+='<div class="wkcard"><div class="wkname">'+esc(p.name)+(p.title?' <span>'+esc(p.title)+'</span>':'')+
+      (p.specialty?'<span class="sp">'+esc(p.specialty)+'</span>':'')+'</div>';
+    SLOTS.forEach(function(sl){
+      html+='<div class="wkrow"><div class="wkc rl">'+sl[1]+'</div>';
+      dates.forEach(function(d){var dayKey=DAYS[monIdx(d)],ymd=fmt(d);
+        var busy=((p.schedule||{})[dayKey]||[]).indexOf(sl[0])>=0;
+        if(busy){html+='<div class="wkc cell busy">진료</div>';}
+        else{var bk=idx[ymd+"|"+sl[0]+"|"+h.id+"|"+p.name];
+          var mk=bk?'<span class="mk" style="background:'+statusColor(bk.status)+'"></span>':"";
+          html+='<button class="wkc cell free" data-ymd="'+ymd+'" data-s="'+sl[0]+'" data-p="'+esc(p.name)+'">'+(bk?mk+'면담':'공석')+'</button>';}
+      });
+      html+='</div>';
+    });
+    html+='</div>';
+  });
+  host.innerHTML=html;
+  host.querySelectorAll(".wkc.cell.free").forEach(function(b){b.onclick=function(){
+    var p=profsInDept().filter(function(x){return x.name===b.dataset.p;})[0];
+    var bk=apptIndex()[b.dataset.ymd+"|"+b.dataset.s+"|"+h.id+"|"+p.name];
+    if(bk)openModal(bk);else openModal({hospitalId:h.id,hospitalName:h.name,dept:p.department,professor:p.name,slot:b.dataset.s,date:b.dataset.ymd});
   };});
 }
 function statusColor(s){return s==="done"?"#059669":s==="canceled"?"#94a3b8":"#2563eb";}
