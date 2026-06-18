@@ -132,6 +132,19 @@
         "신경외과"
       ],
       "enabled": true
+    },
+    {
+      "id": "hyesung",
+      "name": "혜성병원",
+      "url": "https://www.hsmcenter.com/?idx=c65053dbe88877/c65053f1188898",
+      "adapter": "hyesung",
+      "base": "https://www.hsmcenter.com",
+      "listUrl": "https://www.hsmcenter.com/?idx=c65053dbe88877/c65053f1188898",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "enabled": true
     }
   ]
 }

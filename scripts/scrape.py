@@ -579,6 +579,85 @@ def adapter_khmc(ctx, src):
     return out
 
 
+# ---------------------------------------------------------------------------
+# 어댑터: 혜성병원 (hsmcenter.com) — 남양주 척추/관절 전문병원
+# 진료시간 페이지에 의사별 표 table.type-1, 표 바로 앞 <h4> = "<센터> <이름> <직함>".
+# 표는 월~토 × 오전/오후, 셀에 ● 또는 'N주 진료' 텍스트면 진료, 빈칸이면 공석.
+# 관절센터→정형외과, 척추센터→신경외과로 분류(추정). 그 외 진료과는 제외.
+# ---------------------------------------------------------------------------
+_HYESUNG_JS = r"""
+() => {
+  const out = [];
+  document.querySelectorAll('table.type-1').forEach(t => {
+    const prev = t.previousElementSibling;
+    const head = prev ? (prev.textContent || '').replace(/\s+/g, ' ').trim() : '';
+    const parse = (r) => Array.from(r.querySelectorAll('td')).slice(0, 6).map(td => {
+      const tx = (td.textContent || '').trim();
+      return tx.indexOf('●') >= 0 || tx.indexOf('진료') >= 0 || /\d주/.test(tx);
+    });
+    let am = [false,false,false,false,false,false];
+    let pm = [false,false,false,false,false,false];
+    t.querySelectorAll('tbody tr').forEach(r => {
+      const lab = (r.querySelector('th') ? r.querySelector('th').textContent : '') || '';
+      if (lab.indexOf('오전') >= 0) am = parse(r);
+      else if (lab.indexOf('오후') >= 0) pm = parse(r);
+    });
+    if (head) out.push({ head, am, pm });
+  });
+  return out;
+}
+"""
+
+
+def adapter_hyesung(ctx, src):
+    url = src.get("listUrl") or src["base"]
+    page = ctx.new_page()
+    rows = []
+    try:
+        try:
+            page.goto(url, wait_until="networkidle", timeout=45000)
+        except Exception:
+            page.wait_for_timeout(2000)
+        try:
+            page.wait_for_selector("table.type-1", timeout=15000)
+        except Exception:
+            pass
+        rows = page.evaluate(_HYESUNG_JS)
+    finally:
+        page.close()
+    profs = []
+    seen = set()
+    for r in rows:
+        head = r.get("head", "")
+        if "관절" in head:
+            dept = "정형외과"
+        elif "척추" in head:
+            dept = "신경외과"
+        else:
+            continue  # 내과·신경과·영상·마취·건강검진·응급 등 제외
+        m = re.search(r"([가-힣]{2,4})\s*(병원장|원장|과장|부장|소장|센터장|교수|전문의)", head)
+        name = m.group(1) if m else ""
+        if not name or (name, dept) in seen:
+            continue
+        seen.add((name, dept))
+        sched = empty_sched()
+        for i in range(6):
+            if r["am"][i]:
+                sched[DAYS[i]].append("AM")
+            if r["pm"][i]:
+                sched[DAYS[i]].append("PM")
+        spec = head  # 센터명 등 원문 보존
+        profs.append({
+            "name": name,
+            "department": dept,
+            "specialty": spec,
+            "title": "",
+            "schedule": order_slots(sched),
+        })
+    print(f"  [hyesung] 정형·신경 {len(profs)}명")
+    return profs
+
+
 ADAPTERS = {
     "anam_kumc": adapter_anam_kumc,
     "cmc": adapter_cmc,
@@ -587,6 +666,7 @@ ADAPTERS = {
     "seoulhyundai": adapter_seoulhyundai,
     "kdh": adapter_kdh,
     "khmc": adapter_khmc,
+    "hyesung": adapter_hyesung,
 }
 
 
