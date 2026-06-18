@@ -5,453 +5,382 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>MR 영업 스케줄러 | 교수 진료시간표 · 면담 일정</title>
 <meta name="description" content="대학병원 정형외과·신경외과 교수 진료시간표를 비교하고, 공석 시간에 영업 면담 일정을 등록·관리하는 MR용 웹앱." />
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: { extend: { colors: { brand: "#E0112E" } } }
-  };
-</script>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-  html,body{background:#f6f7f9}
-  ::-webkit-scrollbar{height:8px;width:8px}
-  ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+  :root{
+    --brand:#E0112E; --ink:#1d1d1f; --sub:#6b7280; --line:#e5e7eb; --bg:#f6f7f9; --card:#fff;
+    --busy-bg:#fff1f2; --busy:#e11d48; --free-bg:#ecfdf5; --free:#059669; --free-ring:#a7f3d0;
+    --blue:#2563eb; --blue-bg:#eff6ff; --green:#059669; --green-bg:#ecfdf5; --gray:#94a3b8; --gray-bg:#f1f5f9;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  button{font-family:inherit;cursor:pointer}
+  ::-webkit-scrollbar{height:9px;width:9px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+
+  header.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+  .hrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0}
+  .logo{font-size:18px;font-weight:800;letter-spacing:-.3px}
+  .logo .dot{color:var(--brand)}
+  .sub{font-size:12px;color:var(--sub)}
+  .tabs{display:flex;gap:4px}
+  .tab{border:none;background:none;padding:10px 16px;font-size:14px;font-weight:700;color:var(--sub);
+       border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab.on{color:var(--ink);border-bottom-color:var(--brand)}
+  main{max-width:1080px;margin:0 auto;padding:18px 16px}
+
+  .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+  .field{display:flex;flex-direction:column;gap:5px;position:relative}
+  .field>label{font-size:11px;font-weight:800;color:var(--sub)}
+  select,input,textarea{font-family:inherit;font-size:14px;border:1px solid var(--line);border-radius:11px;
+    padding:9px 11px;background:#fff;color:var(--ink)}
+  select:focus,input:focus,textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(224,17,46,.12)}
+  .btn{border:none;border-radius:11px;padding:9px 16px;font-size:13px;font-weight:700}
+  .btn.brand{background:var(--brand);color:#fff}
+  .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+  .btn.soft{background:#f1f5f9;color:#475569}
+
+  /* 교수 선택 팝오버 */
+  .picker-btn{min-width:150px;display:flex;justify-content:space-between;align-items:center;gap:8px;
+    border:1px solid var(--line);border-radius:11px;background:#fff;padding:9px 11px;font-size:14px;font-weight:600}
+  .pop{position:absolute;top:100%;left:0;margin-top:6px;width:230px;max-height:300px;overflow:auto;background:#fff;
+    border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);padding:6px;z-index:30}
+  .pop label{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;font-size:14px}
+  .pop label:hover{background:#f8fafc}
+  .pop .all{color:var(--brand);font-weight:800;font-size:12px;padding:6px 8px;background:none;border:none;text-align:left;width:100%}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin:6px 2px 12px}
+  .legend i{display:inline-block;width:13px;height:13px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+  .lg-busy{background:var(--busy-bg);outline:1px solid #fecdd3}
+  .lg-free{background:var(--free-bg);outline:1px solid var(--free-ring)}
+
+  .gridwrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:#fff}
+  table.grid{border-collapse:collapse;width:100%;min-width:600px;font-size:14px}
+  table.grid th,table.grid td{padding:7px 8px;text-align:center}
+  table.grid thead th{background:#fafbfc;border-bottom:1px solid var(--line);vertical-align:bottom;min-width:118px}
+  .pname{font-weight:800}
+  .ptitle{font-size:11px;color:var(--sub);font-weight:600}
+  .rowhead{position:sticky;left:0;background:#fff;border-right:1px solid var(--line);
+    font-size:12px;font-weight:800;color:var(--sub);white-space:nowrap;text-align:left;min-width:74px;z-index:1}
+  thead .corner{position:sticky;left:0;background:#fafbfc;z-index:2;border-right:1px solid var(--line)}
+  .sep td,.sep th{border-top:2px solid #e2e8f0}
+  .cell{border-top:1px solid #f1f5f9}
+  .chip{display:block;width:100%;border-radius:9px;font-size:11px;font-weight:800;padding:7px 4px;border:none}
+  .chip.busy{background:var(--busy-bg);color:var(--busy)}
+  .chip.free{background:var(--free-bg);color:var(--free);box-shadow:inset 0 0 0 1px var(--free-ring)}
+  .chip.free:hover{background:#d1fae5}
+  .chip .mk{display:inline-block;width:6px;height:6px;border-radius:50%;vertical-align:1px;margin-right:3px}
+
+  .note{font-size:12px;color:var(--sub);line-height:1.6;margin-top:12px}
+
+  /* 캘린더 */
+  .calbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .navbtn{width:32px;height:32px;border-radius:9px;border:none;background:none;color:#64748b;font-size:18px}
+  .navbtn:hover{background:#f1f5f9}
+  .caltitle{font-weight:800;min-width:120px;text-align:center}
+  .seg{background:#f1f5f9;border-radius:11px;padding:3px;display:flex}
+  .seg button{border:none;background:none;padding:6px 14px;font-size:12px;font-weight:800;color:#64748b;border-radius:8px}
+  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .day{border:1px solid var(--line);background:#fff;border-radius:14px;padding:8px;min-height:120px}
+  .day.today{border-color:var(--brand);box-shadow:0 0 0 1px rgba(224,17,46,.25)}
+  .day h4{margin:0 0 8px;font-size:12px;font-weight:800;color:var(--sub)}
+  .day.today h4{color:var(--brand)}
+  .appt{width:100%;text-align:left;border:1px solid #eef2f7;background:#f8fafc;border-radius:9px;padding:7px;margin-bottom:6px}
+  .appt .t{font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .appt .m{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+  .slotlab{font-size:10px;color:#94a3b8}
+
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px}
+  .badge .d{width:6px;height:6px;border-radius:50%}
+  .b-planned{background:var(--blue-bg);color:var(--blue)} .b-planned .d{background:var(--blue)}
+  .b-done{background:var(--green-bg);color:var(--green)} .b-done .d{background:var(--green)}
+  .b-canceled{background:var(--gray-bg);color:var(--gray);text-decoration:line-through} .b-canceled .d{background:var(--gray)}
+
+  .month{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+  .mhead{display:grid;grid-template-columns:repeat(7,1fr);background:#fafbfc;font-size:11px;font-weight:800;color:#94a3b8;text-align:center}
+  .mhead div{padding:8px 0}
+  .mgrid{display:grid;grid-template-columns:repeat(7,1fr)}
+  .mcell{min-height:84px;border-top:1px solid #f1f5f9;border-right:1px solid #f1f5f9;padding:5px}
+  .mcell .dn{font-size:11px;font-weight:700;color:#475569;margin-bottom:3px}
+  .mcell.out{background:#fafbfc}.mcell.out .dn{color:#cbd5e1}
+  .mcell.today .dn{color:var(--brand)}
+  .mline{display:flex;align-items:center;gap:4px;width:100%;border:none;background:none;padding:1px 0;text-align:left}
+  .mline .d{width:6px;height:6px;border-radius:50%;flex:none}
+  .mline span{font-size:10px;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* 모달 */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center;padding:0}
+  .modal{background:#fff;width:100%;max-width:440px;border-radius:22px 22px 0 0;padding:18px;box-shadow:0 -10px 40px rgba(0,0,0,.2)}
+  .modal h3{margin:0 0 4px;font-size:17px}
+  .mclose{float:right;border:none;background:none;font-size:22px;color:#94a3b8;line-height:1}
+  .mctx{font-size:12px;color:var(--sub);margin:2px 0 12px}
+  .fl{display:block;margin-bottom:10px}
+  .fl>span{font-size:11px;font-weight:800;color:var(--sub)}
+  .fl input,.fl select,.fl textarea{width:100%;margin-top:4px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .statusrow{display:flex;gap:8px;margin-top:4px}
+  .statusrow button{flex:1;border-radius:11px;padding:9px 0;font-size:12px;font-weight:800;border:1px solid var(--line);background:#fff;color:#64748b}
+  .statusrow button.on.s-planned{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
+  .statusrow button.on.s-done{background:var(--green-bg);color:var(--green);border-color:var(--green)}
+  .statusrow button.on.s-canceled{background:var(--gray-bg);color:var(--gray);border-color:var(--gray)}
+  .mfoot{display:flex;gap:8px;align-items:center;margin-top:16px}
+  .empty{color:#9aa1ab;text-align:center;padding:36px}
+  @media(min-width:560px){ .overlay{align-items:center;padding:16px} .modal{border-radius:22px} }
+  @media(max-width:760px){ .week{grid-template-columns:1fr 1fr} .field,.picker-btn{min-width:0} }
 </style>
 </head>
 <body>
-<div id="root" class="min-h-screen"></div>
+<div id="root"></div>
+<div id="modal-root"></div>
 
-<script type="text/babel" data-presets="react">
-const { useState, useEffect, useMemo, useRef } = React;
+<script>
+/* ===================== 상수/유틸 ===================== */
+var DATA_URLS=["./data/schedules.json","https://raw.githubusercontent.com/soyeonlee528/woorien/main/data/schedules.json"];
+var DAYS=["mon","tue","wed","thu","fri","sat"], DAY_KO={mon:"월",tue:"화",wed:"수",thu:"목",fri:"금",sat:"토",sun:"일"};
+var SLOTS=[["AM","오전"],["PM","오후"]];
+var LS="mr_sales_appointments_v1";
+var STATUS={planned:["방문 예정","b-planned","s-planned"],done:["면담 완료","b-done","s-done"],canceled:["취소","b-canceled","s-canceled"]};
 
-/* ====================== 상수/유틸 ====================== */
-const DATA_URLS = [
-  "./data/schedules.json",
-  "https://raw.githubusercontent.com/soyeonlee528/woorien/main/data/schedules.json",
-];
-const DAYS = ["mon","tue","wed","thu","fri","sat"];
-const DAY_KO = {mon:"월",tue:"화",wed:"수",thu:"목",fri:"금",sat:"토",sun:"일"};
-const SLOTS = [{k:"AM",ko:"오전"},{k:"PM",ko:"오후"}];
-const LS_KEY = "mr_sales_appointments_v1";
+function pad(n){return (n<10?"0":"")+n;}
+function fmt(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x;}
+function monIdx(d){return (d.getDay()+6)%7;}
+function startWeek(d){return addDays(d,-monIdx(d));}
+function todayYmd(){return fmt(new Date());}
+function nextOcc(dayKey){var t=DAYS.indexOf(dayKey);var n=new Date();n.setHours(0,0,0,0);var diff=(t-monIdx(n)+7)%7;return fmt(addDays(n,diff));}
+function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function loadAppts(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch(e){return [];}}
+function saveAppts(){localStorage.setItem(LS,JSON.stringify(S.appts));}
 
-const STATUS = {
-  planned:  {ko:"방문 예정", dot:"bg-blue-500",  chip:"bg-blue-50 text-blue-700 ring-blue-200"},
-  done:     {ko:"면담 완료", dot:"bg-emerald-500",chip:"bg-emerald-50 text-emerald-700 ring-emerald-200"},
-  canceled: {ko:"취소",     dot:"bg-slate-400", chip:"bg-slate-100 text-slate-500 ring-slate-200 line-through"},
-};
+/* ===================== 상태 ===================== */
+var S={data:null,err:false,tab:"schedule",hospitalId:"",dept:"",selected:new Set(),
+       appts:loadAppts(),calView:"week",calCursor:new Date()};
 
-const pad = n => String(n).padStart(2,"0");
-const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const parseYmd = s => { const [y,m,dd]=s.split("-").map(Number); return new Date(y,m-1,dd); };
-const addDays = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x; };
-const mondayIdx = d => (d.getDay()+6)%7;            // 월=0..일=6
-const startOfWeek = d => addDays(d, -mondayIdx(d));
-const sameYmd = (a,b)=> fmt(a)===fmt(b);
-const todayYmd = () => fmt(new Date());
+/* ===================== 데이터 로드 ===================== */
+(function(){
+  var i=0;
+  function tryNext(){
+    if(i>=DATA_URLS.length){S.err=true;render();return;}
+    fetch(DATA_URLS[i++],{cache:"no-store"}).then(function(r){
+      if(!r.ok) throw 0; return r.json();
+    }).then(function(j){S.data=j;initSelections();render();}).catch(tryNext);
+  }
+  tryNext();
+})();
 
-// 오늘 이후(포함) 가장 가까운 해당 요일 날짜
-function nextOccurrence(dayKey){
-  const target = DAYS.indexOf(dayKey);
-  const now = new Date(); now.setHours(0,0,0,0);
-  const diff = (target - mondayIdx(now) + 7) % 7;
-  return fmt(addDays(now, diff));
+function hospitals(){return (S.data&&S.data.hospitals)||[];}
+function curHospital(){var hs=hospitals();return hs.filter(function(h){return h.id===S.hospitalId;})[0]||hs[0];}
+function depts(){var h=curHospital();if(!h)return [];var s=[];(h.professors||[]).forEach(function(p){if(s.indexOf(p.department)<0)s.push(p.department);});return s;}
+function profsInDept(){var h=curHospital();if(!h)return [];return (h.professors||[]).filter(function(p){return p.department===S.dept;});}
+
+function initSelections(){
+  var hs=hospitals();
+  if(hs.length&&!S.hospitalId)S.hospitalId=hs[0].id;
+  var ds=depts();
+  if(ds.length&&ds.indexOf(S.dept)<0)S.dept=ds[0];
+  resetSelected();
+}
+function resetSelected(){S.selected=new Set(profsInDept().map(function(p){return p.name;}));}
+
+function apptIndex(){var m={};S.appts.forEach(function(a){m[a.date+"|"+a.slot+"|"+a.hospitalId+"|"+a.professor]=a;});return m;}
+
+/* ===================== 렌더 ===================== */
+function render(){
+  var root=document.getElementById("root");
+  root.innerHTML=headerHTML()+'<main id="main"></main>';
+  document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){S.tab=b.dataset.t;render();};});
+  var main=document.getElementById("main");
+  if(S.err){main.innerHTML='<div class="empty" style="color:#e11d48;font-weight:700">데이터를 불러오지 못했습니다.</div>';return;}
+  if(!S.data){main.innerHTML='<div class="empty">불러오는 중…</div>';return;}
+  if(S.tab==="schedule")renderSchedule(main);else renderCalendar(main);
 }
 
-const loadAppts = () => { try { return JSON.parse(localStorage.getItem(LS_KEY))||[]; } catch(e){ return []; } };
-const saveAppts = a => localStorage.setItem(LS_KEY, JSON.stringify(a));
-const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-
-/* ====================== 작은 컴포넌트 ====================== */
-function Badge({status}){
-  const s = STATUS[status] || STATUS.planned;
-  return <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ring-1 ${s.chip}`}>
-    <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`}></span>{s.ko}
-  </span>;
+function headerHTML(){
+  var u=S.data&&S.data.updatedAt?new Date(S.data.updatedAt):null;
+  var upd=u?("데이터 "+u.getFullYear()+"."+pad(u.getMonth()+1)+"."+pad(u.getDate())+" · 매주 자동 갱신"):"";
+  return '<header class="top"><div class="wrap">'+
+    '<div class="hrow"><div class="logo">MR 영업 스케줄러 <span class="dot">·</span> <span class="sub">교수 진료시간표 + 면담 일정</span></div>'+
+    '<div class="sub">'+esc(upd)+'</div></div>'+
+    '<div class="tabs">'+
+      '<button class="tab '+(S.tab==="schedule"?"on":"")+'" data-t="schedule">진료 시간표</button>'+
+      '<button class="tab '+(S.tab==="calendar"?"on":"")+'" data-t="calendar">내 캘린더</button>'+
+    '</div></div></header>';
 }
 
-function Dropdown({label, value, onChange, options}){
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-[11px] font-bold text-slate-500">{label}</span>
-      <select value={value} onChange={e=>onChange(e.target.value)}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium shadow-sm
-                   focus:outline-none focus:ring-2 focus:ring-brand/30 min-w-[150px]">
-        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-      </select>
-    </label>
-  );
+/* ---------- 진료 시간표 ---------- */
+function renderSchedule(main){
+  var hs=hospitals(), ds=depts(), profs=profsInDept();
+  var hOpts=hs.map(function(h){return '<option value="'+h.id+'"'+(h.id===(curHospital()||{}).id?" selected":"")+'>'+esc(h.name)+'</option>';}).join("");
+  var dOpts=ds.map(function(d){return '<option value="'+esc(d)+'"'+(d===S.dept?" selected":"")+'>'+esc(d)+'</option>';}).join("");
+  var allOn=S.selected.size===profs.length&&profs.length>0;
+  main.innerHTML=
+    '<div class="filters">'+
+      '<div class="field"><label>병원</label><select id="f-h">'+hOpts+'</select></div>'+
+      '<div class="field"><label>진료과</label><select id="f-d">'+dOpts+'</select></div>'+
+      '<div class="field"><label>교수</label><button class="picker-btn" id="f-p">'+
+        '<span>'+(allOn?"전체":(S.selected.size+"명 선택"))+'</span><span style="color:#94a3b8">▾</span></button>'+
+        '<div class="pop" id="pop" style="display:none"></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="legend"><span><i class="lg-busy"></i>진료(오전/오후)</span>'+
+      '<span><i class="lg-free"></i>공석 · 영업 공략 시간 (클릭해 면담 등록)</span></div>'+
+    '<div id="gridhost"></div>'+
+    '<p class="note">※ ‘진료’는 해당 교수의 정규 외래(오전/오후)이며, 그 외는 ‘공석’으로 표시됩니다(수술/학회 등 미반영). '+
+      '빈 칸을 누르면 그 요일·시간대의 가장 가까운 날짜로 면담 일정을 등록합니다.</p>';
+
+  document.getElementById("f-h").onchange=function(){S.hospitalId=this.value;S.dept=depts()[0]||"";resetSelected();render();};
+  document.getElementById("f-d").onchange=function(){S.dept=this.value;resetSelected();render();};
+  setupPicker(profs);
+  renderGrid();
 }
 
-/* 교수 다중선택 (노션식 팝오버) */
-function ProfPicker({profs, selected, setSelected}){
-  const [open,setOpen]=useState(false);
-  const ref=useRef();
-  useEffect(()=>{
-    const h=e=>{ if(ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener("mousedown",h); return ()=>document.removeEventListener("mousedown",h);
-  },[]);
-  const toggle = name => { const n=new Set(selected); n.has(name)?n.delete(name):n.add(name); setSelected(n); };
-  const allOn = selected.size===profs.length;
-  return (
-    <div className="flex flex-col gap-1 relative" ref={ref}>
-      <span className="text-[11px] font-bold text-slate-500">교수</span>
-      <button onClick={()=>setOpen(o=>!o)}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium shadow-sm text-left
-                   flex items-center justify-between gap-2 min-w-[150px] hover:bg-slate-50">
-        <span>{allOn ? "전체" : `${selected.size}명 선택`}</span>
-        <span className="text-slate-400">▾</span>
-      </button>
-      {open && (
-        <div className="absolute z-30 top-full mt-1 w-56 max-h-72 overflow-auto rounded-xl border border-slate-200 bg-white shadow-xl p-1">
-          <button onClick={()=>setSelected(new Set(allOn?[]:profs.map(p=>p.name)))}
-            className="w-full text-left text-xs font-semibold text-brand px-2 py-1.5 hover:bg-slate-50 rounded-lg">
-            {allOn ? "전체 해제" : "전체 선택"}
-          </button>
-          {profs.map(p=>(
-            <label key={p.name} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
-              <input type="checkbox" checked={selected.has(p.name)} onChange={()=>toggle(p.name)}
-                className="rounded accent-brand"/>
-              <span className="font-medium">{p.name}</span>
-              {p.title && <span className="text-xs text-slate-400">{p.title}</span>}
-            </label>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+function setupPicker(profs){
+  var btn=document.getElementById("f-p"), pop=document.getElementById("pop");
+  function build(){
+    var allOn=S.selected.size===profs.length&&profs.length>0;
+    pop.innerHTML='<button class="all">'+(allOn?"전체 해제":"전체 선택")+'</button>'+
+      profs.map(function(p){return '<label><input type="checkbox" data-n="'+esc(p.name)+'"'+(S.selected.has(p.name)?" checked":"")+'>'+
+        '<span style="font-weight:600">'+esc(p.name)+'</span>'+(p.title?' <span style="color:#94a3b8;font-size:12px">'+esc(p.title)+'</span>':'')+'</label>';}).join("");
+    pop.querySelector(".all").onclick=function(){if(allOn)S.selected=new Set();else S.selected=new Set(profs.map(function(p){return p.name;}));build();renderGrid();syncBtn();};
+    pop.querySelectorAll("input").forEach(function(c){c.onchange=function(){var n=c.dataset.n;if(c.checked)S.selected.add(n);else S.selected.delete(n);renderGrid();syncBtn();};});
+  }
+  function syncBtn(){var allOn=S.selected.size===profs.length&&profs.length>0;btn.querySelector("span").textContent=allOn?"전체":(S.selected.size+"명 선택");}
+  btn.onclick=function(e){e.stopPropagation();pop.style.display=pop.style.display==="none"?"block":"none";if(pop.style.display==="block")build();};
+  document.addEventListener("click",function h(e){if(!pop.contains(e.target)&&e.target!==btn){pop.style.display="none";}});
 }
 
-/* ====================== 진료시간표 비교 그리드 ====================== */
-function ScheduleGrid({hospital, profs, onBook, apptIndex}){
-  if(!profs.length) return <div className="p-10 text-center text-slate-400">표시할 교수가 없습니다.</div>;
-  return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
-      <table className="border-collapse min-w-[640px] w-full text-sm">
-        <thead>
-          <tr>
-            <th className="sticky left-0 z-10 bg-slate-50 border-b border-r border-slate-200 p-2 w-20"></th>
-            {profs.map(p=>(
-              <th key={p.name} className="border-b border-slate-200 bg-slate-50 p-2 align-bottom min-w-[120px]">
-                <div className="font-bold text-slate-800">{p.name}</div>
-                <div className="text-[11px] font-medium text-slate-400">{p.title||" "}</div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {DAYS.map(day => SLOTS.map((slot,si)=>(
-            <tr key={day+slot.k}>
-              <th className={`sticky left-0 z-10 bg-white border-r border-slate-200 p-2 text-xs font-bold text-slate-500 whitespace-nowrap
-                              ${si===0 ? "border-t-2 border-t-slate-200":"border-t border-slate-100"}`}>
-                {DAY_KO[day]} <span className="text-slate-400 font-medium">{slot.ko}</span>
-              </th>
-              {profs.map(p=>{
-                const busy = (p.schedule?.[day]||[]).includes(slot.k);
-                const ymd = nextOccurrence(day);
-                const booked = apptIndex[`${ymd}|${slot.k}|${hospital.id}|${p.name}`];
-                const cls = si===0 ? "border-t-2 border-t-slate-200":"border-t border-slate-100";
-                if(busy){
-                  return <td key={p.name} className={`p-1.5 text-center ${cls}`}>
-                    <div className="rounded-lg bg-rose-50 text-rose-600 text-[11px] font-semibold py-1.5">진료</div>
-                  </td>;
-                }
-                return (
-                  <td key={p.name} className={`p-1.5 text-center ${cls}`}>
-                    <button onClick={()=>onBook({hospital, prof:p, day, slot:slot.k})}
-                      className="w-full rounded-lg bg-emerald-50 hover:bg-emerald-100 ring-1 ring-emerald-200
-                                 text-emerald-700 text-[11px] font-semibold py-1.5 transition group relative">
-                      {booked ? <span className="flex items-center justify-center gap-1">
-                          <span className={`w-1.5 h-1.5 rounded-full ${(STATUS[booked.status]||STATUS.planned).dot}`}></span>면담</span>
-                        : <span className="opacity-80 group-hover:opacity-100">공석 +</span>}
-                    </button>
-                  </td>
-                );
-              })}
-            </tr>
-          )))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-/* ====================== 예약 모달 ====================== */
-function ApptModal({init, onClose, onSave, onDelete}){
-  const [f,setF]=useState(()=>({
-    id: init.id || null,
-    hospitalId: init.hospitalId, hospitalName: init.hospitalName,
-    dept: init.dept||"", professor: init.professor||"",
-    date: init.date || todayYmd(), slot: init.slot || "AM",
-    title: init.title || (init.professor ? `${init.professor} 교수 면담` : "영업 면담"),
-    status: init.status || "planned", memo: init.memo || "",
-  }));
-  const up = (k,v)=>setF(s=>({...s,[k]:v}));
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4" onClick={onClose}>
-      <div className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl p-5" onClick={e=>e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold">{f.id ? "면담 일정 수정" : "면담 일정 등록"}</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-xl leading-none">×</button>
-        </div>
-        <div className="space-y-3 text-sm">
-          <div className="text-xs text-slate-500">
-            {f.hospitalName}{f.dept && ` · ${f.dept}`}{f.professor && ` · ${f.professor} 교수`}
-          </div>
-          <Field label="제목"><input value={f.title} onChange={e=>up("title",e.target.value)} className={inp}/></Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="날짜"><input type="date" value={f.date} onChange={e=>up("date",e.target.value)} className={inp}/></Field>
-            <Field label="시간대">
-              <select value={f.slot} onChange={e=>up("slot",e.target.value)} className={inp}>
-                <option value="AM">오전</option><option value="PM">오후</option>
-              </select>
-            </Field>
-          </div>
-          <Field label="상태">
-            <div className="flex gap-2">
-              {Object.entries(STATUS).map(([k,v])=>(
-                <button key={k} onClick={()=>up("status",k)}
-                  className={`flex-1 rounded-xl py-2 text-xs font-semibold ring-1 ${f.status===k? v.chip+" ring-2":"bg-white text-slate-500 ring-slate-200"}`}>
-                  {v.ko}
-                </button>
-              ))}
-            </div>
-          </Field>
-          <Field label="메모"><textarea value={f.memo} onChange={e=>up("memo",e.target.value)} rows="2" className={inp} placeholder="면담 목적, 연락처 등"/></Field>
-        </div>
-        <div className="flex gap-2 mt-5">
-          {f.id && <button onClick={()=>onDelete(f.id)} className="px-4 py-2.5 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50">삭제</button>}
-          <div className="flex-1"></div>
-          <button onClick={onClose} className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">취소</button>
-          <button onClick={()=>onSave({...f, id: f.id||uid()})} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-brand text-white hover:opacity-90">저장</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-const inp = "w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30";
-function Field({label,children}){ return <label className="block"><span className="text-[11px] font-bold text-slate-500">{label}</span><div className="mt-1">{children}</div></label>; }
-
-/* ====================== 내 캘린더 ====================== */
-function MyCalendar({appts, onEdit, onNew}){
-  const [view,setView]=useState("week");
-  const [cursor,setCursor]=useState(()=>new Date());
-  const byDate = useMemo(()=>{
-    const m={}; appts.forEach(a=>{(m[a.date]=m[a.date]||[]).push(a);});
-    Object.values(m).forEach(list=>list.sort((a,b)=>(a.slot>b.slot?1:-1)));
-    return m;
-  },[appts]);
-
-  const move = n => setCursor(c => view==="week" ? addDays(c, n*7) : new Date(c.getFullYear(), c.getMonth()+n, 1));
-  const title = view==="week"
-    ? (()=>{const s=startOfWeek(cursor);const e=addDays(s,6);return `${s.getMonth()+1}/${s.getDate()} – ${e.getMonth()+1}/${e.getDate()}`;})()
-    : `${cursor.getFullYear()}년 ${cursor.getMonth()+1}월`;
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-        <div className="flex items-center gap-1">
-          <button onClick={()=>move(-1)} className="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500">‹</button>
-          <div className="font-bold text-slate-800 min-w-[120px] text-center">{title}</div>
-          <button onClick={()=>move(1)} className="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500">›</button>
-          <button onClick={()=>setCursor(new Date())} className="ml-1 text-xs font-semibold text-slate-500 px-2 py-1 rounded-lg hover:bg-slate-100">오늘</button>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="bg-slate-100 rounded-xl p-0.5 flex">
-            {[["week","주"],["month","월"]].map(([v,ko])=>(
-              <button key={v} onClick={()=>setView(v)}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg ${view===v?"bg-white shadow text-slate-800":"text-slate-500"}`}>{ko}</button>
-            ))}
-          </div>
-          <button onClick={()=>onNew()} className="px-3 py-2 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90">+ 일정</button>
-        </div>
-      </div>
-      {view==="week" ? <WeekView cursor={cursor} byDate={byDate} onEdit={onEdit}/> : <MonthView cursor={cursor} byDate={byDate} onEdit={onEdit}/>}
-    </div>
-  );
-}
-
-function WeekView({cursor, byDate, onEdit}){
-  const start = startOfWeek(cursor);
-  const days = Array.from({length:7},(_,i)=>addDays(start,i));
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-      {days.map(d=>{
-        const ymd=fmt(d); const list=byDate[ymd]||[]; const isToday=ymd===todayYmd();
-        return (
-          <div key={ymd} className={`rounded-2xl border bg-white p-2 min-h-[120px] ${isToday?"border-brand ring-1 ring-brand/30":"border-slate-200"}`}>
-            <div className={`text-xs font-bold mb-2 ${isToday?"text-brand":"text-slate-500"}`}>
-              {DAY_KO[DAYS[mondayIdx(d)]]||"일"} {d.getDate()}
-            </div>
-            {list.map(a=>(
-              <button key={a.id} onClick={()=>onEdit(a)}
-                className="w-full text-left mb-1.5 rounded-lg border border-slate-100 bg-slate-50/60 p-2 hover:bg-slate-100">
-                <div className="text-[11px] font-bold text-slate-800 truncate">{a.title}</div>
-                <div className="mt-1 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400">{a.slot==="AM"?"오전":"오후"}</span>
-                  <Badge status={a.status}/>
-                </div>
-              </button>
-            ))}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function MonthView({cursor, byDate, onEdit}){
-  const first = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
-  const gridStart = startOfWeek(first);
-  const cells = Array.from({length:42},(_,i)=>addDays(gridStart,i));
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
-      <div className="grid grid-cols-7 text-center text-[11px] font-bold text-slate-400 bg-slate-50">
-        {["월","화","수","목","금","토","일"].map(d=><div key={d} className="py-2">{d}</div>)}
-      </div>
-      <div className="grid grid-cols-7">
-        {cells.map(d=>{
-          const ymd=fmt(d); const list=byDate[ymd]||[];
-          const inMonth=d.getMonth()===cursor.getMonth(); const isToday=ymd===todayYmd();
-          return (
-            <div key={ymd} className={`min-h-[84px] border-t border-r border-slate-100 p-1 ${inMonth?"":"bg-slate-50/50"}`}>
-              <div className={`text-[11px] font-semibold mb-1 ${isToday?"text-brand":inMonth?"text-slate-600":"text-slate-300"}`}>{d.getDate()}</div>
-              {list.slice(0,3).map(a=>(
-                <button key={a.id} onClick={()=>onEdit(a)}
-                  className="w-full flex items-center gap-1 text-left mb-0.5">
-                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${(STATUS[a.status]||STATUS.planned).dot}`}></span>
-                  <span className="text-[10px] text-slate-600 truncate">{a.title}</span>
-                </button>
-              ))}
-              {list.length>3 && <div className="text-[10px] text-slate-400">+{list.length-3}</div>}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-/* ====================== 앱 ====================== */
-function App(){
-  const [data,setData]=useState(null);
-  const [err,setErr]=useState(false);
-  const [tab,setTab]=useState("schedule");
-  const [hospitalId,setHospitalId]=useState("");
-  const [dept,setDept]=useState("");
-  const [selected,setSelected]=useState(new Set());
-  const [appts,setAppts]=useState(loadAppts);
-  const [modal,setModal]=useState(null);
-
-  useEffect(()=>{ (async()=>{
-    for(const u of DATA_URLS){
-      try{ const r=await fetch(u,{cache:"no-store"}); if(r.ok){ setData(await r.json()); return; } }catch(e){}
-    }
-    setErr(true);
-  })(); },[]);
-
-  useEffect(()=>saveAppts(appts),[appts]);
-
-  const hospitals = data?.hospitals||[];
-  const hospital = hospitals.find(h=>h.id===hospitalId) || hospitals[0];
-
-  // 병원 기본값
-  useEffect(()=>{ if(hospitals.length && !hospitalId) setHospitalId(hospitals[0].id); },[hospitals]);
-
-  const depts = useMemo(()=>{
-    if(!hospital) return [];
-    return [...new Set((hospital.professors||[]).map(p=>p.department))];
-  },[hospital]);
-
-  useEffect(()=>{ if(depts.length && !depts.includes(dept)) setDept(depts[0]); },[depts]);
-
-  const profs = useMemo(()=>(hospital?.professors||[]).filter(p=>p.department===dept),[hospital,dept]);
-
-  // 진료과 바뀌면 전체 선택
-  useEffect(()=>{ setSelected(new Set(profs.map(p=>p.name))); },[hospital?.id,dept]);
-
-  const shownProfs = profs.filter(p=>selected.has(p.name));
-
-  const apptIndex = useMemo(()=>{
-    const m={}; appts.forEach(a=>{ m[`${a.date}|${a.slot}|${a.hospitalId}|${a.professor}`]=a; }); return m;
-  },[appts]);
-
-  const openBook = ({hospital,prof,day,slot}) => setModal({
-    hospitalId:hospital.id, hospitalName:hospital.name, dept:prof.department,
-    professor:prof.name, day, slot, date: nextOccurrence(day),
+function renderGrid(){
+  var host=document.getElementById("gridhost");if(!host)return;
+  var profs=profsInDept().filter(function(p){return S.selected.has(p.name);});
+  if(!profs.length){host.innerHTML='<div class="empty">표시할 교수가 없습니다.</div>';return;}
+  var idx=apptIndex(), h=curHospital();
+  var head='<thead><tr><th class="corner"></th>'+profs.map(function(p){
+    return '<th><div class="pname">'+esc(p.name)+'</div><div class="ptitle">'+esc(p.title||" ")+'</div></th>';}).join("")+'</tr></thead>';
+  var body="<tbody>";
+  DAYS.forEach(function(day){
+    SLOTS.forEach(function(sl,si){
+      body+='<tr class="'+(si===0?"sep":"")+'">';
+      body+='<th class="rowhead">'+DAY_KO[day]+' <span style="color:#94a3b8;font-weight:600">'+sl[1]+'</span></th>';
+      profs.forEach(function(p){
+        var busy=((p.schedule||{})[day]||[]).indexOf(sl[0])>=0;
+        if(busy){body+='<td class="cell"><span class="chip busy">진료</span></td>';}
+        else{
+          var key=nextOcc(day)+"|"+sl[0]+"|"+h.id+"|"+p.name; var bk=idx[key];
+          var mk=bk?'<span class="mk" style="background:'+statusColor(bk.status)+'"></span>':"";
+          body+='<td class="cell"><button class="chip free" data-d="'+day+'" data-s="'+sl[0]+'" data-p="'+esc(p.name)+'">'+
+                (bk?(mk+"면담"):"공석 +")+'</button></td>';
+        }
+      });
+      body+='</tr>';
+    });
   });
-  const saveAppt = a => { setAppts(prev=>{ const i=prev.findIndex(x=>x.id===a.id); if(i>=0){const n=[...prev];n[i]=a;return n;} return [...prev,a]; }); setModal(null); };
-  const delAppt = id => { setAppts(prev=>prev.filter(x=>x.id!==id)); setModal(null); };
-
-  const updatedAt = data?.updatedAt ? new Date(data.updatedAt) : null;
-
-  return (
-    <div>
-      {/* 헤더 */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-extrabold tracking-tight">MR 영업 스케줄러</span>
-            <span className="text-brand font-extrabold">·</span>
-            <span className="text-xs text-slate-400">교수 진료시간표 + 면담 일정</span>
-          </div>
-          <div className="text-xs text-slate-400">
-            {updatedAt && <>데이터 {updatedAt.getFullYear()}.{pad(updatedAt.getMonth()+1)}.{pad(updatedAt.getDate())} · 매주 자동 갱신</>}
-          </div>
-        </div>
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex gap-1">
-            {[["schedule","진료 시간표"],["calendar","내 캘린더"]].map(([v,ko])=>(
-              <button key={v} onClick={()=>setTab(v)}
-                className={`px-4 py-2.5 text-sm font-bold border-b-2 -mb-px ${tab===v?"border-brand text-slate-900":"border-transparent text-slate-400 hover:text-slate-600"}`}>{ko}</button>
-            ))}
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 py-5">
-        {err && <div className="rounded-2xl bg-rose-50 text-rose-600 p-6 text-center font-semibold">데이터를 불러오지 못했습니다.</div>}
-        {!data && !err && <div className="text-center text-slate-400 py-20">불러오는 중…</div>}
-
-        {data && tab==="schedule" && (
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-3 items-end">
-              <Dropdown label="병원" value={hospital?.id||""} onChange={setHospitalId}
-                options={hospitals.map(h=>({value:h.id,label:h.name}))}/>
-              <Dropdown label="진료과" value={dept} onChange={setDept}
-                options={depts.map(d=>({value:d,label:d}))}/>
-              <ProfPicker profs={profs} selected={selected} setSelected={setSelected}/>
-            </div>
-
-            <div className="flex items-center gap-4 text-xs text-slate-500 flex-wrap">
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-rose-100 ring-1 ring-rose-200"></span>진료(오전/오후)</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-100 ring-1 ring-emerald-200"></span>공석 · 영업 공략 시간 (클릭해 면담 등록)</span>
-            </div>
-
-            {hospital && <ScheduleGrid hospital={hospital} profs={shownProfs} onBook={openBook} apptIndex={apptIndex}/>}
-
-            <p className="text-xs text-slate-400 leading-relaxed">
-              ※ ‘진료’는 해당 교수의 정규 외래(오전/오후)이며, 그 외 시간은 ‘공석’으로 표시됩니다(수술/학회 등은 현재 미반영).
-              빈 칸을 누르면 그 요일·시간대의 가장 가까운 날짜로 면담 일정을 등록할 수 있습니다.
-            </p>
-          </div>
-        )}
-
-        {data && tab==="calendar" && (
-          <MyCalendar appts={appts}
-            onEdit={a=>setModal({...a})}
-            onNew={()=>setModal({hospitalId:hospital?.id||"", hospitalName:hospital?.name||"", dept, professor:"", date:todayYmd(), slot:"AM"})}/>
-        )}
-      </main>
-
-      {modal && <ApptModal init={modal} onClose={()=>setModal(null)} onSave={saveAppt} onDelete={delAppt}/>}
-    </div>
-  );
+  body+="</tbody>";
+  host.innerHTML='<div class="gridwrap"><table class="grid">'+head+body+'</table></div>';
+  host.querySelectorAll(".chip.free").forEach(function(b){
+    b.onclick=function(){
+      var p=profsInDept().filter(function(x){return x.name===b.dataset.p;})[0];
+      var key=nextOcc(b.dataset.d)+"|"+b.dataset.s+"|"+h.id+"|"+p.name; var bk=apptIndex()[key];
+      if(bk)openModal(bk); else openModal({hospitalId:h.id,hospitalName:h.name,dept:p.department,professor:p.name,day:b.dataset.d,slot:b.dataset.s,date:nextOcc(b.dataset.d)});
+    };
+  });
 }
+function statusColor(s){return s==="done"?"#059669":s==="canceled"?"#94a3b8":"#2563eb";}
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+/* ---------- 내 캘린더 ---------- */
+function renderCalendar(main){
+  var title;
+  if(S.calView==="week"){var s=startWeek(S.calCursor),e=addDays(s,6);title=(s.getMonth()+1)+"/"+s.getDate()+" – "+(e.getMonth()+1)+"/"+e.getDate();}
+  else title=S.calCursor.getFullYear()+"년 "+(S.calCursor.getMonth()+1)+"월";
+  main.innerHTML=
+    '<div class="calbar">'+
+      '<div style="display:flex;align-items:center;gap:4px">'+
+        '<button class="navbtn" id="prev">‹</button><div class="caltitle">'+esc(title)+'</div><button class="navbtn" id="next">›</button>'+
+        '<button class="btn soft" id="today" style="margin-left:6px;padding:6px 10px">오늘</button></div>'+
+      '<div style="display:flex;gap:8px;align-items:center">'+
+        '<div class="seg"><button id="vw-week" class="'+(S.calView==="week"?"on":"")+'">주</button><button id="vw-month" class="'+(S.calView==="month"?"on":"")+'">월</button></div>'+
+        '<button class="btn brand" id="newappt">+ 일정</button></div>'+
+    '</div><div id="calhost"></div>';
+  document.getElementById("prev").onclick=function(){move(-1);};
+  document.getElementById("next").onclick=function(){move(1);};
+  document.getElementById("today").onclick=function(){S.calCursor=new Date();render();};
+  document.getElementById("vw-week").onclick=function(){S.calView="week";render();};
+  document.getElementById("vw-month").onclick=function(){S.calView="month";render();};
+  document.getElementById("newappt").onclick=function(){var h=curHospital()||{};openModal({hospitalId:h.id||"",hospitalName:h.name||"",dept:S.dept,professor:"",date:todayYmd(),slot:"AM"});};
+  if(S.calView==="week")renderWeek();else renderMonth();
+}
+function move(n){if(S.calView==="week")S.calCursor=addDays(S.calCursor,n*7);else S.calCursor=new Date(S.calCursor.getFullYear(),S.calCursor.getMonth()+n,1);render();}
+function byDate(){var m={};S.appts.forEach(function(a){(m[a.date]=m[a.date]||[]).push(a);});Object.keys(m).forEach(function(k){m[k].sort(function(a,b){return a.slot<b.slot?-1:1;});});return m;}
+function badge(st){var b=STATUS[st]||STATUS.planned;return '<span class="badge '+b[1]+'"><span class="d"></span>'+b[0]+'</span>';}
+
+function renderWeek(){
+  var host=document.getElementById("calhost"),s=startWeek(S.calCursor),m=byDate(),html='<div class="week">';
+  for(var i=0;i<7;i++){
+    var d=addDays(s,i),ymd=fmt(d),list=m[ymd]||[],today=ymd===todayYmd();
+    html+='<div class="day'+(today?" today":"")+'"><h4>'+(DAY_KO[DAYS[monIdx(d)]]||"일")+" "+d.getDate()+'</h4>';
+    list.forEach(function(a){html+='<button class="appt" data-id="'+a.id+'"><div class="t">'+esc(a.title)+'</div>'+
+      '<div class="m"><span class="slotlab">'+(a.slot==="AM"?"오전":"오후")+'</span>'+badge(a.status)+'</div></button>';});
+    html+='</div>';
+  }
+  html+='</div>';host.innerHTML=html;
+  host.querySelectorAll(".appt").forEach(function(b){b.onclick=function(){openModal(findAppt(b.dataset.id));};});
+}
+function renderMonth(){
+  var host=document.getElementById("calhost"),first=new Date(S.calCursor.getFullYear(),S.calCursor.getMonth(),1);
+  var gs=startWeek(first),m=byDate();
+  var html='<div class="month"><div class="mhead">'+["월","화","수","목","금","토","일"].map(function(x){return "<div>"+x+"</div>";}).join("")+'</div><div class="mgrid">';
+  for(var i=0;i<42;i++){
+    var d=addDays(gs,i),ymd=fmt(d),list=m[ymd]||[],inM=d.getMonth()===S.calCursor.getMonth(),today=ymd===todayYmd();
+    html+='<div class="mcell'+(inM?"":" out")+(today?" today":"")+'"><div class="dn">'+d.getDate()+'</div>';
+    list.slice(0,3).forEach(function(a){html+='<button class="mline" data-id="'+a.id+'"><span class="d" style="background:'+statusColor(a.status)+'"></span><span>'+esc(a.title)+'</span></button>';});
+    if(list.length>3)html+='<div style="font-size:10px;color:#94a3b8">+'+(list.length-3)+'</div>';
+    html+='</div>';
+  }
+  html+='</div></div>';host.innerHTML=html;
+  host.querySelectorAll(".mline").forEach(function(b){b.onclick=function(){openModal(findAppt(b.dataset.id));};});
+}
+function findAppt(id){return S.appts.filter(function(a){return a.id===id;})[0];}
+
+/* ---------- 모달 ---------- */
+function openModal(init){
+  var f=Object.assign({id:null,hospitalId:"",hospitalName:"",dept:"",professor:"",date:todayYmd(),slot:"AM",title:"",status:"planned",memo:""},init);
+  if(!f.title)f.title=f.professor?(f.professor+" 교수 면담"):"영업 면담";
+  var statusVal=f.status;
+  var ctx=[f.hospitalName,f.dept,f.professor?(f.professor+" 교수"):""].filter(Boolean).join(" · ");
+  var mr=document.getElementById("modal-root");
+  mr.innerHTML='<div class="overlay" id="ov"><div class="modal">'+
+    '<button class="mclose" id="mx">×</button><h3>'+(f.id?"면담 일정 수정":"면담 일정 등록")+'</h3>'+
+    '<div class="mctx">'+esc(ctx)+'</div>'+
+    '<label class="fl"><span>제목</span><input id="m-title" value="'+esc(f.title)+'"></label>'+
+    '<div class="two"><label class="fl"><span>날짜</span><input id="m-date" type="date" value="'+esc(f.date)+'"></label>'+
+      '<label class="fl"><span>시간대</span><select id="m-slot"><option value="AM"'+(f.slot==="AM"?" selected":"")+'>오전</option><option value="PM"'+(f.slot==="PM"?" selected":"")+'>오후</option></select></label></div>'+
+    '<div class="fl"><span>상태</span><div class="statusrow" id="m-status">'+
+      Object.keys(STATUS).map(function(k){return '<button data-k="'+k+'" class="'+STATUS[k][2]+(k===statusVal?" on":"")+'">'+STATUS[k][0]+'</button>';}).join("")+'</div></div>'+
+    '<label class="fl"><span>메모</span><textarea id="m-memo" rows="2" placeholder="면담 목적, 연락처 등">'+esc(f.memo)+'</textarea></label>'+
+    '<div class="mfoot">'+(f.id?'<button class="btn ghost" id="m-del" style="color:#e11d48">삭제</button>':'')+
+      '<div style="flex:1"></div><button class="btn soft" id="m-cancel">취소</button><button class="btn brand" id="m-save">저장</button></div>'+
+    '</div></div>';
+  function close(){mr.innerHTML="";}
+  document.getElementById("ov").onclick=function(e){if(e.target.id==="ov")close();};
+  document.getElementById("mx").onclick=close;
+  document.getElementById("m-cancel").onclick=close;
+  document.getElementById("m-status").querySelectorAll("button").forEach(function(b){b.onclick=function(){
+    statusVal=b.dataset.k;
+    document.getElementById("m-status").querySelectorAll("button").forEach(function(x){x.className=STATUS[x.dataset.k][2]+(x.dataset.k===statusVal?" on":"");});
+  };});
+  if(f.id)document.getElementById("m-del").onclick=function(){S.appts=S.appts.filter(function(a){return a.id!==f.id;});saveAppts();close();render();};
+  document.getElementById("m-save").onclick=function(){
+    var obj={id:f.id||uid(),hospitalId:f.hospitalId,hospitalName:f.hospitalName,dept:f.dept,professor:f.professor,
+      date:document.getElementById("m-date").value,slot:document.getElementById("m-slot").value,
+      title:document.getElementById("m-title").value.trim()||"영업 면담",status:statusVal,memo:document.getElementById("m-memo").value.trim()};
+    var i=S.appts.map(function(a){return a.id;}).indexOf(obj.id);
+    if(i>=0)S.appts[i]=obj;else S.appts.push(obj);
+    saveAppts();close();render();
+  };
+}
 </script>
 </body>
 </html>
