@@ -9,7 +9,10 @@
       "base": "https://anam.kumc.or.kr",
       "hpCd": "AA",
       "instNo": 1,
-      "departments": ["정형외과", "신경외과"],
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
       "enabled": true
     },
     {
@@ -18,8 +21,14 @@
       "url": "https://www.cmcujb.or.kr/page/department/A/160/2",
       "adapter": "cmc",
       "base": "https://www.cmcujb.or.kr",
-      "deptCodes": { "정형외과": "160", "신경외과": "103" },
-      "departments": ["정형외과", "신경외과"],
+      "deptCodes": {
+        "정형외과": "160",
+        "신경외과": "103"
+      },
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
       "enabled": true
     },
     {
@@ -28,8 +37,14 @@
       "url": "https://www.eulji.or.kr/clinic/clinic_pg04.jsp?dept=ABFDAA",
       "adapter": "eulji",
       "base": "https://www.eulji.or.kr",
-      "deptCodes": { "정형외과": "ABFDAA", "신경외과": "ABGAAA" },
-      "departments": ["정형외과", "신경외과"],
+      "deptCodes": {
+        "정형외과": "ABFDAA",
+        "신경외과": "ABGAAA"
+      },
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
       "enabled": true
     },
     {
@@ -38,8 +53,14 @@
       "url": "https://www.uemc.ac.kr/clinic/clinic_pg04.jsp?dept=ABFDAA",
       "adapter": "eulji",
       "base": "https://www.uemc.ac.kr",
-      "deptCodes": { "정형외과": "ABFDAA", "신경외과": "ABGAAA" },
-      "departments": ["정형외과", "신경외과"],
+      "deptCodes": {
+        "정형외과": "ABFDAA",
+        "신경외과": "ABGAAA"
+      },
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
       "enabled": true
     },
     {
@@ -49,7 +70,10 @@
       "adapter": "saeroun",
       "base": "https://saerounhospital.com",
       "listUrl": "https://saerounhospital.com/view/sub0103.php?menu1=open",
-      "departments": ["정형외과", "신경외과"],
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
       "enabled": true
     },
     {
@@ -59,7 +83,10 @@
       "adapter": "seoulhyundai",
       "base": "https://www.seoulhyundai.co.kr",
       "listUrl": "https://www.seoulhyundai.co.kr/page/sub0103.php",
-      "departments": ["정형외과", "신경외과"],
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
       "enabled": true
     },
     {
@@ -68,8 +95,14 @@
       "url": "https://www.kdh.or.kr/sub201.php?dept=111240",
       "adapter": "kdh",
       "base": "https://www.kdh.or.kr",
-      "deptCodes": { "정형외과": "111240", "신경외과": "111230" },
-      "departments": ["정형외과", "신경외과"],
+      "deptCodes": {
+        "정형외과": "111240",
+        "신경외과": "111230"
+      },
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
       "enabled": true
     },
     {
@@ -78,8 +111,26 @@
       "url": "https://med.khmc.or.kr/kr/treatment/department/2050000000/timetable.do",
       "adapter": "khmc",
       "base": "https://med.khmc.or.kr",
-      "deptCodes": { "정형외과": "2050000000", "신경외과": "2060000000" },
-      "departments": ["정형외과", "신경외과"],
+      "deptCodes": {
+        "정형외과": "2050000000",
+        "신경외과": "2060000000"
+      },
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "nph",
+      "name": "경찰병원",
+      "url": "https://www.nph.go.kr/nph/med/schedule/ScheduleList.do?menuNo=200022",
+      "adapter": "manual",
+      "base": "https://www.nph.go.kr",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
       "enabled": true
     }
   ]

@@ -2315,6 +2315,208 @@
           }
         }
       ]
+    },
+    {
+      "id": "nph",
+      "name": "경찰병원",
+      "url": "https://www.nph.go.kr/nph/med/schedule/ScheduleList.do?menuNo=200022",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "manual",
+      "professors": [
+        {
+          "name": "김인희",
+          "department": "정형외과",
+          "specialty": "척추, 디스크",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김정석",
+          "department": "정형외과",
+          "specialty": "슬관절, 스포츠 손상, 퇴행성 관절염, 외상(골절)",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김가현",
+          "department": "정형외과",
+          "specialty": "수부 질환 및 외상",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "장재석",
+          "department": "정형외과",
+          "specialty": "고관절 질환, 고관절 골절, 인공고관절 치환술, 고관절 이형성증",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM"
+            ],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김건중",
+          "department": "정형외과",
+          "specialty": "척추질환, 디스크 질환, 척추외상, 슬관절, 퇴행성 관절염",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [],
+            "wed": [
+              "AM"
+            ],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "이경주",
+          "department": "정형외과",
+          "specialty": "외상, 슬관절, 고관절, 퇴행성 관절염, 스포츠 손상, 인공관절",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [
+              "PM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "신명열",
+          "department": "정형외과",
+          "specialty": "족부족관절 질환 및 관절염, 스포츠 손상 및 외상, 당뇨발",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "백승현",
+          "department": "정형외과",
+          "specialty": "목디스크, 후종인대골화증, 거북목, 허리디스크, 협착증, 척추측만증, 척추(목/허리) 외상",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [],
+            "thu": [],
+            "fri": [
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김진경",
+          "department": "신경외과",
+          "specialty": "두통, 치매, 두부외상, 뇌동맥류, 뇌종양",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "오선규",
+          "department": "신경외과",
+          "specialty": "신경외과 질환, 척추질환",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [
+              "PM"
+            ],
+            "thu": [],
+            "fri": [
+              "AM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        }
+      ]
     }
   ]
 }
