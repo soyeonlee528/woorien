@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-18T21:20:33+09:00",
+  "updatedAt": "2026-06-18T21:59:28+09:00",
   "note": "정형외과·신경외과 외래 진료 시간표. 매주 목요일 자동 갱신.",
   "hospitals": [
     {
@@ -2513,6 +2513,153 @@
               "AM"
             ],
             "sat": [],
+            "sun": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "hyesung",
+      "name": "혜성병원",
+      "url": "https://www.hsmcenter.com/?idx=c65053dbe88877/c65053f1188898",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "live",
+      "professors": [
+        {
+          "name": "정승효",
+          "department": "정형외과",
+          "specialty": "관절센터 정승효 병원장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [
+              "AM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "강동모",
+          "department": "정형외과",
+          "specialty": "관절센터 강동모 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [
+              "PM"
+            ],
+            "thu": [
+              "AM"
+            ],
+            "fri": [
+              "PM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "백건열",
+          "department": "정형외과",
+          "specialty": "관절센터 백건열 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [
+              "PM"
+            ],
+            "thu": [
+              "AM"
+            ],
+            "fri": [
+              "PM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "임대철",
+          "department": "신경외과",
+          "specialty": "척추센터 임대철 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [
+              "AM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "최우성",
+          "department": "신경외과",
+          "specialty": "척추센터 최우성 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [
+              "PM"
+            ],
+            "thu": [
+              "AM"
+            ],
+            "fri": [
+              "PM"
+            ],
+            "sat": [
+              "AM"
+            ],
             "sun": []
           }
         }
