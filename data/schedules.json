@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-18T18:20:34+09:00",
+  "updatedAt": "2026-06-18T18:30:51+09:00",
   "note": "정형외과·신경외과 외래 진료 시간표. 매주 목요일 자동 갱신.",
   "hospitals": [
     {
@@ -1289,8 +1289,381 @@
         "정형외과",
         "신경외과"
       ],
-      "source": "pending",
-      "professors": []
+      "source": "live",
+      "professors": [
+        {
+          "name": "하주경",
+          "department": "신경외과",
+          "specialty": "척추내시경센터",
+          "title": "원장",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "이종민",
+          "department": "신경외과",
+          "specialty": "척추내시경 센터",
+          "title": "원장",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "안풍기",
+          "department": "신경외과",
+          "specialty": "척추 센터",
+          "title": "원장",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "박상준",
+          "department": "정형외과",
+          "specialty": "하지관절, 정맥센터",
+          "title": "원장",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "이광석",
+          "department": "정형외과",
+          "specialty": "상지관절-스포츠손상 센터",
+          "title": "원장",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "정형외과",
+          "department": "정형외과",
+          "specialty": "",
+          "title": "원장",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "seoulhyundai",
+      "name": "서울현대병원",
+      "url": "https://www.seoulhyundai.co.kr/page/sub0103.php",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "live",
+      "professors": [
+        {
+          "name": "이우태",
+          "department": "정형외과",
+          "specialty": "병원장 / 정형외과",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "허영우",
+          "department": "정형외과",
+          "specialty": "척추관절센터장 / 정형외과 원장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "황성문",
+          "department": "정형외과",
+          "specialty": "정형외과 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "양두근",
+          "department": "정형외과",
+          "specialty": "정형외과 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "황성재",
+          "department": "정형외과",
+          "specialty": "정형외과 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "허준영",
+          "department": "신경외과",
+          "specialty": "척추센터장 / 신경외과 원장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        }
+      ]
     }
   ]
 }
