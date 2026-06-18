@@ -4,11 +4,12 @@ from __future__ import annotations
 from playwright.sync_api import sync_playwright
 UA=("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
 
-def go(ctx,url,t=25000):
+def go(ctx,url,t=20000):
     pg=ctx.new_page()
+    print("  [load]",url)
     try: pg.goto(url,wait_until="domcontentloaded",timeout=t)
     except Exception as e: print("  [goto]",type(e).__name__)
-    pg.wait_for_timeout(1200); return pg
+    pg.wait_for_timeout(1000); print("  [loaded]"); return pg
 
 def main():
     with sync_playwright() as p:
