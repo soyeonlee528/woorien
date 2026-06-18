@@ -620,29 +620,36 @@ def main():
             professors = prev.get("professors", [])
             source_tag = prev.get("source", "pending")
 
-            adapter = ADAPTERS.get(src.get("adapter"))
-            if adapter is None:
-                print(f"[warn] {hid}: adapter '{src.get('adapter')}' 없음 — 기존 유지")
+            adapter_name = src.get("adapter")
+            if adapter_name == "manual":
+                # 수동 입력 병원: 크롤링하지 않고 data/schedules.json 의 기존 값을 그대로 보존
+                professors = prev.get("professors", [])
+                source_tag = "manual"
+                print(f"[manual] {hid}: 수동 데이터 {len(professors)}명 유지")
             else:
-                ctx = browser.new_context(user_agent=UA, locale="ko-KR",
-                                          extra_http_headers={"Referer": src["base"]})
-                try:
-                    ctx.request.get(src["base"], timeout=30000)  # 쿠키 워밍업
-                except Exception:
-                    pass
-                try:
-                    got = adapter(ctx, src)
-                    got = [pr for pr in got if pr.get("name")]
-                    if got:
-                        professors = got
-                        source_tag = "live"
-                        print(f"[ok]   {hid}: 총 {len(got)}명 수집")
-                    else:
-                        print(f"[skip] {hid}: 0명 — 기존 데이터 유지")
-                except Exception as e:
-                    print(f"[fail] {hid}: {type(e).__name__}: {e} — 기존 데이터 유지")
-                finally:
-                    ctx.close()
+                adapter = ADAPTERS.get(adapter_name)
+                if adapter is None:
+                    print(f"[warn] {hid}: adapter '{adapter_name}' 없음 — 기존 유지")
+                else:
+                    ctx = browser.new_context(user_agent=UA, locale="ko-KR",
+                                              extra_http_headers={"Referer": src["base"]})
+                    try:
+                        ctx.request.get(src["base"], timeout=30000)  # 쿠키 워밍업
+                    except Exception:
+                        pass
+                    try:
+                        got = adapter(ctx, src)
+                        got = [pr for pr in got if pr.get("name")]
+                        if got:
+                            professors = got
+                            source_tag = "live"
+                            print(f"[ok]   {hid}: 총 {len(got)}명 수집")
+                        else:
+                            print(f"[skip] {hid}: 0명 — 기존 데이터 유지")
+                    except Exception as e:
+                        print(f"[fail] {hid}: {type(e).__name__}: {e} — 기존 데이터 유지")
+                    finally:
+                        ctx.close()
 
             out.append({
                 "id": hid,
