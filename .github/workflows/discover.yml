@@ -16,4 +16,4 @@ jobs:
           pip install playwright
           python -m playwright install --with-deps chromium
       - name: 구조 탐색 실행
-        run: python scripts/discover.py
+        run: python scripts/discover_anam.py
