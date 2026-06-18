@@ -183,6 +183,16 @@
   .wkc.cell .mk{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:2px;vertical-align:1px}
   @media(max-width:760px){ .week{grid-template-columns:1fr 1fr} .field{min-width:0;flex:1} .field select{width:100%} .picker-btn{min-width:0;width:100%}
     .slot{width:58px} .nm{font-size:15px} }
+  .loginwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .logincard{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:26px 22px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}
+  .loginlogo{font-size:20px;font-weight:800}
+  .loginsub{font-size:13px;color:var(--sub);margin-bottom:6px}
+  .logincard input{border:1px solid var(--line);border-radius:11px;padding:11px 12px;font-size:15px;width:100%}
+  .logincard input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(224,17,46,.12)}
+  .logincard .btn{width:100%}
+  .loginmsg{font-size:12px;font-weight:600;min-height:16px}
+  .userbox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .uemail{font-size:12px;color:#334155;font-weight:700}
 </style>
 </head>
 <body>
@@ -194,8 +204,13 @@
 var DATA_URLS=["./data/schedules.json","https://raw.githubusercontent.com/soyeonlee528/woorien/main/data/schedules.json"];
 var DAYS=["mon","tue","wed","thu","fri","sat","sun"], SDAYS=["mon","tue","wed","thu","fri"], DAY_KO={mon:"월",tue:"화",wed:"수",thu:"목",fri:"금",sat:"토",sun:"일"};
 var SLOTS=[["AM","오전"],["PM","오후"]];
-var LS="mr_sales_appointments_v1";
 var STATUS={planned:["방문 예정","b-planned","s-planned"],done:["면담 완료","b-done","s-done"],canceled:["취소","b-canceled","s-canceled"]};
+/* ===== Supabase (로그인 + 클라우드 저장) ===== */
+var SUPA_URL="https://uwnkeyoemsssdfxgawyi.supabase.co";
+var SUPA_KEY="sb_publishable_mOov6n4h60cDTnDcYXSr0Q_xPMxdEX7";
+var SESS_KEY="mr_supa_session_v1";
+function getSess(){try{return JSON.parse(localStorage.getItem(SESS_KEY));}catch(e){return null;}}
+function setSess(s){if(s)localStorage.setItem(SESS_KEY,JSON.stringify(s));else localStorage.removeItem(SESS_KEY);}
 
 function pad(n){return (n<10?"0":"")+n;}
 function fmt(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
@@ -207,12 +222,26 @@ function todayYmd(){return fmt(new Date());}
 function nextOcc(dayKey){var t=DAYS.indexOf(dayKey);var n=new Date();n.setHours(0,0,0,0);var diff=(t-monIdx(n)+7)%7;return fmt(addDays(n,diff));}
 function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
-function loadAppts(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch(e){return [];}}
-function saveAppts(){localStorage.setItem(LS,JSON.stringify(S.appts));}
+function authReq(path,body){return fetch(SUPA_URL+"/auth/v1/"+path,{method:"POST",headers:{apikey:SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify(body)}).then(function(r){return r.json().then(function(j){return {ok:r.ok,status:r.status,j:j};});});}
+function saveAuth(j){setSess({token:j.access_token,refresh:j.refresh_token,email:(j.user&&j.user.email)||"",uid:(j.user&&j.user.id)||""});}
+function doRefresh(){var s=getSess();if(!s||!s.refresh)return Promise.resolve(false);return authReq("token?grant_type=refresh_token",{refresh_token:s.refresh}).then(function(r){if(r.ok&&r.j.access_token){saveAuth(r.j);return true;}setSess(null);return false;});}
+function rest(method,path,body,_retry){var s=getSess();var h={apikey:SUPA_KEY,Authorization:"Bearer "+(s?s.token:SUPA_KEY),"Content-Type":"application/json"};if(method!=="GET")h.Prefer="return=representation";
+  return fetch(SUPA_URL+"/rest/v1/"+path,{method:method,headers:h,body:body?JSON.stringify(body):undefined}).then(function(r){
+    if(r.status===401&&!_retry){return doRefresh().then(function(ok){if(ok)return rest(method,path,body,true);setSess(null);render();throw new Error("세션이 만료됐어요. 다시 로그인해 주세요.");});}
+    if(r.status===204)return [];
+    return r.json().then(function(j){if(!r.ok)throw new Error((j&&(j.message||j.msg||j.error_description))||("HTTP "+r.status));return j;});
+  });}
+function toRow(a){return {title:a.title,hospital_id:a.hospitalId,hospital_name:a.hospitalName,dept:a.dept,professor:a.professor,date:a.date,slot:a.slot,time:a.time,status:a.status,memo:a.memo};}
+function fromRow(r){return {id:r.id,title:r.title,hospitalId:r.hospital_id,hospitalName:r.hospital_name,dept:r.dept,professor:r.professor,date:r.date,slot:r.slot,time:r.time,status:r.status,memo:r.memo};}
+function loadAppointments(){return rest("GET","appointments?select=*").then(function(rows){S.appts=(rows||[]).map(fromRow);});}
+function apptCreate(a){return rest("POST","appointments",toRow(a)).then(function(rows){if(rows&&rows[0])S.appts.push(fromRow(rows[0]));});}
+function apptUpdate(a){return rest("PATCH","appointments?id=eq."+a.id,toRow(a)).then(function(rows){var i=-1;S.appts.forEach(function(x,k){if(x.id===a.id)i=k;});if(i>=0&&rows&&rows[0])S.appts[i]=fromRow(rows[0]);});}
+function apptDelete(id){return rest("DELETE","appointments?id=eq."+id,null).then(function(){S.appts=S.appts.filter(function(x){return x.id!==id;});});}
+function signOut(){setSess(null);S.appts=[];render();}
 
 /* ===================== 상태 ===================== */
 var S={data:null,err:false,tab:"schedule",hospitalIds:new Set(),depts:new Set(),selected:new Set(),
-       appts:loadAppts(),calView:"week",calCursor:new Date(),weekCursor:new Date(),selDate:"",schedView:"week"};
+       appts:[],calView:"week",calCursor:new Date(),weekCursor:new Date(),selDate:"",schedView:"week"};
 
 /* ===================== 데이터 로드 ===================== */
 (function(){
@@ -221,10 +250,11 @@ var S={data:null,err:false,tab:"schedule",hospitalIds:new Set(),depts:new Set(),
     if(i>=DATA_URLS.length){S.err=true;render();return;}
     fetch(DATA_URLS[i++],{cache:"no-store"}).then(function(r){
       if(!r.ok) throw 0; return r.json();
-    }).then(function(j){S.data=j;initSelections();render();}).catch(tryNext);
+    }).then(function(j){S.data=j;initSelections();boot();}).catch(tryNext);
   }
   tryNext();
 })();
+function boot(){ if(getSess()){ loadAppointments().then(render).catch(function(){render();}); } else { render(); } }
 
 function hospitals(){return (S.data&&S.data.hospitals)||[];}
 function selHospitals(){return hospitals().filter(function(h){return S.hospitalIds.has(h.id);});}
@@ -252,13 +282,35 @@ function apptIndex(){var m={};S.appts.forEach(function(a){m[a.date+"|"+a.slot+"|
 
 /* ===================== 렌더 ===================== */
 function render(){
+  if(!getSess()){renderLogin();return;}
   var root=document.getElementById("root");
   root.innerHTML=headerHTML()+'<main id="main"></main>';
   document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){S.tab=b.dataset.t;render();};});
+  var lo=document.getElementById("logout"); if(lo)lo.onclick=signOut;
   var main=document.getElementById("main");
   if(S.err){main.innerHTML='<div class="empty" style="color:#e11d48;font-weight:700">데이터를 불러오지 못했습니다.</div>';return;}
   if(!S.data){main.innerHTML='<div class="empty">불러오는 중…</div>';return;}
   if(S.tab==="schedule")renderSchedule(main);else renderCalendar(main);
+}
+
+function renderLogin(){
+  var root=document.getElementById("root");
+  root.innerHTML='<div class="loginwrap"><div class="logincard">'+
+    '<div class="loginlogo">MR 영업 스케줄러</div>'+
+    '<div class="loginsub">로그인 후 이용하세요</div>'+
+    '<input id="lg-email" type="email" placeholder="이메일" autocomplete="username">'+
+    '<input id="lg-pw" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="current-password">'+
+    '<div id="lg-msg" class="loginmsg"></div>'+
+    '<button class="btn brand" id="lg-in">로그인</button>'+
+    '<button class="btn ghost" id="lg-up">회원가입</button>'+
+    '</div></div>';
+  function msg(t,err){var m=document.getElementById("lg-msg");m.textContent=t||"";m.style.color=err?"#e11d48":"#059669";}
+  function creds(){return {email:(document.getElementById("lg-email").value||"").trim(),password:document.getElementById("lg-pw").value||""};}
+  function ok(j){ if(j.access_token){ saveAuth(j); msg("로그인 완료!"); loadAppointments().then(render).catch(render); return true; } return false; }
+  document.getElementById("lg-in").onclick=function(){var c=creds();if(!c.email||!c.password){msg("이메일과 비밀번호를 입력하세요",true);return;}msg("로그인 중…");
+    authReq("token?grant_type=password",c).then(function(r){ if(!ok(r.j)) msg((r.j&&(r.j.error_description||r.j.msg))||"로그인 실패 — 이메일/비밀번호 확인",true); });};
+  document.getElementById("lg-up").onclick=function(){var c=creds();if(!c.email||c.password.length<6){msg("이메일과 6자 이상 비밀번호를 입력하세요",true);return;}msg("가입 중…");
+    authReq("signup",c).then(function(r){ if(r.ok){ if(!ok(r.j)) msg("가입 완료! 이메일 인증이 필요하면 메일 확인 후 로그인하세요.",false); } else msg((r.j&&(r.j.msg||r.j.error_description))||"가입 실패",true); });};
 }
 
 function headerHTML(){
@@ -266,7 +318,7 @@ function headerHTML(){
   var upd=u?("데이터 "+u.getFullYear()+"."+pad(u.getMonth()+1)+"."+pad(u.getDate())+" · 매주 자동 갱신"):"";
   return '<header class="top"><div class="wrap">'+
     '<div class="hrow"><div class="logo">MR 영업 스케줄러 <span class="dot">·</span> <span class="sub">교수 진료시간표 + 면담 일정</span></div>'+
-    '<div class="sub">'+esc(upd)+'</div></div>'+
+    '<div class="userbox"><span class="sub">'+esc(upd)+'</span><span class="uemail">'+esc((getSess()||{}).email||"")+'</span><button class="btn ghost" id="logout" style="padding:6px 12px">로그아웃</button></div></div>'+
     '<div class="tabs">'+
       '<button class="tab '+(S.tab==="schedule"?"on":"")+'" data-t="schedule">진료 시간표</button>'+
       '<button class="tab '+(S.tab==="calendar"?"on":"")+'" data-t="calendar">내 캘린더</button>'+
@@ -563,15 +615,15 @@ function openModal(init){
     statusVal=b.dataset.k;
     document.getElementById("m-status").querySelectorAll("button").forEach(function(x){x.className=STATUS[x.dataset.k][2]+(x.dataset.k===statusVal?" on":"");});
   };});
-  if(f.id)document.getElementById("m-del").onclick=function(){S.appts=S.appts.filter(function(a){return a.id!==f.id;});saveAppts();close();render();};
+  if(f.id)document.getElementById("m-del").onclick=function(){var b=this;b.disabled=true;apptDelete(f.id).then(function(){close();render();}).catch(function(e){b.disabled=false;alert("삭제 실패: "+e.message);});};
   document.getElementById("m-save").onclick=function(){
-    var obj={id:f.id||uid(),hospitalId:f.hospitalId,hospitalName:f.hospitalName,dept:f.dept,professor:f.professor,
+    var obj={id:f.id||null,hospitalId:f.hospitalId,hospitalName:f.hospitalName,dept:f.dept,professor:f.professor,
       date:document.getElementById("m-date").value,slot:document.getElementById("m-slot").value,time:document.getElementById("m-time").value,
       title:document.getElementById("m-title").value.trim()||"영업 면담",status:statusVal,memo:document.getElementById("m-memo").value.trim()};
     if(isBusy(obj.hospitalId,obj.professor,obj.date,obj.slot)){alert("그 시간대는 교수님 진료가 있어 면담을 등록할 수 없어요. 다른 시간대를 선택해 주세요.");return;}
-    var i=S.appts.map(function(a){return a.id;}).indexOf(obj.id);
-    if(i>=0)S.appts[i]=obj;else S.appts.push(obj);
-    saveAppts();close();render();
+    var b=this;b.disabled=true;
+    var p=obj.id?apptUpdate(obj):apptCreate(obj);
+    p.then(function(){close();render();}).catch(function(e){b.disabled=false;alert("저장 실패: "+e.message);});
   };
 }
 </script>
