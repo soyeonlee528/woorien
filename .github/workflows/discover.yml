@@ -16,4 +16,4 @@ jobs:
           pip install playwright
           python -m playwright install --with-deps chromium
       - name: 탐색 실행
-        run: python scripts/discover2.py
+        run: python scripts/discover3.py
