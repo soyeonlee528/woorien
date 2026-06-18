@@ -41,6 +41,16 @@
       "deptCodes": { "정형외과": "ABFDAA", "신경외과": "ABGAAA" },
       "departments": ["정형외과", "신경외과"],
       "enabled": true
+    },
+    {
+      "id": "saeroun",
+      "name": "강남새로운병원",
+      "url": "https://saerounhospital.com/view/sub0103.php?menu1=open",
+      "adapter": "saeroun",
+      "base": "https://saerounhospital.com",
+      "listUrl": "https://saerounhospital.com/view/sub0103.php?menu1=open",
+      "departments": ["정형외과", "신경외과"],
+      "enabled": true
     }
   ]
 }

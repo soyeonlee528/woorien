@@ -20,6 +20,7 @@ ctx.new_page() 로 처리한다.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -221,10 +222,108 @@ def adapter_eulji(ctx, src):
     return profs
 
 
+# ---------------------------------------------------------------------------
+# 어댑터: 강남새로운병원 (saerounhospital.com) — 척추/관절 전문병원
+# 한 페이지에 모든 의사. div.name(센터+이름) 과 <table>(시간표) 가 문서 순서대로 1:1.
+# 시간표: 행 오전/오후, 월~금 셀에 '수술' 또는 '진료' 텍스트면 진료(=공석 아님), 빈칸이면 공석.
+# 토요일은 격주/휴진/날짜로 표기되어 정규 슬롯에서 제외.
+# 진료과 라벨이 없어 센터명으로 정형/신경 추정, 마취·영상·내과 등은 제외.
+# ---------------------------------------------------------------------------
+_SAEROUN_JS = r"""
+() => {
+  const names = Array.from(document.querySelectorAll('div.name'))
+    .map(e => (e.textContent || '').replace(/\s+/g, ' ').trim());
+  const tables = Array.from(document.querySelectorAll('table'));
+  const n = Math.min(names.length, tables.length);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const rows = Array.from(tables[i].querySelectorAll('tbody tr'));
+    const am = [false, false, false, false, false];
+    const pm = [false, false, false, false, false];
+    rows.forEach(r => {
+      const tds = Array.from(r.children);
+      const label = (tds[0] ? tds[0].textContent : '') || '';
+      const isAm = label.indexOf('오전') >= 0;
+      const isPm = label.indexOf('오후') >= 0;
+      if (!isAm && !isPm) return;
+      for (let d = 0; d < 5; d++) {            // 월~금 (토는 rowspan 별도 셀)
+        const cell = tds[1 + d];
+        if (!cell) continue;
+        const on = (cell.textContent || '').trim().length > 0;  // 수술/진료
+        if (isAm) am[d] = am[d] || on; else pm[d] = pm[d] || on;
+      }
+    });
+    out.push({ raw: names[i], am, pm });
+  }
+  return out;
+}
+"""
+
+_EXCLUDE_KW = ("마취", "통증", "영상", "내과", "비만", "성인병", "가정의학", "재활", "한방", "치과")
+
+
+def _saeroun_dept(text):
+    """센터/직함 텍스트로 진료과 추정. 제외 대상이면 None."""
+    if any(k in text for k in _EXCLUDE_KW):
+        return None
+    if "신경" in text or "척추" in text:
+        return "신경외과"
+    if any(k in text for k in ("정형", "관절", "스포츠", "하지", "상지", "족부", "수족", "외상")):
+        return "정형외과"
+    return None
+
+
+def _split_name(raw):
+    """'척추내시경센터 하주경원장' -> ('하주경', '척추내시경센터')."""
+    m = re.search(r"([가-힣]{2,4})\s*(원장|교수|과장|부장|소장|센터장|전문의)", raw)
+    if m:
+        name = m.group(1)
+        spec = raw[:m.start()].strip(" ·,-")
+        return name, spec
+    return raw.strip(), ""
+
+
+def adapter_saeroun(ctx, src):
+    base = src["base"].rstrip("/")
+    url = src.get("listUrl") or (base + "/view/sub0103.php?menu1=open")
+    profs = []
+    page = ctx.new_page()
+    try:
+        try:
+            page.goto(url, wait_until="networkidle", timeout=40000)
+        except Exception:
+            page.wait_for_timeout(1500)
+        page.wait_for_timeout(800)
+        rows = page.evaluate(_SAEROUN_JS)
+    finally:
+        page.close()
+    for r in rows:
+        name, spec = _split_name(r.get("raw", ""))
+        dept = _saeroun_dept(r.get("raw", ""))
+        if not dept or not name:
+            continue
+        sched = empty_sched()
+        for i in range(5):
+            if r["am"][i]:
+                sched[DAYS[i]].append("AM")
+            if r["pm"][i]:
+                sched[DAYS[i]].append("PM")
+        profs.append({
+            "name": name,
+            "department": dept,
+            "specialty": spec,
+            "title": "원장",
+            "schedule": order_slots(sched),
+        })
+    print(f"  [saeroun] 정형·신경 {len(profs)}명")
+    return profs
+
+
 ADAPTERS = {
     "anam_kumc": adapter_anam_kumc,
     "cmc": adapter_cmc,
     "eulji": adapter_eulji,
+    "saeroun": adapter_saeroun,
 }
 
 
