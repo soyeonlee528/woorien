@@ -51,6 +51,16 @@
       "listUrl": "https://saerounhospital.com/view/sub0103.php?menu1=open",
       "departments": ["정형외과", "신경외과"],
       "enabled": true
+    },
+    {
+      "id": "seoulhyundai",
+      "name": "서울현대병원",
+      "url": "https://www.seoulhyundai.co.kr/page/sub0103.php",
+      "adapter": "seoulhyundai",
+      "base": "https://www.seoulhyundai.co.kr",
+      "listUrl": "https://www.seoulhyundai.co.kr/page/sub0103.php",
+      "departments": ["정형외과", "신경외과"],
+      "enabled": true
     }
   ]
 }

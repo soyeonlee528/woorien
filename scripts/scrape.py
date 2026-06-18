@@ -329,11 +329,96 @@ def adapter_saeroun(ctx, src):
     return profs
 
 
+# ---------------------------------------------------------------------------
+# 어댑터: 서울현대병원 (seoulhyundai.co.kr) — 척추/관절 전문병원
+# 의사 카드 div.right = <article><h1>이름</h1><h3>직함 / 진료과</h3></article> + table.box-shadow
+# 표: 오전/오후 행, 월~금 셀에 <span class="surgery|treat"> 있으면 진료(=공석 아님). 토는 순환(문의)→제외.
+# h3 에 '정형외과'/'신경외과' 가 명시되어 그대로 분류. (목록+상세 중복 → 이름 기준 중복 제거)
+# ---------------------------------------------------------------------------
+_SEOULHYUNDAI_JS = r"""
+() => {
+  const cards = Array.from(document.querySelectorAll('div.right'))
+    .filter(c => c.querySelector('table.box-shadow') && c.querySelector('h1'));
+  return cards.map(c => {
+    const name = (c.querySelector('h1').textContent || '').replace(/\s+/g, '');
+    const h3 = (c.querySelector('h3') ? c.querySelector('h3').textContent : '')
+      .replace(/\s+/g, ' ').trim();
+    const rows = Array.from(c.querySelector('table.box-shadow').querySelectorAll('tbody tr'));
+    const am = [false, false, false, false, false];
+    const pm = [false, false, false, false, false];
+    rows.forEach(r => {
+      const tds = Array.from(r.children);
+      const label = (tds[0] ? tds[0].textContent : '') || '';
+      const isAm = label.indexOf('오전') >= 0;
+      const isPm = label.indexOf('오후') >= 0;
+      if (!isAm && !isPm) return;
+      for (let d = 0; d < 5; d++) {           // 월~금
+        const cell = tds[1 + d];
+        const on = !!(cell && cell.querySelector('span'));
+        if (isAm) am[d] = am[d] || on; else pm[d] = pm[d] || on;
+      }
+    });
+    return { name, h3, am, pm };
+  });
+}
+"""
+
+
+def adapter_seoulhyundai(ctx, src):
+    base = src["base"].rstrip("/")
+    url = src.get("listUrl") or (base + "/page/sub0103.php")
+    page = ctx.new_page()
+    rows = []
+    try:
+        try:
+            page.goto(url, wait_until="domcontentloaded", timeout=40000)
+        except Exception:
+            pass
+        try:
+            page.wait_for_selector("div.right table.box-shadow", timeout=25000)
+        except Exception:
+            page.wait_for_timeout(2500)
+        page.wait_for_timeout(400)
+        rows = page.evaluate(_SEOULHYUNDAI_JS)
+    finally:
+        page.close()
+    profs = []
+    seen = set()
+    for r in rows:
+        name = (r.get("name") or "").strip()
+        h3 = r.get("h3", "")
+        if "신경외과" in h3:
+            dept = "신경외과"
+        elif "정형외과" in h3:
+            dept = "정형외과"
+        else:
+            continue
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        sched = empty_sched()
+        for i in range(5):
+            if r["am"][i]:
+                sched[DAYS[i]].append("AM")
+            if r["pm"][i]:
+                sched[DAYS[i]].append("PM")
+        profs.append({
+            "name": name,
+            "department": dept,
+            "specialty": h3,
+            "title": "",
+            "schedule": order_slots(sched),
+        })
+    print(f"  [seoulhyundai] 정형·신경 {len(profs)}명")
+    return profs
+
+
 ADAPTERS = {
     "anam_kumc": adapter_anam_kumc,
     "cmc": adapter_cmc,
     "eulji": adapter_eulji,
     "saeroun": adapter_saeroun,
+    "seoulhyundai": adapter_seoulhyundai,
 }
 
 
