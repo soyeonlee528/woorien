@@ -88,10 +88,17 @@ def adapter_anam_kumc(req, src):
                         sched[key].append("AM")
                     if e.get("pmSttsDvsnCd") and "PM" not in sched[key]:
                         sched[key].append("PM")
+            spec = (d.get("special") or d.get("emrSpecial") or "").strip()
+            if not spec:
+                belong = (d.get("belong") or "").strip()
+                parts = [b.strip() for b in belong.split(",") if b.strip()]
+                if parts and parts[0] == dnm:
+                    parts = parts[1:]
+                spec = ", ".join(parts)
             profs.append({
                 "name": (d.get("drName") or "").strip(),
                 "department": dnm,
-                "specialty": (d.get("special") or d.get("emrSpecial") or "").strip(),
+                "specialty": spec,
                 "title": (d.get("hptlJobTitle") or "").strip(),
                 "schedule": order_slots(sched),
             })
