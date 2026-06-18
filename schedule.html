@@ -526,18 +526,22 @@ function renderMonth(){
 function findAppt(id){return S.appts.filter(function(a){return a.id===id;})[0];}
 
 /* ---------- 모달 ---------- */
+function profSchedule(hid,name){var h=hospitals().filter(function(x){return x.id===hid;})[0];if(!h)return null;var p=(h.professors||[]).filter(function(x){return x.name===name;})[0];return p?(p.schedule||{}):null;}
+function isBusy(hid,name,ymd,slot){if(!name||!ymd)return false;var s=profSchedule(hid,name);if(!s)return false;return (s[DAYS[monIdx(parseYmd(ymd))]]||[]).indexOf(slot)>=0;}
+
 function openModal(init){
   var f=Object.assign({id:null,hospitalId:"",hospitalName:"",dept:"",professor:"",date:todayYmd(),slot:"AM",time:"",title:"",status:"planned",memo:""},init);
   if(!f.title)f.title=f.professor?(f.professor+" 교수 면담"):"영업 면담";
   var statusVal=f.status;
   var ctx=[f.hospitalName,f.dept,f.professor?(f.professor+" 교수"):""].filter(Boolean).join(" · ");
+  function slotOpts(date,sel){return [["AM","오전"],["PM","오후"]].map(function(sl){var busy=isBusy(f.hospitalId,f.professor,date,sl[0]);return '<option value="'+sl[0]+'"'+(sl[0]===sel?" selected":"")+(busy?" disabled":"")+'>'+sl[1]+(busy?" (진료중)":"")+'</option>';}).join("");}
   var mr=document.getElementById("modal-root");
   mr.innerHTML='<div class="overlay" id="ov"><div class="modal">'+
     '<button class="mclose" id="mx">×</button><h3>'+(f.id?"면담 일정 수정":"면담 일정 등록")+'</h3>'+
     '<div class="mctx">'+esc(ctx)+'</div>'+
     '<label class="fl"><span>제목</span><input id="m-title" value="'+esc(f.title)+'"></label>'+
     '<label class="fl"><span>날짜</span><input id="m-date" type="date" value="'+esc(f.date)+'"></label>'+
-    '<div class="two"><label class="fl"><span>시간대</span><select id="m-slot"><option value="AM"'+(f.slot==="AM"?" selected":"")+'>오전</option><option value="PM"'+(f.slot==="PM"?" selected":"")+'>오후</option></select></label>'+
+    '<div class="two"><label class="fl"><span>시간대</span><select id="m-slot">'+slotOpts(f.date,f.slot)+'</select></label>'+
       '<label class="fl"><span>시간 (선택·30분)</span><select id="m-time">'+timeOpts(f.time||"",f.slot)+'</select></label></div>'+
     '<div class="fl"><span>상태</span><div class="statusrow" id="m-status">'+
       Object.keys(STATUS).map(function(k){return '<button data-k="'+k+'" class="'+STATUS[k][2]+(k===statusVal?" on":"")+'">'+STATUS[k][0]+'</button>';}).join("")+'</div></div>'+
@@ -549,6 +553,11 @@ function openModal(init){
   document.getElementById("ov").onclick=function(e){if(e.target.id==="ov")close();};
   document.getElementById("mx").onclick=close;
   document.getElementById("m-cancel").onclick=close;
+  document.getElementById("m-date").onchange=function(){
+    var ss=document.getElementById("m-slot");ss.innerHTML=slotOpts(this.value,ss.value);
+    if(ss.options[ss.selectedIndex]&&ss.options[ss.selectedIndex].disabled){for(var i=0;i<ss.options.length;i++){if(!ss.options[i].disabled){ss.selectedIndex=i;break;}}}
+    var t=document.getElementById("m-time");t.innerHTML=timeOpts(t.value,ss.value);
+  };
   document.getElementById("m-slot").onchange=function(){var t=document.getElementById("m-time");t.innerHTML=timeOpts(t.value,this.value);};
   document.getElementById("m-status").querySelectorAll("button").forEach(function(b){b.onclick=function(){
     statusVal=b.dataset.k;
@@ -559,6 +568,7 @@ function openModal(init){
     var obj={id:f.id||uid(),hospitalId:f.hospitalId,hospitalName:f.hospitalName,dept:f.dept,professor:f.professor,
       date:document.getElementById("m-date").value,slot:document.getElementById("m-slot").value,time:document.getElementById("m-time").value,
       title:document.getElementById("m-title").value.trim()||"영업 면담",status:statusVal,memo:document.getElementById("m-memo").value.trim()};
+    if(isBusy(obj.hospitalId,obj.professor,obj.date,obj.slot)){alert("그 시간대는 교수님 진료가 있어 면담을 등록할 수 없어요. 다른 시간대를 선택해 주세요.");return;}
     var i=S.appts.map(function(a){return a.id;}).indexOf(obj.id);
     if(i>=0)S.appts[i]=obj;else S.appts.push(obj);
     saveAppts();close();render();
