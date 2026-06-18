@@ -275,7 +275,7 @@ def _saeroun_dept(text):
 
 def _split_name(raw):
     """'척추내시경센터 하주경원장' -> ('하주경', '척추내시경센터')."""
-    m = re.search(r"([가-힣]{2,4})\s*(원장|교수|과장|부장|소장|센터장|전문의)", raw)
+    m = re.search(r"([가-힣]{2,4})\s*(원장|교수|과장|부장|소장|센터장)", raw)
     if m:
         name = m.group(1)
         spec = raw[:m.start()].strip(" ·,-")
