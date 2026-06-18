@@ -256,7 +256,7 @@ var S={data:null,err:false,tab:"schedule",hospitalIds:new Set(),depts:new Set(),
 })();
 function boot(){ if(getSess()){ loadAppointments().then(render).catch(function(){render();}); } else { render(); } }
 
-function hospitals(){return (S.data&&S.data.hospitals)||[];}
+function hospitals(){var a=(S.data&&S.data.hospitals)||[];return a.slice().sort(function(x,y){return (x.name||"").localeCompare(y.name||"","ko");});}
 function selHospitals(){return hospitals().filter(function(h){return S.hospitalIds.has(h.id);});}
 function firstHosp(){return selHospitals()[0]||hospitals()[0]||{};}
 function depts(){var s=[];selHospitals().forEach(function(h){(h.professors||[]).forEach(function(p){if(s.indexOf(p.department)<0)s.push(p.department);});});return s;}
@@ -269,7 +269,7 @@ function timeOpts(sel,slot){var r={AM:[8,12],PM:[13,18]}[slot]||[8,20];var o='<o
 
 function initSelections(){
   var hs=hospitals();
-  if(!S.hospitalIds.size&&hs.length)S.hospitalIds=new Set(hs.map(function(h){return h.id;}));
+  if(!S.hospitalIds.size&&hs.length)S.hospitalIds=new Set([hs[0].id]);
   var ds=depts();
   var keep=ds.filter(function(d){return S.depts.has(d);});
   S.depts=new Set(keep.length?keep:ds);
