@@ -78,6 +78,13 @@ def create(hospital, p, today):
 def main():
     if not NOTION_TOKEN:
         print("NOTION_TOKEN 없음 — 동기화 건너뜀"); return 0
+
+    # 진단: 토큰 자체가 유효한지(=who am I)
+    me = requests.get(f"{API}/users/me", headers=HEAD, timeout=30)
+    print(f"[진단] 토큰 확인 /users/me → {me.status_code} {me.text[:160]}")
+    db = requests.get(f"{API}/databases/{DB_ID}", headers=HEAD, timeout=30)
+    print(f"[진단] DB 접근 /databases/{DB_ID} → {db.status_code} {db.text[:160]}")
+
     data = json.loads(DATA.read_text(encoding="utf-8"))
     today = datetime.now(KST).strftime("%Y-%m-%d")
 
