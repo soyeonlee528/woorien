@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-18T17:51:13+09:00",
+  "updatedAt": "2026-06-18T18:20:34+09:00",
   "note": "정형외과·신경외과 외래 진료 시간표. 매주 목요일 자동 갱신.",
   "hospitals": [
     {
@@ -1280,6 +1280,17 @@
           }
         }
       ]
+    },
+    {
+      "id": "saeroun",
+      "name": "강남새로운병원",
+      "url": "https://saerounhospital.com/view/sub0103.php?menu1=open",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "pending",
+      "professors": []
     }
   ]
 }
