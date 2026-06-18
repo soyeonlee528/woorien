@@ -288,12 +288,22 @@ def adapter_saeroun(ctx, src):
     url = src.get("listUrl") or (base + "/view/sub0103.php?menu1=open")
     profs = []
     page = ctx.new_page()
+    rows = []
     try:
         try:
-            page.goto(url, wait_until="networkidle", timeout=40000)
+            page.goto(url, wait_until="domcontentloaded", timeout=40000)
         except Exception:
-            page.wait_for_timeout(1500)
-        page.wait_for_timeout(800)
+            pass
+        # ckattempt 안티봇 챌린지가 재로딩될 수 있으므로 실제 의사 카드(div.name) 가 뜰 때까지 대기
+        try:
+            page.wait_for_selector("div.name", timeout=25000)
+        except Exception:
+            page.wait_for_timeout(3000)
+            try:
+                page.wait_for_selector("div.name", timeout=15000)
+            except Exception:
+                print("  [saeroun] div.name 미발견 — 페이지 로딩 실패 가능")
+        page.wait_for_timeout(500)
         rows = page.evaluate(_SAEROUN_JS)
     finally:
         page.close()
