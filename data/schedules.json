@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-18T11:10:26+09:00",
+  "updatedAt": "2026-06-18T11:12:15+09:00",
   "note": "고대안암·의정부성모 정형외과·신경외과 외래 진료 시간표. 매주 자동 갱신.",
   "hospitals": [
     {
@@ -15,7 +15,7 @@
         {
           "name": "박종웅",
           "department": "정형외과",
-          "specialty": "",
+          "specialty": "악성 흑색종 클리닉, 손목 통증 클리닉, 수부외과 및 미세재건 클리닉",
           "title": "교수",
           "schedule": {
             "mon": [
@@ -34,7 +34,7 @@
         {
           "name": "박종훈",
           "department": "정형외과",
-          "specialty": "",
+          "specialty": "골연부 종양클리닉, 암센터, 희귀암",
           "title": "교수",
           "schedule": {
             "mon": [
@@ -53,7 +53,7 @@
         {
           "name": "양재혁",
           "department": "정형외과",
-          "specialty": "",
+          "specialty": "노인성 척추질환 클리닉, 척추측만증 클리닉, 척추센터",
           "title": "교수",
           "schedule": {
             "mon": [
@@ -75,7 +75,7 @@
         {
           "name": "이형래",
           "department": "정형외과",
-          "specialty": "",
+          "specialty": "척추센터",
           "title": "",
           "schedule": {
             "mon": [
@@ -116,7 +116,7 @@
         {
           "name": "장우영",
           "department": "정형외과",
-          "specialty": "",
+          "specialty": "소아/족부센터, 희귀질환 클리닉, 암센터, 희귀암, 당뇨족부센터, 희귀난치성질환센터",
           "title": "교수",
           "schedule": {
             "mon": [],
@@ -136,7 +136,7 @@
         {
           "name": "정웅교",
           "department": "정형외과",
-          "specialty": "",
+          "specialty": "스포츠의학센터, 어깨 팔꿈치 통증 클리닉",
           "title": "교수",
           "schedule": {
             "mon": [],
@@ -158,7 +158,7 @@
         {
           "name": "최인철",
           "department": "정형외과",
-          "specialty": "",
+          "specialty": "손저림증 클리닉, 손목 통증 클리닉",
           "title": "교수",
           "schedule": {
             "mon": [],
@@ -194,7 +194,7 @@
         {
           "name": "한승범",
           "department": "정형외과",
-          "specialty": "",
+          "specialty": "스포츠의학센터, 인공고관절클리닉, 인공무릎관절클리닉",
           "title": "교수",
           "schedule": {
             "mon": [
@@ -234,7 +234,7 @@
         {
           "name": "강신혁",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "뇌 및 척수 종양 클리닉, 뇌혈관 클리닉, 뇌신경센터",
           "title": "교수",
           "schedule": {
             "mon": [
@@ -254,7 +254,7 @@
         {
           "name": "김장훈",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "뇌혈관 클리닉, 뇌신경센터",
           "title": "교수",
           "schedule": {
             "mon": [],
@@ -297,7 +297,7 @@
         {
           "name": "박경재",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "뇌·척추종양, 뇌·척추종양 클리닉, 뇌혈관 클리닉, 암센터, 뇌 및 척수 종양 클리닉, 안면경련 클리닉, 뇌신경센터",
           "title": "교수",
           "schedule": {
             "mon": [],
@@ -314,7 +314,7 @@
         {
           "name": "박동혁",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "뇌혈관 클리닉, 줄기세포센터, 안면경련 클리닉, 뇌 및 척수 종양 클리닉, 뇌신경센터",
           "title": "교수",
           "schedule": {
             "mon": [
@@ -335,7 +335,7 @@
         {
           "name": "박정율",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "척추센터, 뇌신경센터",
           "title": "교수",
           "schedule": {
             "mon": [],
@@ -355,7 +355,7 @@
         {
           "name": "안성재",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "척추센터",
           "title": "교수",
           "schedule": {
             "mon": [
@@ -375,7 +375,7 @@
         {
           "name": "오영규",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "뇌·척추종양, 암센터, 뇌·척추종양 클리닉, 척추센터",
           "title": "교수",
           "schedule": {
             "mon": [],
@@ -397,7 +397,7 @@
         {
           "name": "이성우",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "첨단 초음파 뇌수술 센터",
           "title": "",
           "schedule": {
             "mon": [],
@@ -416,7 +416,7 @@
         {
           "name": "이수범",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "뇌·척추종양, 암센터, 뇌·척추종양 클리닉, 척추센터, 뇌신경센터",
           "title": "교수",
           "schedule": {
             "mon": [],
@@ -436,7 +436,7 @@
         {
           "name": "장진우",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "첨단 초음파 뇌수술 센터",
           "title": "고려대학교 안암병원 신경외과학교실 교수",
           "schedule": {
             "mon": [],
@@ -451,7 +451,7 @@
         {
           "name": "허준석",
           "department": "신경외과",
-          "specialty": "",
+          "specialty": "뇌·척추종양, 암센터, 척추 종양 클리닉, 뇌·척추종양 클리닉, 요추통증 클리닉, 척추센터, 최소침습 척추클리닉, 뇌 및 척수 종양 클리닉",
           "title": "교수",
           "schedule": {
             "mon": [],
