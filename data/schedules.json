@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-18T18:30:51+09:00",
+  "updatedAt": "2026-06-18T18:40:30+09:00",
   "note": "정형외과·신경외과 외래 진료 시간표. 매주 목요일 자동 갱신.",
   "hospitals": [
     {
@@ -1442,9 +1442,9 @@
           }
         },
         {
-          "name": "정형외과",
+          "name": "김승호",
           "department": "정형외과",
-          "specialty": "",
+          "specialty": "정형외과 전문의·의학박사",
           "title": "원장",
           "schedule": {
             "mon": [
@@ -1658,6 +1658,266 @@
             "fri": [
               "AM",
               "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "kdh",
+      "name": "강동성심병원",
+      "url": "https://www.kdh.or.kr/sub201.php?dept=111240",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "live",
+      "professors": [
+        {
+          "name": "현윤석",
+          "department": "정형외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [
+              "AM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김갑래",
+          "department": "정형외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [],
+            "fri": [
+              "AM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "홍성엽",
+          "department": "정형외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "박진호",
+          "department": "정형외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [],
+            "wed": [
+              "AM"
+            ],
+            "thu": [],
+            "fri": [
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "이상림",
+          "department": "정형외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [
+              "PM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "이호원",
+          "department": "정형외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "이종영",
+          "department": "신경외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "조병문",
+          "department": "신경외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [],
+            "fri": [],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "박세혁",
+          "department": "신경외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "전홍준",
+          "department": "신경외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [],
+            "thu": [],
+            "fri": [
+              "AM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "안홍석",
+          "department": "신경외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [],
+            "fri": [
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김섬",
+          "department": "신경외과",
+          "specialty": "",
+          "title": "교수",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [],
+            "thu": [
+              "PM"
+            ],
+            "fri": [
+              "AM"
             ],
             "sat": [],
             "sun": []
