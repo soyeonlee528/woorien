@@ -14,6 +14,10 @@ TARGETS = {
     "nowon_eulji_tt": "https://www.eulji.or.kr/clinic/clinic_pg04.jsp",
     "uijeongbu_eulji_tt": "https://www.uemc.ac.kr/clinic/clinic_pg04.jsp?dept=ABFDAA",
     "uijeongbu_eulji_deptlist": "https://www.uemc.ac.kr/clinic/clinic_pg01_01.jsp",
+    "kdh_os": "https://www.kdh.or.kr/sub201.php?dept=111240",
+    "kdh_ns": "https://www.kdh.or.kr/sub201.php?dept=111230",
+    "seoulhyundai": "https://www.seoulhyundai.co.kr/page/sub0103.php",
+    "saeroun": "https://saerounhospital.com/view/sub0103.php?menu1=open",
 }
 KW = ("오전","오후","진료","교수","정형","신경","월","화","수","목","금","휴진","timetable","schedule","dept")
 INT = ("json","ajax","/api/","getlist","timetable","schedule","dept","doctor","list.do",".json")
