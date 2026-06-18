@@ -30,7 +30,11 @@
   .tab.on{color:var(--ink);border-bottom-color:var(--brand)}
   main{max-width:1080px;margin:0 auto;padding:18px 16px}
 
-  .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+  .filters{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+  .filters .frow{display:flex;gap:10px}
+  .filters .frow .field{flex:1;min-width:0}
+  .field.fw{width:100%}
+  .field.fw .picker-btn{width:100%}
   .field{display:flex;flex-direction:column;gap:5px;position:relative}
   .field>label{font-size:11px;font-weight:800;color:var(--sub)}
   select,input,textarea{font-family:inherit;font-size:14px;border:1px solid var(--line);border-radius:11px;
@@ -44,7 +48,7 @@
   /* 교수 선택 팝오버 */
   .picker-btn{min-width:150px;display:flex;justify-content:space-between;align-items:center;gap:8px;
     border:1px solid var(--line);border-radius:11px;background:#fff;padding:9px 11px;font-size:14px;font-weight:600}
-  .pop{position:absolute;top:100%;left:0;margin-top:6px;width:230px;max-height:300px;overflow:auto;background:#fff;
+  .pop{position:absolute;top:100%;left:0;right:0;margin-top:6px;width:auto;max-height:50vh;overflow:auto;background:#fff;
     border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);padding:6px;z-index:30}
   .pop label{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;font-size:14px}
   .pop label:hover{background:#f8fafc}
@@ -119,8 +123,9 @@
   .mctx{font-size:12px;color:var(--sub);margin:2px 0 12px}
   .fl{display:block;margin-bottom:10px}
   .fl>span{font-size:11px;font-weight:800;color:var(--sub)}
-  .fl input,.fl select,.fl textarea{width:100%;margin-top:4px}
+  .fl input,.fl select,.fl textarea{width:100%;margin-top:4px;min-width:0}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .two>.fl{min-width:0}
   .statusrow{display:flex;gap:8px;margin-top:4px}
   .statusrow button{flex:1;border-radius:11px;padding:9px 0;font-size:12px;font-weight:800;border:1px solid var(--line);background:#fff;color:#64748b}
   .statusrow button.on.s-planned{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
@@ -154,7 +159,7 @@
   .slot.free:active{background:#bbf7d0}
   /* 일주일 보기 */
   .schedseg{margin-bottom:12px}
-  .wkhead,.wkrow{display:grid;grid-template-columns:32px repeat(6,1fr);gap:4px}
+  .wkhead,.wkrow{display:grid;grid-template-columns:32px repeat(5,1fr);gap:4px}
   .wkhead{margin-bottom:4px}
   .wkc{text-align:center}
   .wkc.wd{font-size:11px;font-weight:700;color:#64748b;line-height:1.05;padding:2px 0}
@@ -182,7 +187,7 @@
 <script>
 /* ===================== 상수/유틸 ===================== */
 var DATA_URLS=["./data/schedules.json","https://raw.githubusercontent.com/soyeonlee528/woorien/main/data/schedules.json"];
-var DAYS=["mon","tue","wed","thu","fri","sat"], DAY_KO={mon:"월",tue:"화",wed:"수",thu:"목",fri:"금",sat:"토",sun:"일"};
+var DAYS=["mon","tue","wed","thu","fri","sat","sun"], SDAYS=["mon","tue","wed","thu","fri"], DAY_KO={mon:"월",tue:"화",wed:"수",thu:"목",fri:"금",sat:"토",sun:"일"};
 var SLOTS=[["AM","오전"],["PM","오후"]];
 var LS="mr_sales_appointments_v1";
 var STATUS={planned:["방문 예정","b-planned","s-planned"],done:["면담 완료","b-done","s-done"],canceled:["취소","b-canceled","s-canceled"]};
@@ -226,7 +231,7 @@ function initSelections(){
   if(hs.length&&!S.hospitalId)S.hospitalId=hs[0].id;
   var ds=depts();
   if(ds.length&&ds.indexOf(S.dept)<0)S.dept=ds[0];
-  if(!S.selDate){var t=new Date();if(monIdx(t)>5)t=addDays(t,1);S.selDate=fmt(t);S.weekCursor=t;}
+  if(!S.selDate){var t=new Date();while(monIdx(t)>4)t=addDays(t,1);S.selDate=fmt(t);S.weekCursor=t;}
   resetSelected();
 }
 function resetSelected(){S.selected=new Set(profsInDept().map(function(p){return p.name;}));}
@@ -264,11 +269,12 @@ function renderSchedule(main){
   var allOn=S.selected.size===profs.length&&profs.length>0;
   main.innerHTML=
     '<div class="filters">'+
-      '<div class="field"><label>병원</label><select id="f-h">'+hOpts+'</select></div>'+
-      '<div class="field"><label>진료과</label><select id="f-d">'+dOpts+'</select></div>'+
-      '<div class="field"><label>교수</label><button class="picker-btn" id="f-p">'+
+      '<div class="field fw"><label>교수</label><button class="picker-btn" id="f-p">'+
         '<span>'+(allOn?"전체":(S.selected.size+"명 선택"))+'</span><span style="color:#94a3b8">▾</span></button>'+
-        '<div class="pop" id="pop" style="display:none"></div>'+
+        '<div class="pop" id="pop" style="display:none"></div></div>'+
+      '<div class="frow">'+
+        '<div class="field"><label>병원</label><select id="f-h">'+hOpts+'</select></div>'+
+        '<div class="field"><label>진료과</label><select id="f-d">'+dOpts+'</select></div>'+
       '</div>'+
     '</div>'+
     '<div class="seg schedseg"><button id="sv-week" class="'+(S.schedView==="week"?"on":"")+'">일주일</button>'+
@@ -307,7 +313,7 @@ function bindWeekNav(){
 
 function weekBarHTML(){
   var s=startWeek(S.weekCursor),chips="";
-  for(var i=0;i<6;i++){var d=addDays(s,i),ymd=fmt(d);
+  for(var i=0;i<5;i++){var d=addDays(s,i),ymd=fmt(d);
     chips+='<button class="daychip'+(ymd===S.selDate?" on":"")+(ymd===todayYmd()?" today":"")+'" data-ymd="'+ymd+'">'+
       '<span class="dw">'+DAY_KO[DAYS[i]]+'</span><span class="dd">'+d.getDate()+'</span></button>';
   }
@@ -367,7 +373,7 @@ function renderWeekGrid(){
   var profs=profsInDept().filter(function(p){return S.selected.has(p.name);});
   if(!profs.length){host.innerHTML='<div class="empty">표시할 교수가 없습니다.</div>';return;}
   var s=startWeek(S.weekCursor),idx=apptIndex(),h=curHospital(),dates=[];
-  for(var i=0;i<6;i++)dates.push(addDays(s,i));
+  for(var i=0;i<5;i++)dates.push(addDays(s,i));
   var head='<div class="wkc lbl"></div>'+dates.map(function(d){var t=fmt(d)===todayYmd();
     return '<div class="wkc wd'+(t?" td":"")+'">'+DAY_KO[DAYS[monIdx(d)]]+'<b>'+d.getDate()+'</b></div>';}).join("");
   var html='<div class="wkhead">'+head+'</div>';
@@ -419,7 +425,8 @@ function renderCalendar(main){
   if(S.calView==="week")renderWeek();else renderMonth();
 }
 function move(n){if(S.calView==="week")S.calCursor=addDays(S.calCursor,n*7);else S.calCursor=new Date(S.calCursor.getFullYear(),S.calCursor.getMonth()+n,1);render();}
-function byDate(){var m={};S.appts.forEach(function(a){(m[a.date]=m[a.date]||[]).push(a);});Object.keys(m).forEach(function(k){m[k].sort(function(a,b){return a.slot<b.slot?-1:1;});});return m;}
+function tk(a){return a.time?a.time:(a.slot==="AM"?"08:00":"13:00");}
+function byDate(){var m={};S.appts.forEach(function(a){(m[a.date]=m[a.date]||[]).push(a);});Object.keys(m).forEach(function(k){m[k].sort(function(a,b){var x=tk(a),y=tk(b);return x<y?-1:x>y?1:0;});});return m;}
 function badge(st){var b=STATUS[st]||STATUS.planned;return '<span class="badge '+b[1]+'"><span class="d"></span>'+b[0]+'</span>';}
 
 function renderWeek(){
@@ -428,7 +435,7 @@ function renderWeek(){
     var d=addDays(s,i),ymd=fmt(d),list=m[ymd]||[],today=ymd===todayYmd();
     html+='<div class="day'+(today?" today":"")+'"><h4>'+(DAY_KO[DAYS[monIdx(d)]]||"일")+" "+d.getDate()+'</h4>';
     list.forEach(function(a){html+='<button class="appt" data-id="'+a.id+'"><div class="t">'+esc(a.title)+'</div>'+
-      '<div class="m"><span class="slotlab">'+(a.slot==="AM"?"오전":"오후")+'</span>'+badge(a.status)+'</div></button>';});
+      '<div class="m"><span class="slotlab">'+(a.time?a.time:(a.slot==="AM"?"오전":"오후"))+'</span>'+badge(a.status)+'</div></button>';});
     html+='</div>';
   }
   html+='</div>';host.innerHTML=html;
@@ -441,7 +448,7 @@ function renderMonth(){
   for(var i=0;i<42;i++){
     var d=addDays(gs,i),ymd=fmt(d),list=m[ymd]||[],inM=d.getMonth()===S.calCursor.getMonth(),today=ymd===todayYmd();
     html+='<div class="mcell'+(inM?"":" out")+(today?" today":"")+'"><div class="dn">'+d.getDate()+'</div>';
-    list.slice(0,3).forEach(function(a){html+='<button class="mline" data-id="'+a.id+'"><span class="d" style="background:'+statusColor(a.status)+'"></span><span>'+esc(a.title)+'</span></button>';});
+    list.slice(0,3).forEach(function(a){html+='<button class="mline" data-id="'+a.id+'"><span class="d" style="background:'+statusColor(a.status)+'"></span><span>'+(a.time?esc(a.time)+" ":"")+esc(a.title)+'</span></button>';});
     if(list.length>3)html+='<div style="font-size:10px;color:#94a3b8">+'+(list.length-3)+'</div>';
     html+='</div>';
   }
@@ -452,7 +459,7 @@ function findAppt(id){return S.appts.filter(function(a){return a.id===id;})[0];}
 
 /* ---------- 모달 ---------- */
 function openModal(init){
-  var f=Object.assign({id:null,hospitalId:"",hospitalName:"",dept:"",professor:"",date:todayYmd(),slot:"AM",title:"",status:"planned",memo:""},init);
+  var f=Object.assign({id:null,hospitalId:"",hospitalName:"",dept:"",professor:"",date:todayYmd(),slot:"AM",time:"",title:"",status:"planned",memo:""},init);
   if(!f.title)f.title=f.professor?(f.professor+" 교수 면담"):"영업 면담";
   var statusVal=f.status;
   var ctx=[f.hospitalName,f.dept,f.professor?(f.professor+" 교수"):""].filter(Boolean).join(" · ");
@@ -461,8 +468,9 @@ function openModal(init){
     '<button class="mclose" id="mx">×</button><h3>'+(f.id?"면담 일정 수정":"면담 일정 등록")+'</h3>'+
     '<div class="mctx">'+esc(ctx)+'</div>'+
     '<label class="fl"><span>제목</span><input id="m-title" value="'+esc(f.title)+'"></label>'+
-    '<div class="two"><label class="fl"><span>날짜</span><input id="m-date" type="date" value="'+esc(f.date)+'"></label>'+
-      '<label class="fl"><span>시간대</span><select id="m-slot"><option value="AM"'+(f.slot==="AM"?" selected":"")+'>오전</option><option value="PM"'+(f.slot==="PM"?" selected":"")+'>오후</option></select></label></div>'+
+    '<label class="fl"><span>날짜</span><input id="m-date" type="date" value="'+esc(f.date)+'"></label>'+
+    '<div class="two"><label class="fl"><span>시간대</span><select id="m-slot"><option value="AM"'+(f.slot==="AM"?" selected":"")+'>오전</option><option value="PM"'+(f.slot==="PM"?" selected":"")+'>오후</option></select></label>'+
+      '<label class="fl"><span>시간 (선택)</span><input id="m-time" type="time" value="'+esc(f.time||"")+'"></label></div>'+
     '<div class="fl"><span>상태</span><div class="statusrow" id="m-status">'+
       Object.keys(STATUS).map(function(k){return '<button data-k="'+k+'" class="'+STATUS[k][2]+(k===statusVal?" on":"")+'">'+STATUS[k][0]+'</button>';}).join("")+'</div></div>'+
     '<label class="fl"><span>메모</span><textarea id="m-memo" rows="2" placeholder="면담 목적, 연락처 등">'+esc(f.memo)+'</textarea></label>'+
@@ -480,7 +488,7 @@ function openModal(init){
   if(f.id)document.getElementById("m-del").onclick=function(){S.appts=S.appts.filter(function(a){return a.id!==f.id;});saveAppts();close();render();};
   document.getElementById("m-save").onclick=function(){
     var obj={id:f.id||uid(),hospitalId:f.hospitalId,hospitalName:f.hospitalName,dept:f.dept,professor:f.professor,
-      date:document.getElementById("m-date").value,slot:document.getElementById("m-slot").value,
+      date:document.getElementById("m-date").value,slot:document.getElementById("m-slot").value,time:document.getElementById("m-time").value,
       title:document.getElementById("m-title").value.trim()||"영업 면담",status:statusVal,memo:document.getElementById("m-memo").value.trim()};
     var i=S.appts.map(function(a){return a.id;}).indexOf(obj.id);
     if(i>=0)S.appts[i]=obj;else S.appts.push(obj);
