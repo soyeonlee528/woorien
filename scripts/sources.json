@@ -21,6 +21,26 @@
       "deptCodes": { "정형외과": "160", "신경외과": "103" },
       "departments": ["정형외과", "신경외과"],
       "enabled": true
+    },
+    {
+      "id": "nowoneulji",
+      "name": "노원을지대학교병원",
+      "url": "https://www.eulji.or.kr/clinic/clinic_pg04.jsp?dept=ABFDAA",
+      "adapter": "eulji",
+      "base": "https://www.eulji.or.kr",
+      "deptCodes": { "정형외과": "ABFDAA", "신경외과": "ABGAAA" },
+      "departments": ["정형외과", "신경외과"],
+      "enabled": true
+    },
+    {
+      "id": "uijeongbueulji",
+      "name": "의정부을지대학교병원",
+      "url": "https://www.uemc.ac.kr/clinic/clinic_pg04.jsp?dept=ABFDAA",
+      "adapter": "eulji",
+      "base": "https://www.uemc.ac.kr",
+      "deptCodes": { "정형외과": "ABFDAA", "신경외과": "ABGAAA" },
+      "departments": ["정형외과", "신경외과"],
+      "enabled": true
     }
   ]
 }

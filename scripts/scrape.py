@@ -12,8 +12,10 @@ GitHub Actions(주간 cron)에서 실행되어 data/schedules.json 을 갱신한
 * 한 병원 수집 실패 시 기존 data/schedules.json 값을 보존한다.
 
 새 병원 추가: sources.json 에 항목 추가 + 아래 ADAPTERS 에 adapter 함수 등록.
-adapter(req, src) -> list[professor]; professor = {name, department, specialty, title, schedule}
+adapter(ctx, src) -> list[professor]; professor = {name, department, specialty, title, schedule}
 schedule = {"mon":["AM","PM"], ...}  (월~일)
+ctx 는 Playwright BrowserContext. JSON API 는 ctx.request, HTML 렌더링 페이지는
+ctx.new_page() 로 처리한다.
 """
 from __future__ import annotations
 
@@ -43,7 +45,8 @@ def order_slots(sched):
 # ---------------------------------------------------------------------------
 # 어댑터: 고려대학교 안암병원
 # ---------------------------------------------------------------------------
-def adapter_anam_kumc(req, src):
+def adapter_anam_kumc(ctx, src):
+    req = ctx.request
     base = src["base"].rstrip("/")
     hp = src.get("hpCd", "AA")
     inst = src.get("instNo", 1)
@@ -109,7 +112,8 @@ def adapter_anam_kumc(req, src):
 # ---------------------------------------------------------------------------
 # 어댑터: 가톨릭대학교 의정부성모병원 (CMC)
 # ---------------------------------------------------------------------------
-def adapter_cmc(req, src):
+def adapter_cmc(ctx, src):
+    req = ctx.request
     base = src["base"].rstrip("/")
     profs = []
     for dnm in src["departments"]:
@@ -140,9 +144,87 @@ def adapter_cmc(req, src):
     return profs
 
 
+# ---------------------------------------------------------------------------
+# 어댑터: 을지대학교병원 계열 (노원을지 eulji.or.kr / 의정부을지 uemc.ac.kr)
+# 두 사이트 구조 동일: /clinic/clinic_pg04.jsp?dept=<6자리코드>
+# 표(table[0]) tbody 는 의료진마다 2개 <tr>(오전/오후). 요일 셀(td.d_info)에
+# <img> 또는 텍스트(초진/재진)가 있으면 진료, 빈 칸이면 공석.
+# ---------------------------------------------------------------------------
+_EULJI_JS = r"""
+() => {
+  const tbl = document.querySelector('table');
+  if (!tbl) return [];
+  const trs = Array.from(tbl.querySelectorAll('tbody tr'));
+  const has = (c) => !!(c.querySelector('img') || (c.textContent || '').trim().length);
+  const out = [];
+  let i = 0;
+  while (i < trs.length) {
+    const tr = trs[i];
+    const nameCell = tr.querySelector('td.line_r');
+    if (!nameCell) { i++; continue; }
+    const name = (nameCell.textContent || '').trim();
+    const specCell = tr.querySelector('td.td_al');
+    const specialty = specCell
+      ? (specCell.textContent || '').replace(/\s+/g, ' ').trim() : '';
+    const am = Array.from(tr.querySelectorAll('td.d_info')).slice(0, 6).map(has);
+    let pm = [false, false, false, false, false, false];
+    const tr2 = trs[i + 1];
+    if (tr2 && !tr2.querySelector('td.line_r')) {
+      pm = Array.from(tr2.querySelectorAll('td.d_info')).slice(0, 6).map(has);
+      i += 2;
+    } else {
+      i += 1;
+    }
+    if (name) out.push({ name, specialty, am, pm });
+  }
+  return out;
+}
+"""
+
+
+def adapter_eulji(ctx, src):
+    base = src["base"].rstrip("/")
+    codes = src.get("deptCodes") or {}
+    profs = []
+    page = ctx.new_page()
+    try:
+        for dnm in src["departments"]:
+            cd = codes.get(dnm)
+            if not cd:
+                print(f"  [eulji] 진료과 코드 없음: {dnm}")
+                continue
+            url = f"{base}/clinic/clinic_pg04.jsp?dept={cd}"
+            try:
+                page.goto(url, wait_until="domcontentloaded", timeout=40000)
+                page.wait_for_timeout(800)
+                rows = page.evaluate(_EULJI_JS)
+            except Exception as e:
+                print(f"  [eulji] {dnm} 로드 실패: {type(e).__name__}: {e}")
+                continue
+            for r in rows:
+                sched = empty_sched()
+                for i in range(6):
+                    if r["am"][i]:
+                        sched[DAYS[i]].append("AM")
+                    if r["pm"][i]:
+                        sched[DAYS[i]].append("PM")
+                profs.append({
+                    "name": (r.get("name") or "").strip(),
+                    "department": dnm,
+                    "specialty": (r.get("specialty") or "").strip(),
+                    "title": "",
+                    "schedule": order_slots(sched),
+                })
+            print(f"  [eulji] {dnm}: {len(rows)}명")
+    finally:
+        page.close()
+    return profs
+
+
 ADAPTERS = {
     "anam_kumc": adapter_anam_kumc,
     "cmc": adapter_cmc,
+    "eulji": adapter_eulji,
 }
 
 
@@ -187,7 +269,7 @@ def main():
                 except Exception:
                     pass
                 try:
-                    got = adapter(ctx.request, src)
+                    got = adapter(ctx, src)
                     got = [pr for pr in got if pr.get("name")]
                     if got:
                         professors = got
@@ -212,7 +294,7 @@ def main():
 
     result = {
         "updatedAt": datetime.now(KST).isoformat(timespec="seconds"),
-        "note": "고대안암·의정부성모 정형외과·신경외과 외래 진료 시간표. 매주 자동 갱신.",
+        "note": "정형외과·신경외과 외래 진료 시간표. 매주 목요일 자동 갱신.",
         "hospitals": out,
     }
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
