@@ -129,7 +129,31 @@
   .mfoot{display:flex;gap:8px;align-items:center;margin-top:16px}
   .empty{color:#9aa1ab;text-align:center;padding:36px}
   @media(min-width:560px){ .overlay{align-items:center;padding:16px} .modal{border-radius:22px} }
-  @media(max-width:760px){ .week{grid-template-columns:1fr 1fr} .field,.picker-btn{min-width:0} }
+  /* 주간 날짜바 + 교수 리스트 (모바일 우선) */
+  .weekbar{display:flex;align-items:center;gap:6px;margin-bottom:14px}
+  .daychips{display:flex;gap:6px;overflow-x:auto;flex:1;padding:2px}
+  .daychip{flex:0 0 auto;min-width:48px;border:1px solid var(--line);background:#fff;border-radius:13px;padding:7px 0;color:#64748b}
+  .daychip .dw{display:block;font-size:11px;font-weight:700}
+  .daychip .dd{display:block;font-size:17px;font-weight:800;margin-top:1px}
+  .daychip.today{border-color:#fca5a5}
+  .daychip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .datehead{font-size:16px;font-weight:800;margin:2px 2px 12px}
+  .datehead span{color:var(--sub);font-weight:700}
+  .plist{display:flex;flex-direction:column;gap:9px}
+  .pcard{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px 13px}
+  .pinfo{flex:1;min-width:0}
+  .nm{font-weight:800}
+  .nm .tt{font-size:12px;color:var(--sub);font-weight:600;margin-left:5px}
+  .sp{font-size:12px;color:var(--sub);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .slots{display:flex;gap:6px;flex:none}
+  .slot{width:66px;border:none;border-radius:13px;padding:9px 4px;font-size:13px;font-weight:800;text-align:center;line-height:1.2}
+  .slot .lab{display:block;font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:3px}
+  .slot .mk{display:inline-block;width:6px;height:6px;border-radius:50%;vertical-align:1px;margin-right:3px}
+  .slot.busy{background:var(--busy-bg);color:var(--busy)} .slot.busy .lab{color:#fda4af}
+  .slot.free{background:var(--free-bg);color:var(--free);box-shadow:inset 0 0 0 1px var(--free-ring)} .slot.free .lab{color:#34d399}
+  .slot.free:active{background:#bbf7d0}
+  @media(max-width:760px){ .week{grid-template-columns:1fr 1fr} .field{min-width:0;flex:1} .field select{width:100%} .picker-btn{min-width:0;width:100%}
+    .slot{width:58px} .nm{font-size:15px} }
 </style>
 </head>
 <body>
@@ -146,6 +170,7 @@ var STATUS={planned:["방문 예정","b-planned","s-planned"],done:["면담 완�
 
 function pad(n){return (n<10?"0":"")+n;}
 function fmt(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function parseYmd(s){var p=String(s).split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
 function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x;}
 function monIdx(d){return (d.getDay()+6)%7;}
 function startWeek(d){return addDays(d,-monIdx(d));}
@@ -158,7 +183,7 @@ function saveAppts(){localStorage.setItem(LS,JSON.stringify(S.appts));}
 
 /* ===================== 상태 ===================== */
 var S={data:null,err:false,tab:"schedule",hospitalId:"",dept:"",selected:new Set(),
-       appts:loadAppts(),calView:"week",calCursor:new Date()};
+       appts:loadAppts(),calView:"week",calCursor:new Date(),weekCursor:new Date(),selDate:""};
 
 /* ===================== 데이터 로드 ===================== */
 (function(){
@@ -182,6 +207,7 @@ function initSelections(){
   if(hs.length&&!S.hospitalId)S.hospitalId=hs[0].id;
   var ds=depts();
   if(ds.length&&ds.indexOf(S.dept)<0)S.dept=ds[0];
+  if(!S.selDate){var t=new Date();if(monIdx(t)>5)t=addDays(t,1);S.selDate=fmt(t);S.weekCursor=t;}
   resetSelected();
 }
 function resetSelected(){S.selected=new Set(profsInDept().map(function(p){return p.name;}));}
@@ -226,16 +252,32 @@ function renderSchedule(main){
         '<div class="pop" id="pop" style="display:none"></div>'+
       '</div>'+
     '</div>'+
-    '<div class="legend"><span><i class="lg-busy"></i>진료(오전/오후)</span>'+
-      '<span><i class="lg-free"></i>공석 · 영업 공략 시간 (클릭해 면담 등록)</span></div>'+
-    '<div id="gridhost"></div>'+
-    '<p class="note">※ ‘진료’는 해당 교수의 정규 외래(오전/오후)이며, 그 외는 ‘공석’으로 표시됩니다(수술/학회 등 미반영). '+
-      '빈 칸을 누르면 그 요일·시간대의 가장 가까운 날짜로 면담 일정을 등록합니다.</p>';
+    weekBarHTML()+
+    '<div id="listhost"></div>'+
+    '<p class="note">초록색 ‘공석’은 해당 날짜·시간대에 외래가 없는 시간(영업 공략 타이밍)입니다. 누르면 그 날짜로 면담 일정이 등록됩니다. (수술/학회 등 미반영)</p>';
 
   document.getElementById("f-h").onchange=function(){S.hospitalId=this.value;S.dept=depts()[0]||"";resetSelected();render();};
   document.getElementById("f-d").onchange=function(){S.dept=this.value;resetSelected();render();};
   setupPicker(profs);
-  renderGrid();
+  bindWeekBar();
+  renderProfList();
+}
+
+function weekBarHTML(){
+  var s=startWeek(S.weekCursor),chips="";
+  for(var i=0;i<6;i++){var d=addDays(s,i),ymd=fmt(d);
+    chips+='<button class="daychip'+(ymd===S.selDate?" on":"")+(ymd===todayYmd()?" today":"")+'" data-ymd="'+ymd+'">'+
+      '<span class="dw">'+DAY_KO[DAYS[i]]+'</span><span class="dd">'+d.getDate()+'</span></button>';
+  }
+  return '<div class="weekbar"><button class="navbtn" id="wprev">‹</button>'+
+    '<div class="daychips">'+chips+'</div><button class="navbtn" id="wnext">›</button></div>';
+}
+function bindWeekBar(){
+  document.getElementById("wprev").onclick=function(){S.weekCursor=addDays(S.weekCursor,-7);S.selDate=fmt(addDays(parseYmd(S.selDate),-7));render();};
+  document.getElementById("wnext").onclick=function(){S.weekCursor=addDays(S.weekCursor,7);S.selDate=fmt(addDays(parseYmd(S.selDate),7));render();};
+  document.querySelectorAll(".daychip").forEach(function(b){b.onclick=function(){S.selDate=b.dataset.ymd;
+    document.querySelectorAll(".daychip").forEach(function(x){x.className="daychip"+(x.dataset.ymd===S.selDate?" on":"")+(x.dataset.ymd===todayYmd()?" today":"");});
+    renderProfList();};});
 }
 
 function setupPicker(profs){
@@ -245,48 +287,38 @@ function setupPicker(profs){
     pop.innerHTML='<button class="all">'+(allOn?"전체 해제":"전체 선택")+'</button>'+
       profs.map(function(p){return '<label><input type="checkbox" data-n="'+esc(p.name)+'"'+(S.selected.has(p.name)?" checked":"")+'>'+
         '<span style="font-weight:600">'+esc(p.name)+'</span>'+(p.title?' <span style="color:#94a3b8;font-size:12px">'+esc(p.title)+'</span>':'')+'</label>';}).join("");
-    pop.querySelector(".all").onclick=function(){if(allOn)S.selected=new Set();else S.selected=new Set(profs.map(function(p){return p.name;}));build();renderGrid();syncBtn();};
-    pop.querySelectorAll("input").forEach(function(c){c.onchange=function(){var n=c.dataset.n;if(c.checked)S.selected.add(n);else S.selected.delete(n);renderGrid();syncBtn();};});
+    pop.querySelector(".all").onclick=function(){if(allOn)S.selected=new Set();else S.selected=new Set(profs.map(function(p){return p.name;}));build();renderProfList();syncBtn();};
+    pop.querySelectorAll("input").forEach(function(c){c.onchange=function(){var n=c.dataset.n;if(c.checked)S.selected.add(n);else S.selected.delete(n);renderProfList();syncBtn();};});
   }
   function syncBtn(){var allOn=S.selected.size===profs.length&&profs.length>0;btn.querySelector("span").textContent=allOn?"전체":(S.selected.size+"명 선택");}
   btn.onclick=function(e){e.stopPropagation();pop.style.display=pop.style.display==="none"?"block":"none";if(pop.style.display==="block")build();};
   document.addEventListener("click",function h(e){if(!pop.contains(e.target)&&e.target!==btn){pop.style.display="none";}});
 }
 
-function renderGrid(){
-  var host=document.getElementById("gridhost");if(!host)return;
+function renderProfList(){
+  var host=document.getElementById("listhost");if(!host)return;
   var profs=profsInDept().filter(function(p){return S.selected.has(p.name);});
-  if(!profs.length){host.innerHTML='<div class="empty">표시할 교수가 없습니다.</div>';return;}
-  var idx=apptIndex(), h=curHospital();
-  var head='<thead><tr><th class="corner"></th>'+profs.map(function(p){
-    return '<th><div class="pname">'+esc(p.name)+'</div><div class="ptitle">'+esc(p.title||" ")+'</div></th>';}).join("")+'</tr></thead>';
-  var body="<tbody>";
-  DAYS.forEach(function(day){
-    SLOTS.forEach(function(sl,si){
-      body+='<tr class="'+(si===0?"sep":"")+'">';
-      body+='<th class="rowhead">'+DAY_KO[day]+' <span style="color:#94a3b8;font-weight:600">'+sl[1]+'</span></th>';
-      profs.forEach(function(p){
-        var busy=((p.schedule||{})[day]||[]).indexOf(sl[0])>=0;
-        if(busy){body+='<td class="cell"><span class="chip busy">진료</span></td>';}
-        else{
-          var key=nextOcc(day)+"|"+sl[0]+"|"+h.id+"|"+p.name; var bk=idx[key];
-          var mk=bk?'<span class="mk" style="background:'+statusColor(bk.status)+'"></span>':"";
-          body+='<td class="cell"><button class="chip free" data-d="'+day+'" data-s="'+sl[0]+'" data-p="'+esc(p.name)+'">'+
-                (bk?(mk+"면담"):"공석 +")+'</button></td>';
-        }
-      });
-      body+='</tr>';
-    });
-  });
-  body+="</tbody>";
-  host.innerHTML='<div class="gridwrap"><table class="grid">'+head+body+'</table></div>';
-  host.querySelectorAll(".chip.free").forEach(function(b){
-    b.onclick=function(){
-      var p=profsInDept().filter(function(x){return x.name===b.dataset.p;})[0];
-      var key=nextOcc(b.dataset.d)+"|"+b.dataset.s+"|"+h.id+"|"+p.name; var bk=apptIndex()[key];
-      if(bk)openModal(bk); else openModal({hospitalId:h.id,hospitalName:h.name,dept:p.department,professor:p.name,day:b.dataset.d,slot:b.dataset.s,date:nextOcc(b.dataset.d)});
-    };
-  });
+  var d=parseYmd(S.selDate),dayKey=DAYS[monIdx(d)];
+  var head='<div class="datehead">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 <span>('+DAY_KO[dayKey]+')</span></div>';
+  if(!profs.length){host.innerHTML=head+'<div class="empty">표시할 교수가 없습니다.</div>';return;}
+  var idx=apptIndex(),h=curHospital();
+  var rows=profs.map(function(p){
+    var cells=SLOTS.map(function(sl){
+      var busy=((p.schedule||{})[dayKey]||[]).indexOf(sl[0])>=0;
+      if(busy)return '<div class="slot busy"><span class="lab">'+sl[1]+'</span>진료</div>';
+      var key=S.selDate+"|"+sl[0]+"|"+h.id+"|"+p.name,bk=idx[key];
+      var mk=bk?'<span class="mk" style="background:'+statusColor(bk.status)+'"></span>':"";
+      return '<button class="slot free" data-s="'+sl[0]+'" data-p="'+esc(p.name)+'"><span class="lab">'+sl[1]+'</span>'+(bk?(mk+"면담"):"공석")+'</button>';
+    }).join("");
+    return '<div class="pcard"><div class="pinfo"><div class="nm">'+esc(p.name)+(p.title?' <span class="tt">'+esc(p.title)+'</span>':'')+'</div>'+
+      (p.specialty?'<div class="sp">'+esc(p.specialty)+'</div>':'')+'</div><div class="slots">'+cells+'</div></div>';
+  }).join("");
+  host.innerHTML=head+'<div class="plist">'+rows+'</div>';
+  host.querySelectorAll(".slot.free").forEach(function(b){b.onclick=function(){
+    var p=profsInDept().filter(function(x){return x.name===b.dataset.p;})[0];
+    var key=S.selDate+"|"+b.dataset.s+"|"+h.id+"|"+p.name,bk=apptIndex()[key];
+    if(bk)openModal(bk);else openModal({hospitalId:h.id,hospitalName:h.name,dept:p.department,professor:p.name,slot:b.dataset.s,date:S.selDate});
+  };});
 }
 function statusColor(s){return s==="done"?"#059669":s==="canceled"?"#94a3b8":"#2563eb";}
 
