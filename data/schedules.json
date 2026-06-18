@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-06-18T16:50:50+09:00",
-  "note": "고대안암·의정부성모 정형외과·신경외과 외래 진료 시간표. 매주 자동 갱신.",
+  "updatedAt": "2026-06-18T17:51:13+09:00",
+  "note": "정형외과·신경외과 외래 진료 시간표. 매주 목요일 자동 갱신.",
   "hospitals": [
     {
       "id": "anam",
@@ -787,6 +787,495 @@
             ],
             "fri": [],
             "sat": [],
+            "sun": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "nowoneulji",
+      "name": "노원을지대학교병원",
+      "url": "https://www.eulji.or.kr/clinic/clinic_pg04.jsp?dept=ABFDAA",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "live",
+      "professors": [
+        {
+          "name": "최남홍",
+          "department": "정형외과",
+          "specialty": "어깨, 무릎, 최소절개무릎인공관절",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "임태강",
+          "department": "정형외과",
+          "specialty": "어깨인공관절수술, 회전근개파열, 팔꿈치",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [],
+            "wed": [
+              "PM"
+            ],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김진우",
+          "department": "정형외과",
+          "specialty": "고관절(대퇴부 질환 및 골절), 골다공증",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM",
+              "PM"
+            ],
+            "tue": [],
+            "wed": [],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "손희중",
+          "department": "정형외과",
+          "specialty": "척추 디스크 질환, 척추관 협착증, 척추 외상, 척추 변형, 척추 종양, 소아 척추측만증",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "최성주",
+          "department": "정형외과",
+          "specialty": "수부, 상지, 재건술, 미세수술",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [],
+            "thu": [],
+            "fri": [
+              "AM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "윤지영",
+          "department": "정형외과",
+          "specialty": "어깨관절질환(회전근개 파열, 어깨 탈구,오십견(유착성관절낭염), 석회성 건염,관절염), 어깨관절경수술, 외상 및 스포츠 손상",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "강희인",
+          "department": "신경외과",
+          "specialty": "뇌혈관 및 종양학, 두부외상",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [],
+            "wed": [
+              "PM"
+            ],
+            "thu": [],
+            "fri": [
+              "AM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "이승진",
+          "department": "신경외과",
+          "specialty": "신경외상 및 뇌정위",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM"
+            ],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김재훈",
+          "department": "신경외과",
+          "specialty": "뇌혈관 및 종양학, 두부외상",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [
+              "AM"
+            ],
+            "thu": [],
+            "fri": [
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "배인석",
+          "department": "신경외과",
+          "specialty": "퇴행성척추질환, 척추종양, 척추외상, 최소침습척추수술, 손발저림, 말초신경질환, 두부외상",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "좌철수",
+          "department": "신경외과",
+          "specialty": "요통, 디스크 질환, 척추관 협착증, 골다공증, 척추손상, 뇌손상, 손발저림, 말초신경질환, 뇌출혈",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [],
+            "thu": [
+              "PM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "uijeongbueulji",
+      "name": "의정부을지대학교병원",
+      "url": "https://www.uemc.ac.kr/clinic/clinic_pg04.jsp?dept=ABFDAA",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "live",
+      "professors": [
+        {
+          "name": "양기원",
+          "department": "정형외과",
+          "specialty": "족부질환(발 및 발목관절,당뇨병 족부질환) / 취학아동부터 진료가능",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [],
+            "thu": [
+              "PM"
+            ],
+            "fri": [],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "곽재만",
+          "department": "정형외과",
+          "specialty": "어깨 및 팔꿈치 질환(외상, 스포츠 손상, 관절염) / 만16세 이상 / 수부진료 불가",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [],
+            "fri": [
+              "AM",
+              "PM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "남광우",
+          "department": "정형외과",
+          "specialty": "고관절, 슬관절, 인공관절 성형술, 노인성 골절, 골반골절, 외상, 근골격계 종양, 골다공증, 골이형성증, 소아하지",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "이오성",
+          "department": "정형외과",
+          "specialty": "무릎 관절(무릎의 퇴행성 관절염 및 스포츠 손상) / 만15세 이상",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "AM",
+              "PM"
+            ],
+            "fri": [],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "문병관(척추관절센터)",
+          "department": "신경외과",
+          "specialty": "척추질환, 척추외상, 척추수술, 미세신경수술",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [],
+            "thu": [
+              "PM"
+            ],
+            "fri": [],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "김덕령(척추관절센터)",
+          "department": "신경외과",
+          "specialty": "퇴행성 척추질환(디스크, 협착증), 노인성 척추질환, 척추외상, 통증(신경손상, 척추)",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [
+              "PM"
+            ],
+            "thu": [],
+            "fri": [
+              "AM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "김덕령(뇌신경센터)",
+          "department": "신경외과",
+          "specialty": "뇌정위수술(삼차신경통, 안면떨림, 파킨슨병, 진전, 근이긴장증), 두부외상 / 만15세 이상",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "윤별희(뇌신경센터)",
+          "department": "신경외과",
+          "specialty": "뇌혈관질환, 혈관내 치료, 두부외상 / 만15세 이상",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "박영기(뇌신경센터)",
+          "department": "신경외과",
+          "specialty": "뇌혈관질환, 혈관내치료, 두부외상 / 만 15세 이상",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [
+              "AM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "이승훈(뇌신경센터)",
+          "department": "신경외과",
+          "specialty": "신경외과",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "전주희(뇌신경센터)",
+          "department": "신경외과",
+          "specialty": "뇌종양(뇌전이암, 뇌수막종, 신경초종, 뇌하수체종양, 기타 뇌종양), 수두증, 두부외상, 외상성 뇌출혈",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM"
+            ],
+            "wed": [
+              "PM"
+            ],
+            "thu": [],
+            "fri": [
+              "PM"
+            ],
+            "sat": [
+              "AM"
+            ],
             "sun": []
           }
         }
