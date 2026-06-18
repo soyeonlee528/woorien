@@ -3,317 +3,455 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>교수 진료 시간표 모아보기 | 우리엔</title>
-<meta name="description" content="여러 대학병원의 교수 외래 진료 시간표를 한곳에서 모아보고, 내 일정도 함께 관리하세요. 매주 자동 갱신." />
-<style>
-  :root{
-    --red:#E0112E; --ink:#1d1d1f; --sub:#6b7280; --line:#e5e7eb;
-    --bg:#f6f7f9; --am:#1d6fe0; --pm:#e07a11;
-    --card:#ffffff; --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.04);
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-       color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
-  a{color:inherit}
-  header.top{background:#fff;border-bottom:1px solid var(--line);padding:18px 20px;position:sticky;top:0;z-index:20}
-  .top .wrap{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-  .brand{display:flex;align-items:baseline;gap:10px}
-  .brand b{font-size:20px;letter-spacing:-.4px}
-  .brand span{color:var(--red);font-weight:800}
-  .updated{font-size:13px;color:var(--sub)}
-  .updated b{color:var(--ink)}
-  main{max-width:1180px;margin:0 auto;padding:20px}
-  .tabs{display:flex;gap:6px;margin-bottom:18px}
-  .tab{appearance:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 18px;
-       font-size:14px;font-weight:600;cursor:pointer;color:var(--sub)}
-  .tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px}
-  .filters{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-bottom:16px}
-  .field{display:flex;flex-direction:column;gap:6px}
-  .field label{font-size:12px;font-weight:700;color:var(--sub)}
-  .field input,.field select{border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;background:#fff;min-width:160px}
-  .pills{display:flex;flex-wrap:wrap;gap:8px}
-  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;
-        cursor:pointer;color:var(--sub);user-select:none}
-  .pill.on{background:var(--red);border-color:var(--red);color:#fff}
-  .count{font-size:13px;color:var(--sub);margin:4px 2px 12px}
-  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
-  table{border-collapse:collapse;width:100%;font-size:14px;min-width:760px}
-  th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-  thead th{background:#fafbfc;font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0}
-  tbody tr:hover{background:#fafbfc}
-  .day-col{text-align:center;min-width:64px}
-  .hname{font-weight:700}
-  .dept{color:var(--sub);font-size:13px}
-  .badge{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px;margin:1px}
-  .badge.am{background:rgba(29,111,224,.12);color:var(--am)}
-  .badge.pm{background:rgba(224,122,17,.12);color:var(--pm)}
-  .empty{color:#cbd1d9}
-  .legend{display:flex;gap:14px;font-size:12px;color:var(--sub);margin-top:12px;align-items:center;flex-wrap:wrap}
-  .note{font-size:12px;color:var(--sub);margin-top:10px}
+<title>MR 영업 스케줄러 | 교수 진료시간표 · 면담 일정</title>
+<meta name="description" content="대학병원 정형외과·신경외과 교수 진료시간표를 비교하고, 공석 시간에 영업 면담 일정을 등록·관리하는 MR용 웹앱." />
 
-  /* 내 일정 */
-  .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:6px}
-  .daycard{border:1px solid var(--line);border-radius:12px;padding:10px;min-height:120px;background:#fff}
-  .daycard h4{margin:0 0 8px;font-size:13px;color:var(--sub);text-align:center}
-  .daycard.today h4{color:var(--red)}
-  .item{background:#fff;border:1px solid var(--line);border-left:3px solid var(--red);border-radius:8px;padding:7px 8px;margin-bottom:7px;font-size:12px;position:relative}
-  .item .it-title{font-weight:700}
-  .item .it-meta{color:var(--sub);font-size:11px;margin-top:2px}
-  .item .del{position:absolute;top:5px;right:6px;border:none;background:none;color:#c0c6cf;cursor:pointer;font-size:14px;line-height:1}
-  .item .del:hover{color:var(--red)}
-  .addform{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:16px}
-  .btn{appearance:none;border:none;background:var(--red);color:#fff;font-weight:700;border-radius:10px;padding:10px 18px;font-size:14px;cursor:pointer}
-  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
-  .hide{display:none !important}
-  @media (max-width:760px){
-    .grid7{grid-template-columns:1fr;gap:8px}
-    .field input,.field select{min-width:0;width:100%}
-    .field{flex:1 1 140px}
-  }
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: { colors: { brand: "#E0112E" } } }
+  };
+</script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  html,body{background:#f6f7f9}
+  ::-webkit-scrollbar{height:8px;width:8px}
+  ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <div class="brand"><b>교수 진료 시간표 <span>모아보기</span></b></div>
-    <div class="updated" id="updated">불러오는 중…</div>
-  </div>
-</header>
+<div id="root" class="min-h-screen"></div>
 
-<main>
-  <div class="tabs">
-    <button class="tab active" data-tab="hospital">병원 시간표</button>
-    <button class="tab" data-tab="my">내 일정</button>
-  </div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef } = React;
 
-  <!-- ===================== 병원 시간표 ===================== -->
-  <section id="tab-hospital">
-    <div class="card">
-      <div class="filters">
-        <div class="field" style="flex:1 1 100%">
-          <label>병원</label>
-          <div class="pills" id="hospitalPills"></div>
-        </div>
-        <div class="field">
-          <label>진료과</label>
-          <select id="deptFilter"><option value="">전체</option></select>
-        </div>
-        <div class="field" style="flex:1">
-          <label>교수 검색</label>
-          <input id="search" type="search" placeholder="교수명·전문분야 검색" />
-        </div>
-      </div>
-      <div class="count" id="count"></div>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>병원</th><th>진료과</th><th>교수</th><th>전문분야</th>
-              <th class="day-col">월</th><th class="day-col">화</th><th class="day-col">수</th>
-              <th class="day-col">목</th><th class="day-col">금</th><th class="day-col">토</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
-      </div>
-      <div class="legend">
-        <span><span class="badge am">오전</span> 오전 진료</span>
-        <span><span class="badge pm">오후</span> 오후 진료</span>
-        <span class="empty">— 휴진</span>
-      </div>
-      <div class="note" id="dataNote"></div>
-    </div>
-  </section>
-
-  <!-- ===================== 내 일정 ===================== -->
-  <section id="tab-my" class="hide">
-    <div class="card">
-      <h3 style="margin:0 0 14px">내 주간 일정 추가</h3>
-      <form class="addform" id="myForm">
-        <div class="field"><label>제목*</label><input id="m_title" required placeholder="예: 김민수 교수 진료" /></div>
-        <div class="field"><label>장소/병원</label><input id="m_place" placeholder="예: 서울대병원 본관" /></div>
-        <div class="field"><label>요일*</label>
-          <select id="m_day">
-            <option value="mon">월</option><option value="tue">화</option><option value="wed">수</option>
-            <option value="thu">목</option><option value="fri">금</option><option value="sat">토</option><option value="sun">일</option>
-          </select>
-        </div>
-        <div class="field"><label>시간</label><input id="m_time" placeholder="예: 09:30 / 오후" /></div>
-        <div class="field" style="flex:1"><label>메모</label><input id="m_memo" placeholder="진료실, 연락처 등" /></div>
-        <button class="btn" type="submit">추가</button>
-      </form>
-      <div class="grid7" id="myGrid"></div>
-      <div class="note">내 일정은 이 브라우저에만 저장됩니다(localStorage). 다른 기기와는 공유되지 않아요.
-        <button class="btn ghost" id="clearMine" style="padding:6px 12px;margin-left:8px">전체 삭제</button>
-      </div>
-    </div>
-  </section>
-</main>
-
-<script>
-const DAYS = ["mon","tue","wed","thu","fri","sat","sun"];
+/* ====================== 상수/유틸 ====================== */
+const DATA_URLS = [
+  "./data/schedules.json",
+  "https://raw.githubusercontent.com/soyeonlee528/woorien/main/data/schedules.json",
+];
+const DAYS = ["mon","tue","wed","thu","fri","sat"];
 const DAY_KO = {mon:"월",tue:"화",wed:"수",thu:"목",fri:"금",sat:"토",sun:"일"};
-const LS_KEY = "woorien_my_schedules";
+const SLOTS = [{k:"AM",ko:"오전"},{k:"PM",ko:"오후"}];
+const LS_KEY = "mr_sales_appointments_v1";
 
-let DATA = {hospitals:[]};
-let activeHospitals = new Set();   // 비어있으면 전체
-
-/* ---------- 탭 ---------- */
-document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick = ()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    t.classList.add("active");
-    const tab = t.dataset.tab;
-    document.getElementById("tab-hospital").classList.toggle("hide", tab!=="hospital");
-    document.getElementById("tab-my").classList.toggle("hide", tab!=="my");
-  };
-});
-
-/* ---------- 데이터 로드 ---------- */
-async function load(){
-  try{
-    const res = await fetch("./data/schedules.json", {cache:"no-store"});
-    DATA = await res.json();
-  }catch(e){
-    document.getElementById("updated").textContent = "데이터를 불러오지 못했습니다";
-    return;
-  }
-  const d = DATA.updatedAt ? new Date(DATA.updatedAt) : null;
-  document.getElementById("updated").innerHTML = d
-    ? `최근 갱신 <b>${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}</b> · 매주 자동 갱신`
-    : "매주 자동 갱신";
-  if(DATA.note) document.getElementById("dataNote").textContent = "ℹ︎ " + DATA.note;
-
-  buildHospitalPills();
-  buildDeptFilter();
-  render();
-}
-
-function buildHospitalPills(){
-  const box = document.getElementById("hospitalPills");
-  box.innerHTML = "";
-  DATA.hospitals.forEach(h=>{
-    const p = document.createElement("span");
-    p.className = "pill on";
-    p.textContent = h.name;
-    activeHospitals.add(h.id);
-    p.onclick = ()=>{
-      p.classList.toggle("on");
-      if(p.classList.contains("on")) activeHospitals.add(h.id); else activeHospitals.delete(h.id);
-      render();
-    };
-    box.appendChild(p);
-  });
-}
-
-function buildDeptFilter(){
-  const sel = document.getElementById("deptFilter");
-  const depts = new Set();
-  DATA.hospitals.forEach(h=> (h.professors||[]).forEach(p=> p.department && depts.add(p.department)));
-  [...depts].sort((a,b)=>a.localeCompare(b,"ko")).forEach(d=>{
-    const o = document.createElement("option"); o.value=d; o.textContent=d; sel.appendChild(o);
-  });
-  sel.onchange = render;
-}
-document.getElementById("search").addEventListener("input", render);
-
-/* ---------- 렌더 ---------- */
-function slotBadges(slots){
-  if(!slots || !slots.length) return '<span class="empty">—</span>';
-  return slots.map(s=> s==="AM"
-    ? '<span class="badge am">오전</span>'
-    : '<span class="badge pm">오후</span>').join("");
-}
-
-function render(){
-  const dept = document.getElementById("deptFilter").value;
-  const q = document.getElementById("search").value.trim().toLowerCase();
-  const rows = document.getElementById("rows");
-  rows.innerHTML = "";
-  let n = 0;
-
-  DATA.hospitals.forEach(h=>{
-    if(activeHospitals.size && !activeHospitals.has(h.id)) return;
-    (h.professors||[]).forEach(p=>{
-      if(dept && p.department !== dept) return;
-      if(q && !(`${p.name} ${p.specialty||""} ${p.department||""}`.toLowerCase().includes(q))) return;
-      const tr = document.createElement("tr");
-      let cells = `<td class="hname">${esc(h.name)}</td>`+
-        `<td class="dept">${esc(p.department||"")}</td>`+
-        `<td><b>${esc(p.name)}</b>${p.title?` <span class="dept">${esc(p.title)}</span>`:""}</td>`+
-        `<td class="dept">${esc(p.specialty||"")}</td>`;
-      ["mon","tue","wed","thu","fri","sat"].forEach(day=>{
-        cells += `<td class="day-col">${slotBadges((p.schedule||{})[day])}</td>`;
-      });
-      tr.innerHTML = cells;
-      rows.appendChild(tr);
-      n++;
-    });
-  });
-  if(n===0){
-    const hasAny = DATA.hospitals.some(h=>(h.professors||[]).length);
-    const msg = hasAny ? "조건에 맞는 교수가 없습니다."
-      : "아직 등록된 시간표가 없습니다 — 데이터 준비 중입니다.";
-    rows.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#9aa1ab;padding:32px">${msg}</td></tr>`;
-  }
-  document.getElementById("count").textContent = `총 ${n}명`;
-}
-
-function esc(s){return (s??"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
-
-/* ---------- 내 일정 (localStorage) ---------- */
-function getMine(){ try{return JSON.parse(localStorage.getItem(LS_KEY))||[];}catch(e){return [];} }
-function setMine(arr){ localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
-
-document.getElementById("myForm").addEventListener("submit", e=>{
-  e.preventDefault();
-  const item = {
-    id: Date.now().toString(36)+Math.random().toString(36).slice(2,6),
-    title: document.getElementById("m_title").value.trim(),
-    place: document.getElementById("m_place").value.trim(),
-    day: document.getElementById("m_day").value,
-    time: document.getElementById("m_time").value.trim(),
-    memo: document.getElementById("m_memo").value.trim(),
-  };
-  if(!item.title) return;
-  const arr = getMine(); arr.push(item); setMine(arr);
-  e.target.reset();
-  renderMine();
-});
-
-document.getElementById("clearMine").onclick = ()=>{
-  if(confirm("내 일정을 모두 삭제할까요?")){ setMine([]); renderMine(); }
+const STATUS = {
+  planned:  {ko:"방문 예정", dot:"bg-blue-500",  chip:"bg-blue-50 text-blue-700 ring-blue-200"},
+  done:     {ko:"면담 완료", dot:"bg-emerald-500",chip:"bg-emerald-50 text-emerald-700 ring-emerald-200"},
+  canceled: {ko:"취소",     dot:"bg-slate-400", chip:"bg-slate-100 text-slate-500 ring-slate-200 line-through"},
 };
 
-function renderMine(){
-  const grid = document.getElementById("myGrid");
-  grid.innerHTML = "";
-  const arr = getMine();
-  const todayIdx = (new Date().getDay()+6)%7; // 월=0
-  DAYS.forEach((day,i)=>{
-    const col = document.createElement("div");
-    col.className = "daycard" + (i===todayIdx ? " today":"");
-    col.innerHTML = `<h4>${DAY_KO[day]}</h4>`;
-    arr.filter(x=>x.day===day)
-       .sort((a,b)=>(a.time||"").localeCompare(b.time||""))
-       .forEach(x=>{
-      const el = document.createElement("div");
-      el.className = "item";
-      el.innerHTML = `<button class="del" title="삭제" data-id="${x.id}">×</button>`+
-        `<div class="it-title">${esc(x.title)}</div>`+
-        `<div class="it-meta">${[x.time,x.place,x.memo].filter(Boolean).map(esc).join(" · ")}</div>`;
-      col.appendChild(el);
-    });
-    grid.appendChild(col);
-  });
-  grid.querySelectorAll(".del").forEach(b=> b.onclick=()=>{
-    setMine(getMine().filter(x=>x.id!==b.dataset.id)); renderMine();
-  });
+const pad = n => String(n).padStart(2,"0");
+const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseYmd = s => { const [y,m,dd]=s.split("-").map(Number); return new Date(y,m-1,dd); };
+const addDays = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x; };
+const mondayIdx = d => (d.getDay()+6)%7;            // 월=0..일=6
+const startOfWeek = d => addDays(d, -mondayIdx(d));
+const sameYmd = (a,b)=> fmt(a)===fmt(b);
+const todayYmd = () => fmt(new Date());
+
+// 오늘 이후(포함) 가장 가까운 해당 요일 날짜
+function nextOccurrence(dayKey){
+  const target = DAYS.indexOf(dayKey);
+  const now = new Date(); now.setHours(0,0,0,0);
+  const diff = (target - mondayIdx(now) + 7) % 7;
+  return fmt(addDays(now, diff));
 }
 
-load();
-renderMine();
+const loadAppts = () => { try { return JSON.parse(localStorage.getItem(LS_KEY))||[]; } catch(e){ return []; } };
+const saveAppts = a => localStorage.setItem(LS_KEY, JSON.stringify(a));
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+/* ====================== 작은 컴포넌트 ====================== */
+function Badge({status}){
+  const s = STATUS[status] || STATUS.planned;
+  return <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ring-1 ${s.chip}`}>
+    <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`}></span>{s.ko}
+  </span>;
+}
+
+function Dropdown({label, value, onChange, options}){
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="text-[11px] font-bold text-slate-500">{label}</span>
+      <select value={value} onChange={e=>onChange(e.target.value)}
+        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium shadow-sm
+                   focus:outline-none focus:ring-2 focus:ring-brand/30 min-w-[150px]">
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+    </label>
+  );
+}
+
+/* 교수 다중선택 (노션식 팝오버) */
+function ProfPicker({profs, selected, setSelected}){
+  const [open,setOpen]=useState(false);
+  const ref=useRef();
+  useEffect(()=>{
+    const h=e=>{ if(ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown",h); return ()=>document.removeEventListener("mousedown",h);
+  },[]);
+  const toggle = name => { const n=new Set(selected); n.has(name)?n.delete(name):n.add(name); setSelected(n); };
+  const allOn = selected.size===profs.length;
+  return (
+    <div className="flex flex-col gap-1 relative" ref={ref}>
+      <span className="text-[11px] font-bold text-slate-500">교수</span>
+      <button onClick={()=>setOpen(o=>!o)}
+        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium shadow-sm text-left
+                   flex items-center justify-between gap-2 min-w-[150px] hover:bg-slate-50">
+        <span>{allOn ? "전체" : `${selected.size}명 선택`}</span>
+        <span className="text-slate-400">▾</span>
+      </button>
+      {open && (
+        <div className="absolute z-30 top-full mt-1 w-56 max-h-72 overflow-auto rounded-xl border border-slate-200 bg-white shadow-xl p-1">
+          <button onClick={()=>setSelected(new Set(allOn?[]:profs.map(p=>p.name)))}
+            className="w-full text-left text-xs font-semibold text-brand px-2 py-1.5 hover:bg-slate-50 rounded-lg">
+            {allOn ? "전체 해제" : "전체 선택"}
+          </button>
+          {profs.map(p=>(
+            <label key={p.name} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
+              <input type="checkbox" checked={selected.has(p.name)} onChange={()=>toggle(p.name)}
+                className="rounded accent-brand"/>
+              <span className="font-medium">{p.name}</span>
+              {p.title && <span className="text-xs text-slate-400">{p.title}</span>}
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ====================== 진료시간표 비교 그리드 ====================== */
+function ScheduleGrid({hospital, profs, onBook, apptIndex}){
+  if(!profs.length) return <div className="p-10 text-center text-slate-400">표시할 교수가 없습니다.</div>;
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+      <table className="border-collapse min-w-[640px] w-full text-sm">
+        <thead>
+          <tr>
+            <th className="sticky left-0 z-10 bg-slate-50 border-b border-r border-slate-200 p-2 w-20"></th>
+            {profs.map(p=>(
+              <th key={p.name} className="border-b border-slate-200 bg-slate-50 p-2 align-bottom min-w-[120px]">
+                <div className="font-bold text-slate-800">{p.name}</div>
+                <div className="text-[11px] font-medium text-slate-400">{p.title||" "}</div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {DAYS.map(day => SLOTS.map((slot,si)=>(
+            <tr key={day+slot.k}>
+              <th className={`sticky left-0 z-10 bg-white border-r border-slate-200 p-2 text-xs font-bold text-slate-500 whitespace-nowrap
+                              ${si===0 ? "border-t-2 border-t-slate-200":"border-t border-slate-100"}`}>
+                {DAY_KO[day]} <span className="text-slate-400 font-medium">{slot.ko}</span>
+              </th>
+              {profs.map(p=>{
+                const busy = (p.schedule?.[day]||[]).includes(slot.k);
+                const ymd = nextOccurrence(day);
+                const booked = apptIndex[`${ymd}|${slot.k}|${hospital.id}|${p.name}`];
+                const cls = si===0 ? "border-t-2 border-t-slate-200":"border-t border-slate-100";
+                if(busy){
+                  return <td key={p.name} className={`p-1.5 text-center ${cls}`}>
+                    <div className="rounded-lg bg-rose-50 text-rose-600 text-[11px] font-semibold py-1.5">진료</div>
+                  </td>;
+                }
+                return (
+                  <td key={p.name} className={`p-1.5 text-center ${cls}`}>
+                    <button onClick={()=>onBook({hospital, prof:p, day, slot:slot.k})}
+                      className="w-full rounded-lg bg-emerald-50 hover:bg-emerald-100 ring-1 ring-emerald-200
+                                 text-emerald-700 text-[11px] font-semibold py-1.5 transition group relative">
+                      {booked ? <span className="flex items-center justify-center gap-1">
+                          <span className={`w-1.5 h-1.5 rounded-full ${(STATUS[booked.status]||STATUS.planned).dot}`}></span>면담</span>
+                        : <span className="opacity-80 group-hover:opacity-100">공석 +</span>}
+                    </button>
+                  </td>
+                );
+              })}
+            </tr>
+          )))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/* ====================== 예약 모달 ====================== */
+function ApptModal({init, onClose, onSave, onDelete}){
+  const [f,setF]=useState(()=>({
+    id: init.id || null,
+    hospitalId: init.hospitalId, hospitalName: init.hospitalName,
+    dept: init.dept||"", professor: init.professor||"",
+    date: init.date || todayYmd(), slot: init.slot || "AM",
+    title: init.title || (init.professor ? `${init.professor} 교수 면담` : "영업 면담"),
+    status: init.status || "planned", memo: init.memo || "",
+  }));
+  const up = (k,v)=>setF(s=>({...s,[k]:v}));
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4" onClick={onClose}>
+      <div className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl p-5" onClick={e=>e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold">{f.id ? "면담 일정 수정" : "면담 일정 등록"}</h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-xl leading-none">×</button>
+        </div>
+        <div className="space-y-3 text-sm">
+          <div className="text-xs text-slate-500">
+            {f.hospitalName}{f.dept && ` · ${f.dept}`}{f.professor && ` · ${f.professor} 교수`}
+          </div>
+          <Field label="제목"><input value={f.title} onChange={e=>up("title",e.target.value)} className={inp}/></Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="날짜"><input type="date" value={f.date} onChange={e=>up("date",e.target.value)} className={inp}/></Field>
+            <Field label="시간대">
+              <select value={f.slot} onChange={e=>up("slot",e.target.value)} className={inp}>
+                <option value="AM">오전</option><option value="PM">오후</option>
+              </select>
+            </Field>
+          </div>
+          <Field label="상태">
+            <div className="flex gap-2">
+              {Object.entries(STATUS).map(([k,v])=>(
+                <button key={k} onClick={()=>up("status",k)}
+                  className={`flex-1 rounded-xl py-2 text-xs font-semibold ring-1 ${f.status===k? v.chip+" ring-2":"bg-white text-slate-500 ring-slate-200"}`}>
+                  {v.ko}
+                </button>
+              ))}
+            </div>
+          </Field>
+          <Field label="메모"><textarea value={f.memo} onChange={e=>up("memo",e.target.value)} rows="2" className={inp} placeholder="면담 목적, 연락처 등"/></Field>
+        </div>
+        <div className="flex gap-2 mt-5">
+          {f.id && <button onClick={()=>onDelete(f.id)} className="px-4 py-2.5 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50">삭제</button>}
+          <div className="flex-1"></div>
+          <button onClick={onClose} className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">취소</button>
+          <button onClick={()=>onSave({...f, id: f.id||uid()})} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-brand text-white hover:opacity-90">저장</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+const inp = "w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30";
+function Field({label,children}){ return <label className="block"><span className="text-[11px] font-bold text-slate-500">{label}</span><div className="mt-1">{children}</div></label>; }
+
+/* ====================== 내 캘린더 ====================== */
+function MyCalendar({appts, onEdit, onNew}){
+  const [view,setView]=useState("week");
+  const [cursor,setCursor]=useState(()=>new Date());
+  const byDate = useMemo(()=>{
+    const m={}; appts.forEach(a=>{(m[a.date]=m[a.date]||[]).push(a);});
+    Object.values(m).forEach(list=>list.sort((a,b)=>(a.slot>b.slot?1:-1)));
+    return m;
+  },[appts]);
+
+  const move = n => setCursor(c => view==="week" ? addDays(c, n*7) : new Date(c.getFullYear(), c.getMonth()+n, 1));
+  const title = view==="week"
+    ? (()=>{const s=startOfWeek(cursor);const e=addDays(s,6);return `${s.getMonth()+1}/${s.getDate()} – ${e.getMonth()+1}/${e.getDate()}`;})()
+    : `${cursor.getFullYear()}년 ${cursor.getMonth()+1}월`;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+        <div className="flex items-center gap-1">
+          <button onClick={()=>move(-1)} className="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500">‹</button>
+          <div className="font-bold text-slate-800 min-w-[120px] text-center">{title}</div>
+          <button onClick={()=>move(1)} className="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500">›</button>
+          <button onClick={()=>setCursor(new Date())} className="ml-1 text-xs font-semibold text-slate-500 px-2 py-1 rounded-lg hover:bg-slate-100">오늘</button>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="bg-slate-100 rounded-xl p-0.5 flex">
+            {[["week","주"],["month","월"]].map(([v,ko])=>(
+              <button key={v} onClick={()=>setView(v)}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg ${view===v?"bg-white shadow text-slate-800":"text-slate-500"}`}>{ko}</button>
+            ))}
+          </div>
+          <button onClick={()=>onNew()} className="px-3 py-2 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90">+ 일정</button>
+        </div>
+      </div>
+      {view==="week" ? <WeekView cursor={cursor} byDate={byDate} onEdit={onEdit}/> : <MonthView cursor={cursor} byDate={byDate} onEdit={onEdit}/>}
+    </div>
+  );
+}
+
+function WeekView({cursor, byDate, onEdit}){
+  const start = startOfWeek(cursor);
+  const days = Array.from({length:7},(_,i)=>addDays(start,i));
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+      {days.map(d=>{
+        const ymd=fmt(d); const list=byDate[ymd]||[]; const isToday=ymd===todayYmd();
+        return (
+          <div key={ymd} className={`rounded-2xl border bg-white p-2 min-h-[120px] ${isToday?"border-brand ring-1 ring-brand/30":"border-slate-200"}`}>
+            <div className={`text-xs font-bold mb-2 ${isToday?"text-brand":"text-slate-500"}`}>
+              {DAY_KO[DAYS[mondayIdx(d)]]||"일"} {d.getDate()}
+            </div>
+            {list.map(a=>(
+              <button key={a.id} onClick={()=>onEdit(a)}
+                className="w-full text-left mb-1.5 rounded-lg border border-slate-100 bg-slate-50/60 p-2 hover:bg-slate-100">
+                <div className="text-[11px] font-bold text-slate-800 truncate">{a.title}</div>
+                <div className="mt-1 flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400">{a.slot==="AM"?"오전":"오후"}</span>
+                  <Badge status={a.status}/>
+                </div>
+              </button>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function MonthView({cursor, byDate, onEdit}){
+  const first = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+  const gridStart = startOfWeek(first);
+  const cells = Array.from({length:42},(_,i)=>addDays(gridStart,i));
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+      <div className="grid grid-cols-7 text-center text-[11px] font-bold text-slate-400 bg-slate-50">
+        {["월","화","수","목","금","토","일"].map(d=><div key={d} className="py-2">{d}</div>)}
+      </div>
+      <div className="grid grid-cols-7">
+        {cells.map(d=>{
+          const ymd=fmt(d); const list=byDate[ymd]||[];
+          const inMonth=d.getMonth()===cursor.getMonth(); const isToday=ymd===todayYmd();
+          return (
+            <div key={ymd} className={`min-h-[84px] border-t border-r border-slate-100 p-1 ${inMonth?"":"bg-slate-50/50"}`}>
+              <div className={`text-[11px] font-semibold mb-1 ${isToday?"text-brand":inMonth?"text-slate-600":"text-slate-300"}`}>{d.getDate()}</div>
+              {list.slice(0,3).map(a=>(
+                <button key={a.id} onClick={()=>onEdit(a)}
+                  className="w-full flex items-center gap-1 text-left mb-0.5">
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${(STATUS[a.status]||STATUS.planned).dot}`}></span>
+                  <span className="text-[10px] text-slate-600 truncate">{a.title}</span>
+                </button>
+              ))}
+              {list.length>3 && <div className="text-[10px] text-slate-400">+{list.length-3}</div>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ====================== 앱 ====================== */
+function App(){
+  const [data,setData]=useState(null);
+  const [err,setErr]=useState(false);
+  const [tab,setTab]=useState("schedule");
+  const [hospitalId,setHospitalId]=useState("");
+  const [dept,setDept]=useState("");
+  const [selected,setSelected]=useState(new Set());
+  const [appts,setAppts]=useState(loadAppts);
+  const [modal,setModal]=useState(null);
+
+  useEffect(()=>{ (async()=>{
+    for(const u of DATA_URLS){
+      try{ const r=await fetch(u,{cache:"no-store"}); if(r.ok){ setData(await r.json()); return; } }catch(e){}
+    }
+    setErr(true);
+  })(); },[]);
+
+  useEffect(()=>saveAppts(appts),[appts]);
+
+  const hospitals = data?.hospitals||[];
+  const hospital = hospitals.find(h=>h.id===hospitalId) || hospitals[0];
+
+  // 병원 기본값
+  useEffect(()=>{ if(hospitals.length && !hospitalId) setHospitalId(hospitals[0].id); },[hospitals]);
+
+  const depts = useMemo(()=>{
+    if(!hospital) return [];
+    return [...new Set((hospital.professors||[]).map(p=>p.department))];
+  },[hospital]);
+
+  useEffect(()=>{ if(depts.length && !depts.includes(dept)) setDept(depts[0]); },[depts]);
+
+  const profs = useMemo(()=>(hospital?.professors||[]).filter(p=>p.department===dept),[hospital,dept]);
+
+  // 진료과 바뀌면 전체 선택
+  useEffect(()=>{ setSelected(new Set(profs.map(p=>p.name))); },[hospital?.id,dept]);
+
+  const shownProfs = profs.filter(p=>selected.has(p.name));
+
+  const apptIndex = useMemo(()=>{
+    const m={}; appts.forEach(a=>{ m[`${a.date}|${a.slot}|${a.hospitalId}|${a.professor}`]=a; }); return m;
+  },[appts]);
+
+  const openBook = ({hospital,prof,day,slot}) => setModal({
+    hospitalId:hospital.id, hospitalName:hospital.name, dept:prof.department,
+    professor:prof.name, day, slot, date: nextOccurrence(day),
+  });
+  const saveAppt = a => { setAppts(prev=>{ const i=prev.findIndex(x=>x.id===a.id); if(i>=0){const n=[...prev];n[i]=a;return n;} return [...prev,a]; }); setModal(null); };
+  const delAppt = id => { setAppts(prev=>prev.filter(x=>x.id!==id)); setModal(null); };
+
+  const updatedAt = data?.updatedAt ? new Date(data.updatedAt) : null;
+
+  return (
+    <div>
+      {/* 헤더 */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-extrabold tracking-tight">MR 영업 스케줄러</span>
+            <span className="text-brand font-extrabold">·</span>
+            <span className="text-xs text-slate-400">교수 진료시간표 + 면담 일정</span>
+          </div>
+          <div className="text-xs text-slate-400">
+            {updatedAt && <>데이터 {updatedAt.getFullYear()}.{pad(updatedAt.getMonth()+1)}.{pad(updatedAt.getDate())} · 매주 자동 갱신</>}
+          </div>
+        </div>
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex gap-1">
+            {[["schedule","진료 시간표"],["calendar","내 캘린더"]].map(([v,ko])=>(
+              <button key={v} onClick={()=>setTab(v)}
+                className={`px-4 py-2.5 text-sm font-bold border-b-2 -mb-px ${tab===v?"border-brand text-slate-900":"border-transparent text-slate-400 hover:text-slate-600"}`}>{ko}</button>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 py-5">
+        {err && <div className="rounded-2xl bg-rose-50 text-rose-600 p-6 text-center font-semibold">데이터를 불러오지 못했습니다.</div>}
+        {!data && !err && <div className="text-center text-slate-400 py-20">불러오는 중…</div>}
+
+        {data && tab==="schedule" && (
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-3 items-end">
+              <Dropdown label="병원" value={hospital?.id||""} onChange={setHospitalId}
+                options={hospitals.map(h=>({value:h.id,label:h.name}))}/>
+              <Dropdown label="진료과" value={dept} onChange={setDept}
+                options={depts.map(d=>({value:d,label:d}))}/>
+              <ProfPicker profs={profs} selected={selected} setSelected={setSelected}/>
+            </div>
+
+            <div className="flex items-center gap-4 text-xs text-slate-500 flex-wrap">
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-rose-100 ring-1 ring-rose-200"></span>진료(오전/오후)</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-100 ring-1 ring-emerald-200"></span>공석 · 영업 공략 시간 (클릭해 면담 등록)</span>
+            </div>
+
+            {hospital && <ScheduleGrid hospital={hospital} profs={shownProfs} onBook={openBook} apptIndex={apptIndex}/>}
+
+            <p className="text-xs text-slate-400 leading-relaxed">
+              ※ ‘진료’는 해당 교수의 정규 외래(오전/오후)이며, 그 외 시간은 ‘공석’으로 표시됩니다(수술/학회 등은 현재 미반영).
+              빈 칸을 누르면 그 요일·시간대의 가장 가까운 날짜로 면담 일정을 등록할 수 있습니다.
+            </p>
+          </div>
+        )}
+
+        {data && tab==="calendar" && (
+          <MyCalendar appts={appts}
+            onEdit={a=>setModal({...a})}
+            onNew={()=>setModal({hospitalId:hospital?.id||"", hospitalName:hospital?.name||"", dept, professor:"", date:todayYmd(), slot:"AM"})}/>
+        )}
+      </main>
+
+      {modal && <ApptModal init={modal} onClose={()=>setModal(null)} onSave={saveAppt} onDelete={delAppt}/>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
