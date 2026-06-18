@@ -233,7 +233,9 @@ function depts(){var s=[];selHospitals().forEach(function(h){(h.professors||[]).
 function allProfs(){var a=[];selHospitals().forEach(function(h){(h.professors||[]).forEach(function(p){if(S.depts.has(p.department))a.push({hid:h.id,hname:h.name,p:p});});});return a;}
 function groups(){return selHospitals().map(function(h){return {h:h,profs:(h.professors||[]).filter(function(p){return S.depts.has(p.department)&&S.selected.has(h.id+"|"+p.name);})};}).filter(function(g){return g.profs.length;});}
 function deptLabel(ds){if(S.depts.size>=ds.length)return "전체";if(S.depts.size===1)return Array.from(S.depts)[0];return S.depts.size+"개";}
-function timeOpts(sel){var o='<option value="">선택 안 함</option>';for(var h=8;h<=20;h++){for(var m=0;m<60;m+=30){if(h===20&&m>0)break;var v=pad(h)+":"+pad(m);o+='<option value="'+v+'"'+(v===sel?" selected":"")+'>'+v+'</option>';}}return o;}
+function deptStyle(d){var m={"정형외과":["#e0f2fe","#0369a1"],"신경외과":["#ede9fe","#6d28d9"]};var c=m[d]||["#f1f5f9","#475569"];return "background:"+c[0]+";color:"+c[1];}
+function dtagHTML(d){return '<span class="dtag" style="'+deptStyle(d)+'">'+esc(d)+'</span>';}
+function timeOpts(sel,slot){var r={AM:[8,12],PM:[13,18]}[slot]||[8,20];var o='<option value="">선택 안 함</option>';for(var h=r[0];h<=r[1];h++){for(var m=0;m<60;m+=30){if(h===r[1]&&m>0)break;var v=pad(h)+":"+pad(m);o+='<option value="'+v+'"'+(v===sel?" selected":"")+'>'+v+'</option>';}}return o;}
 
 function initSelections(){
   var hs=hospitals();
@@ -391,7 +393,7 @@ function setupProfPicker(){
       if(multi)html+='<div class="popgrp">'+esc(h.name)+'</div>';
       var md=S.depts.size>1;
       html+=ps.map(function(p){var k=h.id+"|"+p.name;return '<label><input type="checkbox" data-k="'+esc(k)+'"'+(S.selected.has(k)?" checked":"")+'>'+
-        '<span style="font-weight:600">'+esc(p.name)+'</span>'+(md?' <span style="color:#94a3b8;font-size:11px">'+esc(p.department)+'</span>':'')+(p.title?' <span style="color:#94a3b8;font-size:12px">'+esc(p.title)+'</span>':'')+'</label>';}).join("");
+        '<span style="font-weight:600">'+esc(p.name)+'</span>'+(md?' '+dtagHTML(p.department):'')+(p.title?' <span style="color:#94a3b8;font-size:12px">'+esc(p.title)+'</span>':'')+'</label>';}).join("");
     });
     pop.innerHTML=html;
     pop.querySelector(".all").onclick=function(){if(all)S.selected=new Set();else S.selected=new Set(aps.map(function(x){return x.hid+"|"+x.p.name;}));build();syncBtn();refreshSched();};
@@ -417,7 +419,7 @@ function renderProfList(){
         var mk=bk?'<span class="mk" style="background:'+statusColor(bk.status)+'"></span>':"";
         return '<button class="slot free" data-s="'+sl[0]+'" data-h="'+g.h.id+'" data-p="'+esc(p.name)+'"><span class="lab">'+sl[1]+'</span>'+(bk?(mk+"면담"):"공석")+'</button>';
       }).join("");
-      return '<div class="pcard"><div class="pinfo"><div class="nm">'+esc(p.name)+(p.title?' <span class="tt">'+esc(p.title)+'</span>':'')+(md?' <span class="dtag">'+esc(p.department)+'</span>':'')+'</div>'+
+      return '<div class="pcard"><div class="pinfo"><div class="nm">'+esc(p.name)+(p.title?' <span class="tt">'+esc(p.title)+'</span>':'')+(md?' '+dtagHTML(p.department):'')+'</div>'+
         (p.specialty?'<div class="sp">'+esc(p.specialty)+'</div>':'')+'</div><div class="slots">'+cells+'</div></div>';
     }).join("");
     return (multi?'<div class="grphdr">'+esc(g.h.name)+'</div>':'')+'<div class="plist">'+cards+'</div>';
@@ -442,7 +444,7 @@ function renderWeekGrid(){
   gs.forEach(function(g){
     if(multi)html+='<div class="grphdr">'+esc(g.h.name)+'</div>';
     g.profs.forEach(function(p){
-      html+='<div class="wkcard"><div class="wkname">'+esc(p.name)+(p.title?' <span>'+esc(p.title)+'</span>':'')+(md?' <span class="dtag">'+esc(p.department)+'</span>':'')+
+      html+='<div class="wkcard"><div class="wkname">'+esc(p.name)+(p.title?' <span>'+esc(p.title)+'</span>':'')+(md?' '+dtagHTML(p.department):'')+
         (p.specialty?'<span class="sp">'+esc(p.specialty)+'</span>':'')+'</div>';
       SLOTS.forEach(function(sl){
         html+='<div class="wkrow"><div class="wkc rl">'+sl[1]+'</div>';
@@ -536,7 +538,7 @@ function openModal(init){
     '<label class="fl"><span>제목</span><input id="m-title" value="'+esc(f.title)+'"></label>'+
     '<label class="fl"><span>날짜</span><input id="m-date" type="date" value="'+esc(f.date)+'"></label>'+
     '<div class="two"><label class="fl"><span>시간대</span><select id="m-slot"><option value="AM"'+(f.slot==="AM"?" selected":"")+'>오전</option><option value="PM"'+(f.slot==="PM"?" selected":"")+'>오후</option></select></label>'+
-      '<label class="fl"><span>시간 (선택·30분)</span><select id="m-time">'+timeOpts(f.time||"")+'</select></label></div>'+
+      '<label class="fl"><span>시간 (선택·30분)</span><select id="m-time">'+timeOpts(f.time||"",f.slot)+'</select></label></div>'+
     '<div class="fl"><span>상태</span><div class="statusrow" id="m-status">'+
       Object.keys(STATUS).map(function(k){return '<button data-k="'+k+'" class="'+STATUS[k][2]+(k===statusVal?" on":"")+'">'+STATUS[k][0]+'</button>';}).join("")+'</div></div>'+
     '<label class="fl"><span>메모</span><textarea id="m-memo" rows="2" placeholder="면담 목적, 연락처 등">'+esc(f.memo)+'</textarea></label>'+
@@ -547,6 +549,7 @@ function openModal(init){
   document.getElementById("ov").onclick=function(e){if(e.target.id==="ov")close();};
   document.getElementById("mx").onclick=close;
   document.getElementById("m-cancel").onclick=close;
+  document.getElementById("m-slot").onchange=function(){var t=document.getElementById("m-time");t.innerHTML=timeOpts(t.value,this.value);};
   document.getElementById("m-status").querySelectorAll("button").forEach(function(b){b.onclick=function(){
     statusVal=b.dataset.k;
     document.getElementById("m-status").querySelectorAll("button").forEach(function(x){x.className=STATUS[x.dataset.k][2]+(x.dataset.k===statusVal?" on":"");});
