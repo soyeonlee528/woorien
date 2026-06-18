@@ -61,6 +61,16 @@
       "listUrl": "https://www.seoulhyundai.co.kr/page/sub0103.php",
       "departments": ["정형외과", "신경외과"],
       "enabled": true
+    },
+    {
+      "id": "kdh",
+      "name": "강동성심병원",
+      "url": "https://www.kdh.or.kr/sub201.php?dept=111240",
+      "adapter": "kdh",
+      "base": "https://www.kdh.or.kr",
+      "deptCodes": { "정형외과": "111240", "신경외과": "111230" },
+      "departments": ["정형외과", "신경외과"],
+      "enabled": true
     }
   ]
 }

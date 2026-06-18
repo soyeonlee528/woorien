@@ -413,12 +413,104 @@ def adapter_seoulhyundai(ctx, src):
     return profs
 
 
+# ---------------------------------------------------------------------------
+# 어댑터: 강동성심병원 (kdh.or.kr)
+# sub201.php?dept=<코드> 에 의사 카드(.sub201_02_doc_name: 이름/진료과)와
+# openDocPop('<doctid>') 버튼. openDocPop 은 /proc/doctor_info.php(POST id) 로 시간표를
+# 받아 공용 표(.pop_monam ... .pop_satpm)를 채운다. ● 있으면 진료, 빈칸이면 공석.
+# ---------------------------------------------------------------------------
+_KDH_LIST_JS = r"""
+() => {
+  const names = Array.from(document.querySelectorAll('.sub201_02_doc_name')).map(d => ({
+    name: ((d.querySelector('.doct_name_bold') || {}).textContent || '')
+      .replace('교수', '').replace(/\s+/g, ' ').trim(),
+    dept: ((d.querySelector('.sub201_dept') || {}).textContent || '').trim()
+  }));
+  const ids = [];
+  document.querySelectorAll('[onclick]').forEach(e => {
+    const m = (e.getAttribute('onclick') || '').match(/openDocPop\('?(\d+)'?\)/);
+    if (m && ids.indexOf(m[1]) < 0) ids.push(m[1]);
+  });
+  const n = Math.min(names.length, ids.length);
+  const out = [];
+  for (let i = 0; i < n; i++) out.push({ name: names[i].name, dept: names[i].dept, id: ids[i] });
+  return out;
+}
+"""
+
+_KDH_POP_JS = r"""
+() => {
+  const g = (c) => {
+    const el = document.querySelector('.' + c);
+    return el ? ((el.textContent || '').trim().length > 0) : false;
+  };
+  return {
+    am: ['pop_monam','pop_tueam','pop_wedam','pop_thuam','pop_friam','pop_satam'].map(g),
+    pm: ['pop_monpm','pop_tuepm','pop_wedpm','pop_thupm','pop_fripm','pop_satpm'].map(g)
+  };
+}
+"""
+
+
+def adapter_kdh(ctx, src):
+    base = src["base"].rstrip("/")
+    codes = src.get("deptCodes") or {}
+    profs = []
+    page = ctx.new_page()
+    try:
+        for dnm, code in codes.items():
+            try:
+                page.goto(f"{base}/sub201.php?dept={code}", wait_until="networkidle", timeout=40000)
+            except Exception:
+                page.wait_for_timeout(1500)
+            try:
+                page.wait_for_selector(".sub201_02_doc_name", timeout=15000)
+            except Exception:
+                print(f"  [kdh] {dnm}: 의사 목록 없음")
+                continue
+            docs = page.evaluate(_KDH_LIST_JS)
+            cnt = 0
+            for d in docs:
+                dept = (d.get("dept") or "").strip() or dnm
+                if dept not in ("정형외과", "신경외과"):
+                    continue
+                try:
+                    page.evaluate("(id) => openDocPop(id)", d["id"])
+                    page.wait_for_timeout(900)
+                    sc = page.evaluate(_KDH_POP_JS)
+                except Exception:
+                    continue
+                sched = empty_sched()
+                for i in range(6):
+                    if sc["am"][i]:
+                        sched[DAYS[i]].append("AM")
+                    if sc["pm"][i]:
+                        sched[DAYS[i]].append("PM")
+                profs.append({
+                    "name": (d.get("name") or "").strip(),
+                    "department": dept,
+                    "specialty": "",
+                    "title": "교수",
+                    "schedule": order_slots(sched),
+                })
+                cnt += 1
+            print(f"  [kdh] {dnm}({code}): {cnt}명")
+    finally:
+        page.close()
+    # 이름 기준 중복 제거(여러 진료과 코드에 동일인 노출 대비)
+    uniq = {}
+    for pr in profs:
+        uniq.setdefault((pr["name"], pr["department"]), pr)
+    return list(uniq.values())
+
+
 ADAPTERS = {
     "anam_kumc": adapter_anam_kumc,
     "cmc": adapter_cmc,
     "eulji": adapter_eulji,
     "saeroun": adapter_saeroun,
     "seoulhyundai": adapter_seoulhyundai,
+    "kdh": adapter_kdh,
 }
 
 
