@@ -1,46 +1,26 @@
 #!/usr/bin/env python3
-"""대학병원 교수 외래 시간표 수집 스크립트.
+"""대학병원 교수 외래 진료 시간표 수집기 (Playwright 기반).
 
-GitHub Actions(주간 cron)에서 실행되어 data/schedules.json 을 갱신합니다.
+대상: 고대안암병원, 의정부성모병원 / 정형외과·신경외과
+GitHub Actions(주간 cron)에서 실행되어 data/schedules.json 을 갱신한다.
 
-설계 원칙
----------
-* 병원마다 사이트 구조가 다르므로, 병원 1곳당 adapter 함수 1개를 둡니다.
-* sources.json 의 각 병원 항목은 어떤 adapter 를 쓸지 'adapter' 키로 지정합니다.
-* 수집에 실패하거나 adapter 가 'sample' 이면, 기존 data/schedules.json 의
-  해당 병원 데이터를 그대로 유지합니다(데이터 유실 방지).
+설계
+----
+* 두 병원 모두 내부 JSON API 를 호출해 의료진과 요일별 오전/오후 진료 여부를 수집.
+* 사이트가 봇/비브라우저 요청·일부 TLS 를 거르므로, Playwright(headless chromium)의
+  request 컨텍스트로 호출한다(브라우저와 동일한 네트워크 스택).
+* 한 병원 수집 실패 시 기존 data/schedules.json 값을 보존한다.
 
-새 병원 추가 방법
------------------
-1. scripts/sources.json 의 hospitals 배열에 항목 추가
-   (id, name, url, adapter, enabled)
-2. 아래 ADAPTERS 에 adapter 이름과 동일한 함수를 등록
-   함수 시그니처: def my_adapter(source: dict) -> list[dict]
-   반환: 교수 목록. 각 교수는 아래 형태의 dict
-       {
-         "name": "홍길동",
-         "department": "소화기내과",
-         "specialty": "내시경",          # 선택
-         "schedule": {                    # 요일별 진료 시간대
-            "mon": ["AM", "PM"], "tue": [], ...
-         }
-       }
+새 병원 추가: sources.json 에 항목 추가 + 아래 ADAPTERS 에 adapter 함수 등록.
+adapter(req, src) -> list[professor]; professor = {name, department, specialty, title, schedule}
+schedule = {"mon":["AM","PM"], ...}  (월~일)
 """
-
 from __future__ import annotations
 
 import json
 import sys
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Callable
-
-try:
-    import requests
-    from bs4 import BeautifulSoup
-except ImportError:  # 로컬에서 의존성 없이 sample 만 돌릴 때
-    requests = None
-    BeautifulSoup = None
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_FILE = ROOT / "data" / "schedules.json"
@@ -48,186 +28,191 @@ SOURCES_FILE = ROOT / "scripts" / "sources.json"
 
 KST = timezone(timedelta(hours=9))
 DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
-SLOTS = {"AM", "PM"}
 
-USER_AGENT = (
-    "Mozilla/5.0 (compatible; WoorienScheduleBot/1.0; "
-    "+https://soyeonlee528.github.io/woorien/)"
-)
+
+def empty_sched():
+    return {d: [] for d in DAYS}
+
+
+def order_slots(sched):
+    for k in sched:
+        sched[k] = [s for s in ("AM", "PM") if s in sched[k]]
+    return sched
 
 
 # ---------------------------------------------------------------------------
-# 유틸
+# 어댑터: 고려대학교 안암병원
 # ---------------------------------------------------------------------------
-def fetch(url: str, **kwargs) -> str:
-    """HTML 텍스트를 가져온다. requests 미설치 시 명확히 실패시킨다."""
-    if requests is None:
-        raise RuntimeError("requests 가 설치되지 않았습니다. pip install -r scripts/requirements.txt")
-    headers = {"User-Agent": USER_AGENT}
-    headers.update(kwargs.pop("headers", {}))
-    resp = requests.get(url, headers=headers, timeout=20, **kwargs)
-    resp.raise_for_status()
-    resp.encoding = resp.apparent_encoding or resp.encoding
-    return resp.text
+def adapter_anam_kumc(req, src):
+    base = src["base"].rstrip("/")
+    hp = src.get("hpCd", "AA")
+    inst = src.get("instNo", 1)
 
+    dep = req.get(f"{base}/api/department.do?instNo={inst}&langType=kr&deptClsf=A").json()
+    name2code = {d["deptNm"]: (d["deptCd"], d.get("emrDeptCd"))
+                 for d in dep.get("deptList", [])}
 
-def normalize_schedule(raw: dict) -> dict:
-    """요일/시간대 표기를 표준 형태로 정리한다."""
-    out = {d: [] for d in DAYS}
-    for day, slots in (raw or {}).items():
-        key = day.strip().lower()[:3]
-        if key not in out:
+    today = datetime.now(KST)
+    start = today.strftime("%Y%m%d")
+    end = (today + timedelta(weeks=8)).strftime("%Y%m%d")
+
+    profs = []
+    for dnm in src["departments"]:
+        if dnm not in name2code:
+            print(f"  [anam] 진료과 매칭 실패: {dnm}")
             continue
-        clean = []
-        for s in slots or []:
-            s = str(s).strip().upper()
-            if s in ("오전", "AM", "A"):
-                s = "AM"
-            elif s in ("오후", "PM", "P"):
-                s = "PM"
-            if s in SLOTS and s not in clean:
-                clean.append(s)
-        out[key] = clean
-    return out
-
-
-def clean_professors(rows: list[dict]) -> list[dict]:
-    result = []
-    for r in rows or []:
-        name = (r.get("name") or "").strip()
-        if not name:
-            continue
-        result.append(
-            {
-                "name": name,
-                "department": (r.get("department") or "").strip(),
-                "specialty": (r.get("specialty") or "").strip(),
-                "schedule": normalize_schedule(r.get("schedule")),
-            }
-        )
-    return result
+        dept_cd, emr_cd = name2code[dnm]
+        url = (f"{base}/api/doctorApi.do?startIndex=1&pageRow=300&drName="
+               f"&langType=kr&instNo={inst}&deptClsf=A&deptCd={dept_cd}&chosung=")
+        docs = req.get(url).json().get("doctorList", [])
+        for d in docs:
+            emp = d.get("empId")
+            sched = empty_sched()
+            if emp and emr_cd:
+                surl = (f"{base}/api/getDoctorSchedule.do?hpCd={hp}&empId={emp}"
+                        f"&inqrStrtYmd={start}&inqrFnshYmd={end}&mcdpCd={emr_cd}")
+                try:
+                    rows = req.get(surl).json()
+                except Exception:
+                    rows = []
+                for e in rows or []:
+                    ymd = e.get("mdcrYmd")
+                    if not ymd:
+                        continue
+                    try:
+                        wd = datetime.strptime(ymd, "%Y%m%d").weekday()  # 0=월
+                    except ValueError:
+                        continue
+                    key = DAYS[wd]
+                    if e.get("amSttsDvsnCd") and "AM" not in sched[key]:
+                        sched[key].append("AM")
+                    if e.get("pmSttsDvsnCd") and "PM" not in sched[key]:
+                        sched[key].append("PM")
+            profs.append({
+                "name": (d.get("drName") or "").strip(),
+                "department": dnm,
+                "specialty": (d.get("special") or d.get("emrSpecial") or "").strip(),
+                "title": (d.get("hptlJobTitle") or "").strip(),
+                "schedule": order_slots(sched),
+            })
+        print(f"  [anam] {dnm}: {len(docs)}명")
+    return profs
 
 
 # ---------------------------------------------------------------------------
-# 어댑터들
+# 어댑터: 가톨릭대학교 의정부성모병원 (CMC)
 # ---------------------------------------------------------------------------
-def adapter_sample(source: dict) -> list[dict]:
-    """실수집 어댑터가 준비되기 전까지 기존 데이터를 그대로 유지한다."""
-    raise SkipUpdate("sample adapter: 기존 데이터 유지")
-
-
-def adapter_generic_table(source: dict) -> list[dict]:
-    """범용 표(table) 파서 예시.
-
-    실제 병원 페이지의 진료 시간표가 단순 <table> 로 되어 있을 때 참고용.
-    대부분의 대학병원은 JS 렌더링/검색폼 기반이라 그대로는 동작하지 않으며,
-    병원별로 selector 와 컬럼 매핑을 맞춰서 복사해 쓰세요.
-
-    source 예: {"url": "...", "selector": "table.schedule", ...}
-    """
-    html = fetch(source["url"])
-    soup = BeautifulSoup(html, "html.parser")
-    table = soup.select_one(source.get("selector", "table"))
-    if table is None:
-        raise SkipUpdate(f"{source['id']}: 표를 찾지 못함 (selector={source.get('selector')})")
-
-    professors: list[dict] = []
-    for tr in table.select("tbody tr"):
-        cells = [td.get_text(strip=True) for td in tr.select("td")]
-        if len(cells) < 3:
+def adapter_cmc(req, src):
+    base = src["base"].rstrip("/")
+    profs = []
+    for dnm in src["departments"]:
+        cd = (src.get("deptCodes") or {}).get(dnm)
+        if not cd:
+            print(f"  [cmc] 진료과 코드 없음: {dnm}")
             continue
-        # 컬럼 순서: 진료과, 교수명, 월, 화, 수, 목, 금, 토  (사이트에 맞게 조정)
-        department, name, *day_cells = cells
-        schedule = {}
-        for day, cell in zip(DAYS, day_cells):
-            slots = []
-            if "오전" in cell or "AM" in cell.upper():
-                slots.append("AM")
-            if "오후" in cell or "PM" in cell.upper():
-                slots.append("PM")
-            schedule[day] = slots
-        professors.append(
-            {"name": name, "department": department, "schedule": schedule}
-        )
-    if not professors:
-        raise SkipUpdate(f"{source['id']}: 표에서 교수 정보를 추출하지 못함")
-    return professors
+        arr = req.get(f"{base}/api/doctor?deptCd={cd}&orderType=dept&fsexamflag=A").json()
+        for d in arr or []:
+            tr = d.get("doctorTreatment") or {}
+            sched = empty_sched()
+            for i, slot in enumerate(tr.get("hoursAm") or []):
+                if i < 6 and slot:
+                    sched[DAYS[i]].append("AM")
+            for i, slot in enumerate(tr.get("hoursPm") or []):
+                if i < 6 and slot:
+                    sched[DAYS[i]].append("PM")
+            dept = (d.get("doctorDept") or {}).get("deptNm") or dnm
+            profs.append({
+                "name": (d.get("drName") or "").strip(),
+                "department": dept,
+                "specialty": (tr.get("special")
+                              or (d.get("doctorDept") or {}).get("nuSpecial") or "").strip(),
+                "title": (d.get("nuHptlJobTitle") or "").strip(),
+                "schedule": order_slots(sched),
+            })
+        print(f"  [cmc] {dnm}: {len(arr or [])}명")
+    return profs
 
 
-class SkipUpdate(Exception):
-    """이번 실행에서 해당 병원 데이터를 갱신하지 말고 기존 값을 유지하라는 신호."""
-
-
-# 어댑터 이름 -> 함수
-ADAPTERS: dict[str, Callable[[dict], list[dict]]] = {
-    "sample": adapter_sample,
-    "generic_table": adapter_generic_table,
+ADAPTERS = {
+    "anam_kumc": adapter_anam_kumc,
+    "cmc": adapter_cmc,
 }
 
 
 # ---------------------------------------------------------------------------
 # 메인
 # ---------------------------------------------------------------------------
-def load_json(path: Path, default):
+def load_json(path, default):
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return default
 
 
-def main() -> int:
+def main():
+    from playwright.sync_api import sync_playwright
+
     sources = load_json(SOURCES_FILE, {"hospitals": []})
     existing = load_json(DATA_FILE, {"hospitals": []})
-    existing_by_id = {h["id"]: h for h in existing.get("hospitals", [])}
+    prev_by_id = {h["id"]: h for h in existing.get("hospitals", [])}
 
-    out_hospitals = []
-    changed = False
+    UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+          "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
 
-    for src in sources.get("hospitals", []):
-        if not src.get("enabled", True):
-            continue
-        hid = src["id"]
-        prev = existing_by_id.get(hid, {})
-        adapter_name = src.get("adapter", "sample")
-        adapter = ADAPTERS.get(adapter_name)
+    out = []
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        for src in sources.get("hospitals", []):
+            if not src.get("enabled", True):
+                continue
+            hid = src["id"]
+            prev = prev_by_id.get(hid, {})
+            professors = prev.get("professors", [])
+            source_tag = prev.get("source", "pending")
 
-        professors = prev.get("professors", [])
-        source_tag = prev.get("source", adapter_name)
+            adapter = ADAPTERS.get(src.get("adapter"))
+            if adapter is None:
+                print(f"[warn] {hid}: adapter '{src.get('adapter')}' 없음 — 기존 유지")
+            else:
+                ctx = browser.new_context(user_agent=UA, locale="ko-KR",
+                                          extra_http_headers={"Referer": src["base"]})
+                try:
+                    ctx.request.get(src["base"], timeout=30000)  # 쿠키 워밍업
+                except Exception:
+                    pass
+                try:
+                    got = adapter(ctx.request, src)
+                    got = [pr for pr in got if pr.get("name")]
+                    if got:
+                        professors = got
+                        source_tag = "live"
+                        print(f"[ok]   {hid}: 총 {len(got)}명 수집")
+                    else:
+                        print(f"[skip] {hid}: 0명 — 기존 데이터 유지")
+                except Exception as e:
+                    print(f"[fail] {hid}: {type(e).__name__}: {e} — 기존 데이터 유지")
+                finally:
+                    ctx.close()
 
-        if adapter is None:
-            print(f"[warn] {hid}: 알 수 없는 adapter '{adapter_name}' — 기존 데이터 유지")
-        else:
-            try:
-                professors = clean_professors(adapter(src))
-                source_tag = adapter_name
-                if professors != prev.get("professors", []):
-                    changed = True
-                print(f"[ok]   {hid}: {len(professors)}명 수집")
-            except SkipUpdate as e:
-                print(f"[skip] {hid}: {e}")
-            except Exception as e:  # 한 병원 실패가 전체를 막지 않도록
-                print(f"[fail] {hid}: {e} — 기존 데이터 유지")
-
-        out_hospitals.append(
-            {
+            out.append({
                 "id": hid,
                 "name": src.get("name", prev.get("name", hid)),
                 "url": src.get("url", prev.get("url", "")),
+                "departments": src.get("departments", prev.get("departments", [])),
                 "source": source_tag,
                 "professors": professors,
-            }
-        )
+            })
+        browser.close()
 
     result = {
         "updatedAt": datetime.now(KST).isoformat(timespec="seconds"),
-        "note": existing.get("note", ""),
-        "hospitals": out_hospitals,
+        "note": "고대안암·의정부성모 정형외과·신경외과 외래 진료 시간표. 매주 자동 갱신.",
+        "hospitals": out,
     }
-
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
-    DATA_FILE.write_text(
-        json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
-    print(f"[done] {DATA_FILE} 갱신 (변경={'있음' if changed else '없음'})")
+    DATA_FILE.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                         encoding="utf-8")
+    total = sum(len(h["professors"]) for h in out)
+    print(f"[done] {DATA_FILE} 갱신 — 병원 {len(out)}곳, 교수 {total}명")
     return 0
 
 

@@ -241,7 +241,7 @@ function render(){
       const tr = document.createElement("tr");
       let cells = `<td class="hname">${esc(h.name)}</td>`+
         `<td class="dept">${esc(p.department||"")}</td>`+
-        `<td><b>${esc(p.name)}</b></td>`+
+        `<td><b>${esc(p.name)}</b>${p.title?` <span class="dept">${esc(p.title)}</span>`:""}</td>`+
         `<td class="dept">${esc(p.specialty||"")}</td>`;
       ["mon","tue","wed","thu","fri","sat"].forEach(day=>{
         cells += `<td class="day-col">${slotBadges((p.schedule||{})[day])}</td>`;

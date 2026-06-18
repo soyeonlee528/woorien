@@ -1,24 +1,26 @@
 {
-  "_comment": "수집 대상 병원 목록. 병원 한 곳을 추가하려면 아래 배열에 항목을 넣고, scrape.py 의 ADAPTERS 에 같은 이름의 adapter 함수를 등록하세요. adapter 가 'sample' 이면 기존 data/schedules.json 의 값을 그대로 유지합니다(실수집 전 보존용). departments 는 수집/표시 대상 진료과를 제한합니다(비어 있으면 전체).",
+  "_comment": "수집 대상 병원. adapter 는 scrape.py 의 ADAPTERS 에 등록된 이름. departments 로 수집할 진료과를 제한한다.",
   "hospitals": [
     {
       "id": "anam",
       "name": "고려대학교 안암병원",
       "url": "https://anam.kumc.or.kr/kr/doctor-department/doctor.do",
-      "scheduleUrlLegacy": "http://anam.kumc.or.kr/guide/opdClinic02.do",
+      "adapter": "anam_kumc",
+      "base": "https://anam.kumc.or.kr",
+      "hpCd": "AA",
+      "instNo": 1,
       "departments": ["정형외과", "신경외과"],
-      "adapter": "sample",
-      "enabled": true,
-      "note": "WAF가 봇 접근(403) 차단. 네트워크 허용된 세션에서 구조 확인 후 adapter 작성 예정."
+      "enabled": true
     },
     {
       "id": "cmcujb",
       "name": "가톨릭대학교 의정부성모병원",
-      "url": "https://www.cmcujb.or.kr/page/department/A/103/1",
+      "url": "https://www.cmcujb.or.kr/page/department/A/160/2",
+      "adapter": "cmc",
+      "base": "https://www.cmcujb.or.kr",
+      "deptCodes": { "정형외과": "160", "신경외과": "103" },
       "departments": ["정형외과", "신경외과"],
-      "adapter": "sample",
-      "enabled": true,
-      "note": "WAF가 봇 접근(403) 차단. 정형외과/신경외과 진료과 코드는 네트워크 허용된 세션에서 확인 예정."
+      "enabled": true
     }
   ]
 }
