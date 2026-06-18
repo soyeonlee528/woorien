@@ -9,15 +9,25 @@ def main():
     with sync_playwright() as p:
         b=p.chromium.launch(); ctx=b.new_context(user_agent=UA,locale="ko-KR")
         ctx.set_default_timeout(20000)
-        bodies={}
-        pg=ctx.new_page()
-        pg.on("response",lambda r:bodies.__setitem__(r.url,r.text()) if "timetable.do" in r.url and "html" in r.headers.get("content-type","") else None)
-        try: pg.goto("https://med.khmc.or.kr/kr/treatment/department/2050000000/timetable.do",wait_until="commit",timeout=20000)
-        except Exception as e: print("[goto]",type(e).__name__)
-        pg.wait_for_timeout(5000); pg.close()
+        URL="https://med.khmc.or.kr/kr/treatment/department/2050000000/timetable.do"
         h=""
-        for u,bd in bodies.items():
-            if "timetable.do" in u: h=bd; break
+        for attempt in range(4):
+            bodies={}
+            pg=ctx.new_page()
+            def on(r):
+                try:
+                    if "timetable.do" in r.url and "html" in r.headers.get("content-type",""):
+                        bodies[r.url]=r.text()
+                except: pass
+            pg.on("response",on)
+            try: pg.goto(URL,wait_until="commit",timeout=25000)
+            except Exception as e: print("[goto%d]"%attempt,type(e).__name__)
+            pg.wait_for_timeout(5000)
+            for u,bd in bodies.items():
+                if "timetable.do" in u and len(bd)>5000: h=bd; break
+            pg.close()
+            print("attempt",attempt,"len",len(h))
+            if len(h)>5000: break
         print("len",len(h),"진료일정 횟수",h.count("진료일정"))
         # 본문 영역만: '진료일정' 첫 등장 ~ 그 앞 1800자
         i=h.find("진료일정")
