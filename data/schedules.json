@@ -1598,6 +1598,249 @@
           }
         }
       ]
+    },
+    {
+      "id": "hyesung",
+      "name": "혜성병원",
+      "url": "https://www.hsmcenter.com/?idx=c65053dbe88877/c65053f1188898",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "live",
+      "professors": [
+        {
+          "name": "정승효",
+          "department": "정형외과",
+          "specialty": "관절센터 정승효 병원장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [
+              "AM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "강동모",
+          "department": "정형외과",
+          "specialty": "관절센터 강동모 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [
+              "PM"
+            ],
+            "thu": [
+              "AM"
+            ],
+            "fri": [
+              "PM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "백건열",
+          "department": "정형외과",
+          "specialty": "관절센터 백건열 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [
+              "PM"
+            ],
+            "thu": [
+              "AM"
+            ],
+            "fri": [
+              "PM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "임대철",
+          "department": "신경외과",
+          "specialty": "척추센터 임대철 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "AM"
+            ],
+            "tue": [
+              "PM"
+            ],
+            "wed": [
+              "AM"
+            ],
+            "thu": [
+              "PM"
+            ],
+            "fri": [
+              "AM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        },
+        {
+          "name": "최우성",
+          "department": "신경외과",
+          "specialty": "척추센터 최우성 과장",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "AM"
+            ],
+            "wed": [
+              "PM"
+            ],
+            "thu": [
+              "AM"
+            ],
+            "fri": [
+              "PM"
+            ],
+            "sat": [
+              "AM"
+            ],
+            "sun": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "hanyang_guri",
+      "name": "한양대학교구리병원",
+      "url": "https://guri.hyumc.com",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "manual",
+      "professors": [
+        {
+          "name": "하병진",
+          "department": "신경외과",
+          "specialty": "퇴행성 척추질환(디스크, 협착증), 척추외상, 최소침습수술, 척추내시경수술, 통증중재시술, 두부외상",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "PM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "소재완",
+          "department": "정형외과",
+          "specialty": "퇴행성 경추·요추 질환, 경추·요추 추간판(디스크) 탈출증, 경추·요추 외상, 골다공증성 척추 골절, 최소 침습적 척추 수술(미세 현미경·척추 내시경)",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김현준",
+          "department": "정형외과",
+          "specialty": "척추 협착증, 척추 변형, 추간판 탈출증(디스크), 척추 외상, 골절, 감염, 종양, 골다공증, 강직성 척추염",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "hanyang_seoul",
+      "name": "한양대학교병원",
+      "url": "https://seoul.hyumc.com",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "manual",
+      "professors": [
+        {
+          "name": "최성훈",
+          "department": "정형외과",
+          "specialty": "퇴행성 척추증, 류마티스성 척추질환, 추간판 탈출증, 경추 척수증 및 신경근증, 척추관 협착증, 노인성 후만증",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        }
+      ]
     }
   ]
 }
