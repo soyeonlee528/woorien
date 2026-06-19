@@ -44,6 +44,65 @@ def order_slots(sched):
 
 
 # ---------------------------------------------------------------------------
+# 신경외과 뇌 질환 전문의 제외 필터
+# 신경외과에는 뇌(뇌혈관·뇌종양·파킨슨 등)와 척추를 함께 다루는데, MR 영업 대상은
+# 척추·디스크·목·무릎 등 근골격 질환을 보는 의료진이다. 진료과목(specialty)/이름의
+# 센터명 텍스트에 척추 키워드가 하나라도 있으면 유지, 척추 없이 뇌 키워드만 있으면 제외.
+# 진료과목 텍스트가 없어 키워드 분류가 불가능한 병원은 BRAIN_DOCTORS 명단으로 제외.
+# 정형외과는 전부 유지(근골격 진료과).
+# ---------------------------------------------------------------------------
+SPINE_KEYWORDS = (
+    "척추", "디스크", "추간판", "경추", "흉추", "요추", "요통", "척추관협착",
+    "측만", "손발저림", "말초신경", "척추관", "목디스크", "허리", "관절", "무릎",
+)
+BRAIN_KEYWORDS = (
+    "뇌", "두부", "두개", "안면경련", "삼차신경통", "파킨슨", "모야모야",
+    "뇌전증", "수두증", "치매", "두통", "동맥류", "뇌졸중",
+)
+# 진료과목 텍스트가 없어 키워드 분류가 불가능한 병원의 '뇌 질환 전문' 신경외과 의료진
+# (웹 조사로 확인). (병원id, 이름) 으로 지정하면 제외한다.
+BRAIN_DOCTORS = {
+    # 안암병원 (anam): 신경외과 김섬 외 빈칸 → 제외
+    ("anam", "문은지"),
+    # 강동성심병원 (kdh): 신경외과는 김섬만 유지, 나머지 제외
+    ("kdh", "이종영"),
+    ("kdh", "조병문"),
+    ("kdh", "박세혁"),
+    ("kdh", "전홍준"),
+    ("kdh", "안홍석"),
+    # 경희대학교병원 (khmc): 신경외과는 강석형·서승호만 유지, 나머지 제외
+    ("khmc", "박봉진"),
+    ("khmc", "최석근"),
+    ("khmc", "박창규"),
+    ("khmc", "유지욱"),
+    ("khmc", "박주인"),
+}
+
+
+def _is_brain_only(prof):
+    text = (prof.get("name", "") + " " + (prof.get("specialty") or ""))
+    has_spine = any(k in text for k in SPINE_KEYWORDS)
+    has_brain = any(k in text for k in BRAIN_KEYWORDS)
+    return has_brain and not has_spine
+
+
+def filter_neuro_brain(professors, hid):
+    """신경외과 중 척추를 안 보는(뇌 전담) 의료진을 제외. 정형외과는 그대로."""
+    kept = []
+    for pr in professors:
+        if pr.get("department") != "신경외과":
+            kept.append(pr)
+            continue
+        base_name = (pr.get("name") or "").split("(")[0].strip()
+        if (hid, base_name) in BRAIN_DOCTORS:
+            continue
+        if _is_brain_only(pr):
+            continue
+        kept.append(pr)
+    return kept
+
+
+# ---------------------------------------------------------------------------
 # 어댑터: 고려대학교 안암병원
 # ---------------------------------------------------------------------------
 def adapter_anam_kumc(ctx, src):
@@ -730,6 +789,11 @@ def main():
                         print(f"[fail] {hid}: {type(e).__name__}: {e} — 기존 데이터 유지")
                     finally:
                         ctx.close()
+
+            before = len(professors)
+            professors = filter_neuro_brain(professors, hid)
+            if len(professors) != before:
+                print(f"  [filter] {hid}: 신경외과 뇌 전담 {before - len(professors)}명 제외")
 
             out.append({
                 "id": hid,
