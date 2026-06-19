@@ -145,6 +145,30 @@
         "신경외과"
       ],
       "enabled": true
+    },
+    {
+      "id": "hanyang_guri",
+      "name": "한양대학교구리병원",
+      "url": "https://guri.hyumc.com",
+      "adapter": "manual",
+      "base": "https://guri.hyumc.com",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "hanyang_seoul",
+      "name": "한양대학교병원",
+      "url": "https://seoul.hyumc.com",
+      "adapter": "manual",
+      "base": "https://seoul.hyumc.com",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "enabled": true
     }
   ]
 }
