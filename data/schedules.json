@@ -1283,72 +1283,6 @@
       "source": "live",
       "professors": [
         {
-          "name": "현윤석",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "김갑래",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [
-              "AM"
-            ],
-            "thu": [],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "홍성엽",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [
-              "AM",
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [],
-            "sat": [
-              "AM"
-            ],
-            "sun": []
-          }
-        },
-        {
           "name": "박진호",
           "department": "정형외과",
           "specialty": "",
@@ -1365,50 +1299,6 @@
             "fri": [
               "PM"
             ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이상림",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "PM"
-            ],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이호원",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [
-              "AM"
-            ],
-            "wed": [
-              "AM"
-            ],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
             "sat": [],
             "sun": []
           }
@@ -1447,106 +1337,6 @@
       "source": "live",
       "professors": [
         {
-          "name": "윤경호",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM"
-            ],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "유기형",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "AM",
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이정희",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM",
-              "PM"
-            ],
-            "tue": [],
-            "wed": [
-              "AM",
-              "PM"
-            ],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "송상준",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM",
-              "PM"
-            ],
-            "wed": [],
-            "thu": [],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "정비오",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "AM",
-              "PM"
-            ],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
           "name": "강경중",
           "department": "정형외과",
           "specialty": "",
@@ -1562,68 +1352,6 @@
               "PM"
             ],
             "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "백종훈",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM",
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "박철희",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [],
-            "wed": [
-              "AM"
-            ],
-            "thu": [
-              "AM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이성민",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [
-              "PM"
-            ],
-            "wed": [],
-            "thu": [],
-            "fri": [
-              "AM"
-            ],
             "sat": [],
             "sun": []
           }
@@ -1645,42 +1373,6 @@
             "fri": [
               "AM"
             ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "서대근",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "PM"
-            ],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "강상윤",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [],
-            "wed": [],
-            "thu": [],
-            "fri": [],
             "sat": [],
             "sun": []
           }

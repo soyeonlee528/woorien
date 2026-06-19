@@ -62,21 +62,24 @@ BRAIN_KEYWORDS = (
 # 진료과목 텍스트가 없어 키워드 분류가 불가능한 병원의 '뇌 질환 전문' 신경외과 의료진
 # (웹 조사로 확인). (병원id, 이름) 으로 지정하면 제외한다.
 BRAIN_DOCTORS = {
-    # 안암병원 (anam): 신경외과 김섬 외 빈칸 → 제외
+    # 안암병원 (anam): 신경외과 빈칸, 뇌/척추 확인 불가 → 제외
     ("anam", "문은지"),
-    # 강동성심병원 (kdh): 신경외과는 김섬만 유지, 나머지 제외
-    ("kdh", "이종영"),
-    ("kdh", "조병문"),
-    ("kdh", "박세혁"),
-    ("kdh", "전홍준"),
-    ("kdh", "안홍석"),
-    # 경희대학교병원 (khmc): 신경외과는 강석형·서승호만 유지, 나머지 제외
-    ("khmc", "박봉진"),
-    ("khmc", "최석근"),
-    ("khmc", "박창규"),
-    ("khmc", "유지욱"),
-    ("khmc", "박주인"),
 }
+
+# 특정 병원은 지정한 의료진만 노출하고(진료과 무관) 나머지는 전부 제외한다.
+# 사용자가 "이 교수들만 보면 됨" 으로 직접 지정.
+HOSPITAL_KEEP_ONLY = {
+    "kdh": {"박진호", "김섬"},               # 강동성심병원
+    "khmc": {"강경중", "이기영", "강석형", "서승호"},  # 경희대학교병원
+}
+
+
+def filter_keep_only(professors, hid):
+    keep = HOSPITAL_KEEP_ONLY.get(hid)
+    if not keep:
+        return professors
+    return [p for p in professors
+            if (p.get("name") or "").split("(")[0].strip() in keep]
 
 
 def _is_brain_only(prof):
@@ -791,9 +794,10 @@ def main():
                         ctx.close()
 
             before = len(professors)
+            professors = filter_keep_only(professors, hid)
             professors = filter_neuro_brain(professors, hid)
             if len(professors) != before:
-                print(f"  [filter] {hid}: 신경외과 뇌 전담 {before - len(professors)}명 제외")
+                print(f"  [filter] {hid}: {before - len(professors)}명 제외(지정 외/뇌 전담)")
 
             out.append({
                 "id": hid,
