@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-18T21:59:28+09:00",
+  "updatedAt": "2026-06-18T21:20:33+09:00",
   "note": "정형외과·신경외과 외래 진료 시간표. 매주 목요일 자동 갱신.",
   "hospitals": [
     {
@@ -236,69 +236,6 @@
           }
         },
         {
-          "name": "강신혁",
-          "department": "신경외과",
-          "specialty": "뇌 및 척수 종양 클리닉, 뇌혈관 클리닉, 뇌신경센터",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [],
-            "thu": [
-              "AM",
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "김장훈",
-          "department": "신경외과",
-          "specialty": "뇌혈관 클리닉, 뇌신경센터",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "PM"
-            ],
-            "fri": [
-              "AM",
-              "PM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "문은지",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "PM"
-            ],
-            "thu": [],
-            "fri": [
-              "PM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
           "name": "박경재",
           "department": "신경외과",
           "specialty": "뇌·척추종양, 뇌·척추종양 클리닉, 뇌혈관 클리닉, 암센터, 뇌 및 척수 종양 클리닉, 안면경련 클리닉, 뇌신경센터",
@@ -309,27 +246,6 @@
               "AM"
             ],
             "wed": [],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "박동혁",
-          "department": "신경외과",
-          "specialty": "뇌혈관 클리닉, 줄기세포센터, 안면경련 클리닉, 뇌 및 척수 종양 클리닉, 뇌신경센터",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [
-              "AM"
-            ],
-            "wed": [
-              "AM"
-            ],
             "thu": [],
             "fri": [],
             "sat": [],
@@ -399,25 +315,6 @@
           }
         },
         {
-          "name": "이성우",
-          "department": "신경외과",
-          "specialty": "첨단 초음파 뇌수술 센터",
-          "title": "",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
           "name": "이수범",
           "department": "신경외과",
           "specialty": "뇌·척추종양, 암센터, 뇌·척추종양 클리닉, 척추센터, 뇌신경센터",
@@ -433,21 +330,6 @@
             "fri": [
               "AM"
             ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "장진우",
-          "department": "신경외과",
-          "specialty": "첨단 초음파 뇌수술 센터",
-          "title": "고려대학교 안암병원 신경외과학교실 교수",
-          "schedule": {
-            "mon": [],
-            "tue": [],
-            "wed": [],
-            "thu": [],
-            "fri": [],
             "sat": [],
             "sun": []
           }
@@ -638,26 +520,6 @@
           }
         },
         {
-          "name": "김영우",
-          "department": "신경외과",
-          "specialty": "뇌혈관질환(뇌혈관내수술-뇌동맥류, 뇌동정맥기형, 뇌동정맥루) 뇌출혈 및 뇌경색(뇌혈관협착 스텐트 삽입술, 혈전제거술, 경동맥 내막절제술, 뇌혈관문합술, 모야모야병)",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "AM",
-              "PM"
-            ],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
           "name": "이태규",
           "department": "신경외과",
           "specialty": "미세혈관감압술 (안면떨림/삼차신경통), 뇌종양, 척수신경자극기설치술 (난치성통증, 복합부위통증증후군, 척추수술후통증, 당뇨병성신경통, 대상포진후통증, 중풍후통증), 이식형약물주입기설치술 (암성통증, 뇌성마비, 중풍후마비), 심부뇌자극술 (파킨슨병, 진전, 뇌전증, 뇌성마비, 만성통증, 강박증, 우울증).",
@@ -691,99 +553,6 @@
             "wed": [],
             "thu": [
               "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "오재상",
-          "department": "신경외과",
-          "specialty": "뇌혈관질환(뇌혈관내수술, 클립결찰술-뇌동맥류, 뇌동정맥기형, 뇌동정맥루) 뇌출혈 및 뇌경색(뇌혈관협착 스텐트 삽입술, 혈전제거술, 경동맥 내막절제술, 뇌혈관문합술, 모야모야병) 안면경련 수술적치료",
-          "title": "부교수",
-          "schedule": {
-            "mon": [],
-            "tue": [],
-            "wed": [],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "황의현",
-          "department": "신경외과",
-          "specialty": "뇌혈관질환(뇌혈관내수술, 클립결찰술-뇌동맥류, 뇌동정맥기형, 뇌동정맥루) 뇌출혈 및 뇌경색(뇌혈관협착 스텐트 삽입술, 혈전제거술, 경동맥 내막절제술, 뇌혈관문합술, 모야모야병)",
-          "title": "임상진료조교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "조광욱",
-          "department": "신경외과",
-          "specialty": "두부외상(성인 및 소아), 외상 후 후유증, 외상성 치매 및 수두증, 외상관련 혈관성 뇌경색",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [],
-            "wed": [
-              "AM"
-            ],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "장혁",
-          "department": "신경외과",
-          "specialty": "뇌혈관질환(뇌혈관내수술, 클립결찰술-뇌동맥류, 뇌동정맥기형, 뇌동정맥루) 뇌출혈 및 뇌경색(뇌혈관협착 스텐트 삽입술, 혈전제거술, 경동맥 내막절제술, 뇌혈관문합술, 모야모야병)",
-          "title": "임상진료조교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [
-              "PM"
-            ],
-            "wed": [],
-            "thu": [],
-            "fri": [
-              "PM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이민호",
-          "department": "신경외과",
-          "specialty": "뇌종양(악성뇌종양, 양성뇌종양), 두개저수술, 내시경수술, 두부외상",
-          "title": "부교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "AM"
             ],
             "fri": [],
             "sat": [],
@@ -922,65 +691,6 @@
               "PM"
             ],
             "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "강희인",
-          "department": "신경외과",
-          "specialty": "뇌혈관 및 종양학, 두부외상",
-          "title": "",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [],
-            "wed": [
-              "PM"
-            ],
-            "thu": [],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이승진",
-          "department": "신경외과",
-          "specialty": "신경외상 및 뇌정위",
-          "title": "",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM"
-            ],
-            "wed": [],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "김재훈",
-          "department": "신경외과",
-          "specialty": "뇌혈관 및 종양학, 두부외상",
-          "title": "",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "AM"
-            ],
-            "thu": [],
-            "fri": [
-              "PM"
-            ],
             "sat": [],
             "sun": []
           }
@@ -1169,109 +879,6 @@
             "thu": [],
             "fri": [
               "AM"
-            ],
-            "sat": [
-              "AM"
-            ],
-            "sun": []
-          }
-        },
-        {
-          "name": "김덕령(뇌신경센터)",
-          "department": "신경외과",
-          "specialty": "뇌정위수술(삼차신경통, 안면떨림, 파킨슨병, 진전, 근이긴장증), 두부외상 / 만15세 이상",
-          "title": "",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [],
-            "wed": [],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "윤별희(뇌신경센터)",
-          "department": "신경외과",
-          "specialty": "뇌혈관질환, 혈관내 치료, 두부외상 / 만15세 이상",
-          "title": "",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [
-              "AM"
-            ],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
-            "sat": [
-              "AM"
-            ],
-            "sun": []
-          }
-        },
-        {
-          "name": "박영기(뇌신경센터)",
-          "department": "신경외과",
-          "specialty": "뇌혈관질환, 혈관내치료, 두부외상 / 만 15세 이상",
-          "title": "",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [
-              "AM"
-            ],
-            "sat": [
-              "AM"
-            ],
-            "sun": []
-          }
-        },
-        {
-          "name": "이승훈(뇌신경센터)",
-          "department": "신경외과",
-          "specialty": "신경외과",
-          "title": "",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "전주희(뇌신경센터)",
-          "department": "신경외과",
-          "specialty": "뇌종양(뇌전이암, 뇌수막종, 신경초종, 뇌하수체종양, 기타 뇌종양), 수두증, 두부외상, 외상성 뇌출혈",
-          "title": "",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM"
-            ],
-            "wed": [
-              "PM"
-            ],
-            "thu": [],
-            "fri": [
-              "PM"
             ],
             "sat": [
               "AM"
@@ -1676,72 +1283,6 @@
       "source": "live",
       "professors": [
         {
-          "name": "현윤석",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "김갑래",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [
-              "AM"
-            ],
-            "thu": [],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "홍성엽",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [
-              "AM",
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [],
-            "sat": [
-              "AM"
-            ],
-            "sun": []
-          }
-        },
-        {
           "name": "박진호",
           "department": "정형외과",
           "specialty": "",
@@ -1753,146 +1294,6 @@
             "tue": [],
             "wed": [
               "AM"
-            ],
-            "thu": [],
-            "fri": [
-              "PM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이상림",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "PM"
-            ],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이호원",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [
-              "AM"
-            ],
-            "wed": [
-              "AM"
-            ],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이종영",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [],
-            "wed": [],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "조병문",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "AM",
-              "PM"
-            ],
-            "thu": [],
-            "fri": [],
-            "sat": [
-              "AM"
-            ],
-            "sun": []
-          }
-        },
-        {
-          "name": "박세혁",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "전홍준",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM",
-              "PM"
-            ],
-            "wed": [],
-            "thu": [],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "안홍석",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [],
-            "wed": [
-              "AM",
-              "PM"
             ],
             "thu": [],
             "fri": [
@@ -1936,106 +1337,6 @@
       "source": "live",
       "professors": [
         {
-          "name": "윤경호",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM"
-            ],
-            "wed": [],
-            "thu": [
-              "AM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "유기형",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "AM",
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이정희",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM",
-              "PM"
-            ],
-            "tue": [],
-            "wed": [
-              "AM",
-              "PM"
-            ],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "송상준",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM",
-              "PM"
-            ],
-            "wed": [],
-            "thu": [],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "정비오",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "AM",
-              "PM"
-            ],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
           "name": "강경중",
           "department": "정형외과",
           "specialty": "",
@@ -2051,68 +1352,6 @@
               "PM"
             ],
             "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "백종훈",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM",
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "박철희",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [],
-            "wed": [
-              "AM"
-            ],
-            "thu": [
-              "AM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "이성민",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [
-              "PM"
-            ],
-            "wed": [],
-            "thu": [],
-            "fri": [
-              "AM"
-            ],
             "sat": [],
             "sun": []
           }
@@ -2139,82 +1378,6 @@
           }
         },
         {
-          "name": "서대근",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [],
-            "wed": [
-              "PM"
-            ],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "강상윤",
-          "department": "정형외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [],
-            "wed": [],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "박봉진",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "PM"
-            ],
-            "tue": [],
-            "wed": [],
-            "thu": [
-              "AM",
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "최석근",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "PM"
-            ],
-            "wed": [
-              "AM",
-              "PM"
-            ],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
           "name": "강석형",
           "department": "신경외과",
           "specialty": "",
@@ -2236,46 +1399,6 @@
           }
         },
         {
-          "name": "박창규",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [
-              "AM",
-              "PM"
-            ],
-            "wed": [],
-            "thu": [
-              "PM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "유지욱",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [
-              "AM",
-              "PM"
-            ],
-            "tue": [
-              "AM"
-            ],
-            "wed": [],
-            "thu": [],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
           "name": "서승호",
           "department": "신경외과",
           "specialty": "",
@@ -2287,25 +1410,6 @@
               "PM"
             ],
             "wed": [],
-            "thu": [],
-            "fri": [
-              "AM"
-            ],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
-          "name": "박주인",
-          "department": "신경외과",
-          "specialty": "",
-          "title": "교수",
-          "schedule": {
-            "mon": [],
-            "tue": [],
-            "wed": [
-              "AM"
-            ],
             "thu": [],
             "fri": [
               "AM"
@@ -2475,29 +1579,6 @@
           }
         },
         {
-          "name": "김진경",
-          "department": "신경외과",
-          "specialty": "두통, 치매, 두부외상, 뇌동맥류, 뇌종양",
-          "title": "",
-          "schedule": {
-            "mon": [
-              "AM"
-            ],
-            "tue": [
-              "PM"
-            ],
-            "wed": [
-              "AM"
-            ],
-            "thu": [
-              "AM"
-            ],
-            "fri": [],
-            "sat": [],
-            "sun": []
-          }
-        },
-        {
           "name": "오선규",
           "department": "신경외과",
           "specialty": "신경외과 질환, 척추질환",
@@ -2660,6 +1741,106 @@
             "sat": [
               "AM"
             ],
+            "sun": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "hanyang_guri",
+      "name": "한양대학교구리병원",
+      "url": "https://guri.hyumc.com",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "manual",
+      "professors": [
+        {
+          "name": "하병진",
+          "department": "신경외과",
+          "specialty": "퇴행성 척추질환(디스크, 협착증), 척추외상, 최소침습수술, 척추내시경수술, 통증중재시술, 두부외상",
+          "title": "",
+          "schedule": {
+            "mon": [
+              "PM"
+            ],
+            "tue": [
+              "PM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "소재완",
+          "department": "정형외과",
+          "specialty": "퇴행성 경추·요추 질환, 경추·요추 추간판(디스크) 탈출증, 경추·요추 외상, 골다공증성 척추 골절, 최소 침습적 척추 수술(미세 현미경·척추 내시경)",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [
+              "AM",
+              "PM"
+            ],
+            "wed": [],
+            "thu": [
+              "AM"
+            ],
+            "fri": [],
+            "sat": [],
+            "sun": []
+          }
+        },
+        {
+          "name": "김현준",
+          "department": "정형외과",
+          "specialty": "척추 협착증, 척추 변형, 추간판 탈출증(디스크), 척추 외상, 골절, 감염, 종양, 골다공증, 강직성 척추염",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [
+              "AM",
+              "PM"
+            ],
+            "thu": [],
+            "fri": [
+              "PM"
+            ],
+            "sat": [],
+            "sun": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "hanyang_seoul",
+      "name": "한양대학교병원",
+      "url": "https://seoul.hyumc.com",
+      "departments": [
+        "정형외과",
+        "신경외과"
+      ],
+      "source": "manual",
+      "professors": [
+        {
+          "name": "최성훈",
+          "department": "정형외과",
+          "specialty": "퇴행성 척추증, 류마티스성 척추질환, 추간판 탈출증, 경추 척수증 및 신경근증, 척추관 협착증, 노인성 후만증",
+          "title": "",
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
             "sun": []
           }
         }
