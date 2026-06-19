@@ -211,6 +211,10 @@ var SUPA_KEY="sb_publishable_mOov6n4h60cDTnDcYXSr0Q_xPMxdEX7";
 var SESS_KEY="mr_supa_session_v1";
 function getSess(){try{return JSON.parse(localStorage.getItem(SESS_KEY));}catch(e){return null;}}
 function setSess(s){if(s)localStorage.setItem(SESS_KEY,JSON.stringify(s));else localStorage.removeItem(SESS_KEY);}
+/* 필터(병원·진료과·교수 선택) 유지 — 세션과 별개 키라 로그아웃/재방문/새로고침에도 보존 */
+var FILTER_KEY="mr_filter_v1";
+function saveFilter(){try{localStorage.setItem(FILTER_KEY,JSON.stringify({hospitalIds:Array.from(S.hospitalIds),depts:Array.from(S.depts),selected:Array.from(S.selected)}));}catch(e){}}
+function loadFilter(){try{return JSON.parse(localStorage.getItem(FILTER_KEY));}catch(e){return null;}}
 
 function pad(n){return (n<10?"0":"")+n;}
 function fmt(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
@@ -268,13 +272,21 @@ function dtagHTML(d){return '<span class="dtag" style="'+deptStyle(d)+'">'+esc(d
 function timeOpts(sel,slot){var r={AM:[8,12],PM:[13,18]}[slot]||[8,20];var o='<option value="">선택 안 함</option>';for(var h=r[0];h<=r[1];h++){for(var m=0;m<60;m+=30){if(h===r[1]&&m>0)break;var v=pad(h)+":"+pad(m);o+='<option value="'+v+'"'+(v===sel?" selected":"")+'>'+v+'</option>';}}return o;}
 
 function initSelections(){
-  var hs=hospitals();
-  if(!S.hospitalIds.size&&hs.length)S.hospitalIds=new Set([hs[0].id]);
+  var hs=hospitals(), saved=loadFilter();
+  // 병원: 저장된 선택 복원(없어진 병원 제거), 저장값 없으면 전체 선택
+  if(saved&&saved.hospitalIds)S.hospitalIds=new Set(saved.hospitalIds.filter(function(id){return hs.some(function(h){return h.id===id;});}));
+  if(!S.hospitalIds.size)S.hospitalIds=new Set(hs.map(function(h){return h.id;}));
+  // 진료과: 저장값 복원, 없으면 전체
   var ds=depts();
-  var keep=ds.filter(function(d){return S.depts.has(d);});
-  S.depts=new Set(keep.length?keep:ds);
+  if(saved&&saved.depts){var kd=saved.depts.filter(function(d){return ds.indexOf(d)>=0;});S.depts=new Set(kd.length?kd:ds);}
+  else S.depts=new Set(ds);
   if(!S.selDate){var t=new Date();while(monIdx(t)>4)t=addDays(t,1);S.selDate=fmt(t);S.weekCursor=t;}
-  resetSelected();
+  // 교수: 저장값 복원(없어진 교수 제거), 없으면 전체. 복원 결과가 비면 전체로 폴백
+  if(saved&&saved.selected){
+    var avail={};allProfs().forEach(function(x){avail[x.hid+"|"+x.p.name]=1;});
+    S.selected=new Set(saved.selected.filter(function(k){return avail[k];}));
+    if(!S.selected.size)resetSelected();
+  } else resetSelected();
 }
 function resetSelected(){S.selected=new Set(allProfs().map(function(x){return x.hid+"|"+x.p.name;}));}
 
@@ -403,9 +415,9 @@ function updFilterLabels(){
 }
 function onHospChange(){
   var ds=depts(),keep=ds.filter(function(d){return S.depts.has(d);}); S.depts=new Set(keep.length?keep:ds);
-  resetSelected(); updFilterLabels(); refreshSched();
+  resetSelected(); saveFilter(); updFilterLabels(); refreshSched();
 }
-function onDeptChange(){ resetSelected(); updFilterLabels(); refreshSched(); }
+function onDeptChange(){ resetSelected(); saveFilter(); updFilterLabels(); refreshSched(); }
 
 function setupDeptPicker(){
   var btn=document.getElementById("f-dp"),pop=document.getElementById("pop-d");
@@ -448,8 +460,8 @@ function setupProfPicker(){
         '<span style="font-weight:600">'+esc(p.name)+'</span>'+(md?' '+dtagHTML(p.department):'')+(p.title?' <span style="color:#94a3b8;font-size:12px">'+esc(p.title)+'</span>':'')+'</label>';}).join("");
     });
     pop.innerHTML=html;
-    pop.querySelector(".all").onclick=function(){if(all)S.selected=new Set();else S.selected=new Set(aps.map(function(x){return x.hid+"|"+x.p.name;}));build();syncBtn();refreshSched();};
-    pop.querySelectorAll("input").forEach(function(c){c.onchange=function(){var k=c.dataset.k;if(c.checked)S.selected.add(k);else S.selected.delete(k);syncBtn();refreshSched();};});
+    pop.querySelector(".all").onclick=function(){if(all)S.selected=new Set();else S.selected=new Set(aps.map(function(x){return x.hid+"|"+x.p.name;}));saveFilter();build();syncBtn();refreshSched();};
+    pop.querySelectorAll("input").forEach(function(c){c.onchange=function(){var k=c.dataset.k;if(c.checked)S.selected.add(k);else S.selected.delete(k);saveFilter();syncBtn();refreshSched();};});
   }
   btn.onclick=function(e){e.stopPropagation();pop.style.display=pop.style.display==="none"?"block":"none";if(pop.style.display==="block")build();};
   document.addEventListener("click",function(e){if(!pop.contains(e.target)&&!btn.contains(e.target))pop.style.display="none";});
