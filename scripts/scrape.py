@@ -754,6 +754,7 @@ def main():
           "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
 
     out = []
+    problems = []
     with sync_playwright() as p:
         browser = p.chromium.launch()
         for src in sources.get("hospitals", []):
@@ -774,6 +775,7 @@ def main():
                 adapter = ADAPTERS.get(adapter_name)
                 if adapter is None:
                     print(f"[warn] {hid}: adapter '{adapter_name}' 없음 — 기존 유지")
+                    problems.append(f"{src.get('name', hid)}: 어댑터 '{adapter_name}' 설정 오류")
                 else:
                     ctx = browser.new_context(user_agent=UA, locale="ko-KR",
                                               extra_http_headers={"Referer": src["base"]})
@@ -790,8 +792,10 @@ def main():
                             print(f"[ok]   {hid}: 총 {len(got)}명 수집")
                         else:
                             print(f"[skip] {hid}: 0명 — 기존 데이터 유지")
+                            problems.append(f"{src.get('name', hid)}: 수집 0명(사이트 구조 변경 가능성) — 기존 데이터 유지")
                     except Exception as e:
                         print(f"[fail] {hid}: {type(e).__name__}: {e} — 기존 데이터 유지")
+                        problems.append(f"{src.get('name', hid)}: 수집 실패 {type(e).__name__} — 기존 데이터 유지")
                     finally:
                         ctx.close()
 
@@ -821,6 +825,16 @@ def main():
                          encoding="utf-8")
     total = sum(len(h["professors"]) for h in out)
     print(f"[done] {DATA_FILE} 갱신 — 병원 {len(out)}곳, 교수 {total}명")
+
+    # 수집 문제 기록(워크플로가 읽어 실패/알림 트리거). 문제 없으면 파일 삭제.
+    prob_file = ROOT / "scrape_problems.txt"
+    if problems:
+        prob_file.write_text("\n".join(problems) + "\n", encoding="utf-8")
+        print(f"[problems] {len(problems)}건 발생 — {prob_file.name} 기록")
+        for p in problems:
+            print("  - " + p)
+    elif prob_file.exists():
+        prob_file.unlink()
     return 0
 
 
