@@ -60,7 +60,6 @@ jobs:
       - name: 수집 문제 점검(문제 시 작업 실패 → 메일 알림)
         if: always()
         run: |
-          printf 'TEST: 메일 발송 점검용 더미(곧 제거)\n' > scrape_problems.txt   # TEMP-MAIL-TEST
           if [ -s scrape_problems.txt ]; then
             echo "::error title=교수 시간표 수집 문제::아래 병원에서 문제가 발생했습니다(데이터는 기존 값 유지)"
             cat scrape_problems.txt
