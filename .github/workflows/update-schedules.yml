@@ -56,3 +56,13 @@ jobs:
           else
             echo "변경 사항 없음 — 커밋 생략"
           fi
+
+      - name: 수집 문제 점검(문제 시 작업 실패 → 메일 알림)
+        if: always()
+        run: |
+          if [ -s scrape_problems.txt ]; then
+            echo "::error title=교수 시간표 수집 문제::아래 병원에서 문제가 발생했습니다(데이터는 기존 값 유지)"
+            cat scrape_problems.txt
+            exit 1
+          fi
+          echo "모든 병원 정상 수집 — 문제 없음"
