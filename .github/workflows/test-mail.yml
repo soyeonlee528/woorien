@@ -2,6 +2,9 @@ name: 메일 알림 테스트(임시)
 
 # 메일 발송 시크릿이 제대로 동작하는지 1회 확인용. 확인 후 삭제 예정.
 on:
+  push:
+    paths:
+      - ".github/workflows/test-mail.yml"
   workflow_dispatch: {}
 
 jobs:
