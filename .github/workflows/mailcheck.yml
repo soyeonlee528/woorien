@@ -1,30 +1,21 @@
-name: mail-test
+name: mailcheck
 
 on:
   push:
     paths:
-      - ".github/workflows/test-mail.yml"
+      - ".github/workflows/mailcheck.yml"
   workflow_dispatch: {}
 
-permissions:
-  contents: read
-
-concurrency:
-  group: mail-test
-  cancel-in-progress: false
-
 jobs:
-  test:
+  send:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: make dummy problem file
-        run: printf 'mail-test: notification check (not a real problem)\n' > scrape_problems.txt
-      - name: send test mail
-        env:
+      - run: printf 'mailcheck: SMTP 동작 확인용 (실제 문제 아님)\n' > scrape_problems.txt
+      - env:
           MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
           MAIL_PORT: ${{ secrets.MAIL_PORT }}
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
