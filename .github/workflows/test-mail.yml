@@ -1,0 +1,25 @@
+name: 메일 알림 테스트(임시)
+
+# 메일 발송 시크릿이 제대로 동작하는지 1회 확인용. 확인 후 삭제 예정.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 더미 문제 파일 생성
+        run: printf '테스트병원: 메일 알림 동작 확인용 (실제 문제 아님)\n' > scrape_problems.txt
+      - name: 이메일 발송 테스트
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python scripts/notify_email.py
