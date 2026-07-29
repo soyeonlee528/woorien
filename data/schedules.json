@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-23T01:18:45+09:00",
+  "updatedAt": "2026-07-30T01:19:01+09:00",
   "note": "정형외과·신경외과 외래 진료 시간표. 매주 목요일 자동 갱신.",
   "hospitals": [
     {
@@ -618,7 +618,7 @@
         {
           "name": "김진우",
           "department": "정형외과",
-          "specialty": "고관절(대퇴부 질환 및 골절), 골다공증",
+          "specialty": "고관절(대퇴부 질환 및 골절), 골다공증, 사지접합(수지제외)",
           "title": "",
           "schedule": {
             "mon": [
@@ -659,7 +659,7 @@
         {
           "name": "최성주",
           "department": "정형외과",
-          "specialty": "수부, 상지, 재건술, 미세수술",
+          "specialty": "수부, 상지, 재건술, 미세수술, 사지접합(수지)",
           "title": "",
           "schedule": {
             "mon": [],
@@ -679,7 +679,7 @@
         {
           "name": "윤지영",
           "department": "정형외과",
-          "specialty": "어깨관절질환(회전근개 파열, 어깨 탈구,오십견(유착성관절낭염), 석회성 건염,관절염), 어깨관절경수술, 외상 및 스포츠 손상",
+          "specialty": "어깨관절질환(회전근개 파열, 어깨 탈구, 오십견(유착성관절낭염), 석회성 건염, 관절염), 어깨관절경수술, 외상 및 스포츠 손상",
           "title": "",
           "schedule": {
             "mon": [],
@@ -755,7 +755,7 @@
         {
           "name": "양기원",
           "department": "정형외과",
-          "specialty": "족부질환(발 및 발목관절,당뇨병 족부질환) / 취학아동부터 진료가능",
+          "specialty": "족부질환(발 및 발목관절, 당뇨병 족부질환) / 취학아동부터 진료가능",
           "title": "",
           "schedule": {
             "mon": [
@@ -902,9 +902,9 @@
       "source": "live",
       "professors": [
         {
-          "name": "하주경",
+          "name": "주경진료",
           "department": "신경외과",
-          "specialty": "척추내시경센터",
+          "specialty": "척추내시경센터 하",
           "title": "원장",
           "schedule": {
             "mon": [
@@ -932,9 +932,9 @@
           }
         },
         {
-          "name": "이종민",
+          "name": "종민진료",
           "department": "신경외과",
-          "specialty": "척추내시경 센터",
+          "specialty": "척추내시경센터 이",
           "title": "원장",
           "schedule": {
             "mon": [
@@ -962,9 +962,9 @@
           }
         },
         {
-          "name": "안풍기",
+          "name": "풍기진료",
           "department": "신경외과",
-          "specialty": "척추 센터",
+          "specialty": "척추센터 안",
           "title": "원장",
           "schedule": {
             "mon": [
@@ -992,9 +992,9 @@
           }
         },
         {
-          "name": "박상준",
+          "name": "상준진료",
           "department": "정형외과",
-          "specialty": "하지관절, 정맥센터",
+          "specialty": "관절센터-하지정맥관절센터 박",
           "title": "원장",
           "schedule": {
             "mon": [
@@ -1022,9 +1022,9 @@
           }
         },
         {
-          "name": "이광석",
+          "name": "광석진료",
           "department": "정형외과",
-          "specialty": "상지관절-스포츠손상 센터",
+          "specialty": "관절센터-스포츠손상 센터 이",
           "title": "원장",
           "schedule": {
             "mon": [
@@ -1052,9 +1052,9 @@
           }
         },
         {
-          "name": "김승호",
+          "name": "승호진료",
           "department": "정형외과",
-          "specialty": "정형외과 전문의·의학박사",
+          "specialty": "관절센터-상지관절센터 김",
           "title": "원장",
           "schedule": {
             "mon": [
@@ -1295,14 +1295,10 @@
               "PM"
             ],
             "tue": [],
-            "wed": [
-              "AM"
-            ],
+            "wed": [],
             "thu": [],
             "fri": [],
-            "sat": [
-              "AM"
-            ],
+            "sat": [],
             "sun": []
           }
         },
@@ -1313,9 +1309,7 @@
           "title": "교수",
           "schedule": {
             "mon": [],
-            "tue": [
-              "PM"
-            ],
+            "tue": [],
             "wed": [],
             "thu": [
               "PM"
